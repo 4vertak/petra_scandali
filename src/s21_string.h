@@ -5,7 +5,7 @@
 #include <stdlib.h>
 
 #define s21_NULL (void *)0
-typedef long unsigned s21_size_t;
+typedef unsigned long s21_size_t;
 
 // возвращает указатель на первое вхождение значения c среди первых n байтов
 // s или NULL, если не найдено

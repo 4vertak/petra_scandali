@@ -11,11 +11,11 @@ TEST_OBJ = $(patsubst $(TEST)%.c, $(TEST)%.o, $(TEST_SRC))
 all: s21_string.a test.a covered
 
 s21_string.a: $(OBJ)
-	ar rc s21_string.a $^
+	ar rc s21_string.a $(OBJ)
 	ranlib s21_string.a
 
 test.a: $(TEST_OBJ)
-	ar rc $(TEST).a $^
+	ar rc $(TEST).a $(TEST_OBJ)
 	ranlib $(TEST).a
 
 covered:

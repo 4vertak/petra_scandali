@@ -5,7 +5,7 @@ int main(void) {
   Suite *test[] = {test_memchr(), test_memcmp(), NULL};
   SRunner *sr;
   int i = 0;
-  while (test[i] != 0) {
+  while (test[i] != NULL) {
     sr = srunner_create(test[i]);
 
     srunner_set_fork_status(sr, CK_NOFORK);

@@ -2,23 +2,25 @@
 
 int main(void) {
   int number_failed = 0;
-  Suite *test;
+  Suite *test[] = {test_memchr(), test_memcmp(), NULL};
   SRunner *sr;
-  test = test_memchr();
+  int i = 0;
+  while (test[i] != 0) {
+    sr = srunner_create(test[i]);
 
-  sr = srunner_create(test);
+    srunner_set_fork_status(sr, CK_NOFORK);
+    srunner_run_all(sr, CK_NORMAL);
 
-  srunner_set_fork_status(sr, CK_NOFORK);
-  srunner_run_all(sr, CK_NORMAL);
-
-  number_failed = srunner_ntests_failed(sr);
+    number_failed = srunner_ntests_failed(sr);
+    srunner_free(sr);
+    i++;
+  }
   if (number_failed != 0)
     printf("\033[31;1m========= FAILED: %d =========\033[0;0m\n",
            number_failed);
   else
     printf("\033[32;1m========= FAILED: %d =========\033[0;0m\n",
            number_failed);
-  srunner_free(sr);
 
   return (number_failed == 0) ? EXIT_SUCCESS : EXIT_FAILURE;
 }

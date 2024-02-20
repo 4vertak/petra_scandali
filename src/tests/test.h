@@ -9,5 +9,6 @@
 #include "../s21_string.h"
 
 Suite *test_memchr(void);
+Suite *test_memcmp(void);
 
 #endif  // SRC_TESTS_TEST_H_

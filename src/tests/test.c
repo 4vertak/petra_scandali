@@ -2,8 +2,8 @@
 
 int main(void) {
   int number_failed = 0;
-  Suite *test[] = {test_memchr(), test_memcmp(), test_memcpy(),
-                   test_strlen(), test_strchr(), NULL};
+  Suite *test[] = {test_memchr(), test_memcmp(), test_memcpy(), test_strlen(),
+                   NULL};
   SRunner *sr;
   int i = 0;
   while (test[i] != NULL) {

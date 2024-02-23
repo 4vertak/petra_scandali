@@ -20,10 +20,7 @@ void *s21_memset(void *str, int c, s21_size_t n);
 // строка s не содержит символ c
 char *s21_strchr(const char *str, int c);
 
-// лексикографическое сравнение строк (возвращает "0", если строки
-// одинаковые, положительное, если первая строка больше, и отрицательное, если
-// меньше)
-// int s21_strncmp(const char *str1, const char *str2, s21_size_t n);
+int s21_strncmp(const char *str1, const char *str2, s21_size_t n);
 
 // ккопирует до n байт строки из одного места в другое
 // char *s21_strncpy(char *dest, const char *src, s21_size_t n);

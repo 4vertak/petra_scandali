@@ -15,13 +15,12 @@ int main(void) {
     number_failed = srunner_ntests_failed(sr);
     srunner_free(sr);
     i++;
+    (number_failed != 0)
+        ? printf("\033[31;1m=========FAILED: %d =========\033[0;0m\n",
+                 number_failed)
+        : printf("\033[32;1m=========FAILED: %d =========\033[0;0m\n",
+                 number_failed);
   }
-  if (number_failed != 0)
-    printf("\033[31;1m========= FAILED: %d =========\033[0;0m\n",
-           number_failed);
-  else
-    printf("\033[32;1m========= FAILED: %d =========\033[0;0m\n",
-           number_failed);
 
   return (number_failed == 0) ? EXIT_SUCCESS : EXIT_FAILURE;
 }

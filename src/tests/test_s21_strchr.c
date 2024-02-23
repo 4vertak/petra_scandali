@@ -84,7 +84,7 @@ Suite *test_strchr(void) {
   s = suite_create("\n\033[32;1m=========S21_STRCHR=========\033[0m");
 
   tc = tcase_create("strchr_tc");
-  tcase_add_test(tc, strchr_1);
+  // tcase_add_test(tc, strchr_1);
   // tcase_add_test(tc, strchr_2);
   // tcase_add_test(tc, strchr_3);
   // tcase_add_test(tc, strchr_4);

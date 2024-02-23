@@ -46,16 +46,16 @@ START_TEST(memcpy_5) {
 }
 END_TEST
 
-// START_TEST(memcpy_6) {
-//   char str1[] = "Hello, world!";
-//   char str2[] = "Hello, world!";
-//   char str3[] = "12345678901234";
-//   // memcpy(str1, str3, len) == "123456789012341234567890123412345678901234";
-//   // s21_memcpy(str2, str3, len) == "1234567890123412345678901234";
-//   s21_size_t len = strlen(str3);
-//   ck_assert_str_eq(memcpy(str1, str3, len), s21_memcpy(str2, str3, len));
-// }
-// END_TEST
+START_TEST(memcpy_6) {
+  char str1[15] = "";
+  char str2[15] = "";
+  char str3[] = "12345678901234";
+  // memcpy(str1, str3, len) == "123456789012341234567890123412345678901234";
+  // s21_memcpy(str2, str3, len) == "1234567890123412345678901234";
+  s21_size_t len = strlen(str3);
+  ck_assert_str_eq(memcpy(str1, str3, len), s21_memcpy(str2, str3, len));
+}
+END_TEST
 
 START_TEST(memcpy_7) {
   char str1[] = "Hello, world!";
@@ -103,17 +103,14 @@ START_TEST(memcpy_11) {
 END_TEST
 
 Suite *test_memcpy(void) {
-  Suite *s;
-  TCase *tc;
-  s = suite_create("\n\033[32;1m=========S21_MEMCPY=========\033[0m");
-
-  tc = tcase_create("memcpy_tc");
+  Suite *s = suite_create("\n\033[37;1m=========S21_MEMCPY=========\033[0m");
+  TCase *tc = tcase_create("memcpy_tc");
   tcase_add_test(tc, memcpy_1);
   tcase_add_test(tc, memcpy_2);
   tcase_add_test(tc, memcpy_3);
   tcase_add_test(tc, memcpy_4);
   tcase_add_test(tc, memcpy_5);
-  // tcase_add_test(tc, memcpy_6);
+  tcase_add_test(tc, memcpy_6);
   tcase_add_test(tc, memcpy_7);
   tcase_add_test(tc, memcpy_8);
   tcase_add_test(tc, memcpy_9);

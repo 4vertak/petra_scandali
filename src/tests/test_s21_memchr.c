@@ -91,7 +91,7 @@ END_TEST
 Suite *test_memchr(void) {
   Suite *s;
   TCase *tc;
-  s = suite_create("\n\033[32;1m=========S21_MEMCHR=========\033[0m");
+  s = suite_create("\n\033[37;1m=========S21_MEMCHR=========\033[0m");
 
   tc = tcase_create("memchr_tc");
   tcase_add_test(tc, memchr_1);

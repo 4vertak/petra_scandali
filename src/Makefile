@@ -44,3 +44,6 @@ rebuild: clean all
 gcov_report: test
 	lcov -t "s21_string" -o s21_string.info -c -d .
 	genhtml -o gcov_report s21_string.info
+# для замены lcov на gcovr
+#	gcovr -r . -o s21_string.info
+#	gcovr --html --html-details -o gcov_report/index.html

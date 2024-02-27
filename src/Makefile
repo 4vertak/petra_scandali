@@ -30,8 +30,11 @@ style: clean
 	
 test: clean covered test.a
 	$(CC) $(FLAGS) --coverage -o $(TEST).o $(TEST).c -c
+	gcc -g -Wall -Wextra -Werror -std=c11 --coverage -o tests/test_s21_strchr.o tests/test_s21_strchr.c -c
 	$(CC) $(TEST).o $(TEST).a s21_string.a -o $(TEST) --coverage $(FLAGS) $(TEST_FLAGS)
-	./$(TEST)
+	gcc tests/test_s21_strchr.o tests/test.a s21_string.a -o tests/test_s21_strchr --coverage -g -Wall -Wextra -Werror -std=c11 -lcheck -lpthread -pthread -lm -lrt -lsubunit -lgcov
+	
+	./$(TEST) ./tests/test_s21_strchr
 
 leaks: test
 	valgrind --leak-check=yes  ./$(TEST)

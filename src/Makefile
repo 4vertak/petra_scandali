@@ -46,4 +46,4 @@ gcov_report: test
 	genhtml -o gcov_report s21_string.info
 # для замены lcov на gcovr
 #	gcovr -r . -o s21_string.info
-#	gcovr --html --html-details -o gcov_report/index.html
+#	gcovr --html --html-details -o gcov_report/index.html s21_string.info

@@ -27,14 +27,11 @@ style: clean
 	cp ../materials/linters/.clang-format ../src/.clang-format
 	clang-format -style=Google -n *.c *.h
 	rm .clang-format
-	
+
 test: clean covered test.a
 	$(CC) $(FLAGS) --coverage -o $(TEST).o $(TEST).c -c
-	gcc -g -Wall -Wextra -Werror -std=c11 --coverage -o tests/test_s21_strchr.o tests/test_s21_strchr.c -c
 	$(CC) $(TEST).o $(TEST).a s21_string.a -o $(TEST) --coverage $(FLAGS) $(TEST_FLAGS)
-	gcc tests/test_s21_strchr.o tests/test.a s21_string.a -o tests/test_s21_strchr --coverage -g -Wall -Wextra -Werror -std=c11 -lcheck -lpthread -pthread -lm -lrt -lsubunit -lgcov
-	
-	./$(TEST) ./tests/test_s21_strchr
+	./$(TEST)
 
 leaks: test
 	valgrind --leak-check=yes  ./$(TEST)
@@ -47,3 +44,6 @@ rebuild: clean all
 gcov_report: test
 	lcov -t "s21_string" -o s21_string.info -c -d .
 	genhtml -o gcov_report s21_string.info
+# для замены lcov на gcovr
+#	gcovr -r . -o s21_string.info
+#	gcovr --html --html-details -o gcov_report/index.html

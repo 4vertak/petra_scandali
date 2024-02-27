@@ -1,45 +1,125 @@
-#include <check.h>
-#include <stdio.h>
-#include <stdlib.h>
-#include <string.h>
+#include "./test.h"
 
-#include "../s21_string.h"
-
-START_TEST(test_strchr) {
-  char str[14] = "Hello, world!";
-  char ch = 'o';
-
-  char *result = s21_strchr(str, ch);
-
-  ck_assert_ptr_ne(result, NULL);
-  ck_assert_int_eq(*result, ch);
+START_TEST(strchr_1) {
+  char str[] = "Hello, world!";
+  int ch = ' ';
+  ck_assert_ptr_eq(strchr(str, ch), s21_strchr(str, ch));
 }
 END_TEST
 
-Suite *strchr_suite(void) {
+START_TEST(strchr_2) {
+  char str[] = "Hello, world!";
+  int ch = 'e';
+  ck_assert_ptr_eq(strchr(str, ch), s21_strchr(str, ch));
+}
+END_TEST
+
+START_TEST(strchr_3) {
+  char str[] = "Hello, world!";
+  int ch = '1';
+  ck_assert_ptr_eq(strchr(str, ch), s21_strchr(str, ch));
+}
+END_TEST
+
+START_TEST(strchr_4) {
+  char str[] = "Hello, world!";
+  int ch = 101;
+  ck_assert_ptr_eq(strchr(str, ch), s21_strchr(str, ch));
+}
+END_TEST
+
+START_TEST(strchr_5) {
+  char str[] = "Hello, world!";
+  int ch = 'l';
+  ck_assert_ptr_eq(strchr(str, ch), s21_strchr(str, ch));
+}
+END_TEST
+
+START_TEST(strchr_6) {
+  char str[] = "Hello\n, world!";
+  int ch = '\n';
+  ck_assert_ptr_eq(strchr(str, ch), s21_strchr(str, ch));
+}
+END_TEST
+
+START_TEST(strchr_7) {
+  char str[] = "Hello@world!";
+  int ch = '@';
+  ck_assert_ptr_eq(strchr(str, ch), s21_strchr(str, ch));
+}
+END_TEST
+
+START_TEST(strchr_8) {
+  char str[] = "Hello@world!";
+  int ch = '\0';
+  ck_assert_ptr_eq(strchr(str, ch), s21_strchr(str, ch));
+}
+END_TEST
+
+START_TEST(strchr_9) {
+  char str[] = "16022024";
+  int ch = '6';
+  ck_assert_ptr_eq(strchr(str, ch), s21_strchr(str, ch));
+}
+END_TEST
+
+START_TEST(strchr_10) {
+  char str[] = "16022024";
+  int ch = '6';
+  ck_assert_ptr_eq(strchr(str, ch), s21_strchr(str, ch));
+}
+END_TEST
+
+START_TEST(strchr_11) {
+  char str[] = "16022024";
+  int ch = 54;
+  ck_assert_ptr_eq(strchr(str, ch), s21_strchr(str, ch));
+}
+END_TEST
+
+Suite *test_strchr(void) {
   Suite *s;
-  TCase *tc_core;
+  TCase *tc;
+  s = suite_create("\n\033[37;1m=========S21_STRCHR=========\033[0m");
 
-  s = suite_create("strchr");
-  tc_core = tcase_create("core");
+  tc = tcase_create("strchr_tc");
+  tcase_add_test(tc, strchr_1);
+  tcase_add_test(tc, strchr_2);
+  tcase_add_test(tc, strchr_3);
+  tcase_add_test(tc, strchr_4);
+  tcase_add_test(tc, strchr_5);
+  tcase_add_test(tc, strchr_6);
+  tcase_add_test(tc, strchr_7);
+  tcase_add_test(tc, strchr_8);
+  tcase_add_test(tc, strchr_9);
+  tcase_add_test(tc, strchr_10);
+  tcase_add_test(tc, strchr_11);
 
-  tcase_add_test(tc_core, test_strchr);
-  suite_add_tcase(s, tc_core);
-
+  suite_add_tcase(s, tc);
   return s;
 }
 
-int main(void) {
-  int number_failed;
-  Suite *s;
-  SRunner *sr;
+// Suite * Money_suite (void)
+//  {
+//      Suite *s;
+//      TCase *tc_core;
+//      TCase *tc_limits;
 
-  s = strchr_suite();
-  sr = srunner_create(s);
-  srunner_set_fork_status(sr, CK_NOFORK);
-  srunner_run_all(sr, CK_NORMAL);
-  number_failed = srunner_ntests_failed(sr);
-  srunner_free(sr);
+//      s = suite_create("Деньги");
 
-  return (number_failed == 0) ? EXIT_SUCCESS : EXIT_FAILURE;
-}
+//      /* Основной тестовый пример */
+//      tc_core = tcase_create("Core");
+
+// + tcase_add_checked_fixture(tc_core, setup, демонтаж);
+//      tcase_add_test (tc_core, test_money_create);
+//      suite_add_tcase(s, tc_core);
+
+//      /* Тестовый пример ограничений */
+//      tc_limits = tcase_create("Limits");
+
+//      tcase_add_test(tc_limits, test_money_create_neg);
+//      tcase_add_test(tc_limits, test_money_create_zero);
+//      suite_add_tcase(s, tc_limits);
+
+//      вернуть с;
+//  }

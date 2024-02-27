@@ -6,11 +6,13 @@
 // меньше)
 
 int s21_strncmp(const char *str1, const char *str2, s21_size_t n) {
-  int result = 0;
-  s21_size_t i = 0;
-  while (++i < n && *str1 == *str2 && *str1 != '\0' && *str2 != '\0') {
-    result = *((char *)str1 + i) - *((char *)str2 + i);
-  }
-  if (*str1 != *str2) result = *str1 - *str2;
-  return result;
+ while (n > 0) {
+if (*str1 != *str2 || *str1 == '\0' || *str2 == '\0') {
+return (*str1 - *str2);
+}
+str1++;
+str2++;
+n--;
+}
+return 0;
 }

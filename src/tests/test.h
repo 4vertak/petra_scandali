@@ -15,5 +15,12 @@ Suite *test_strlen(void);
 Suite *test_memset(void);
 Suite *test_strncmp(void);
 Suite *test_strchr(void);
+Suite *test_strrchr(void);
+Suite *test_strncpy(void);
+Suite *test_strncat(void);
+Suite *test_strpbrk(void);
+Suite *test_strerror(void);
+Suite *test_strcspn(void);
+Suite *test_strstr(void);
 
 #endif  // SRC_TESTS_TEST_H_

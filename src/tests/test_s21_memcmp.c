@@ -42,14 +42,7 @@ START_TEST(memcmp_5) {
 END_TEST
 
 START_TEST(memcmp_6) {
-  char str1[] =
-      "These are the functions that will make our lives easier! You know, "
-      "deciphering Enigma by brute force…I'd rather marry Joan than we do "
-      "that. Therefore, it seems that we need to keep analysing texts, looking "
-      "for patterns and coincidences. And so, we\\’ll have to come up with "
-      "various algorithms related to the processing of that very text and "
-      "describe them. That is why we need a number of functions to help us "
-      "with that. I'm working on them now.";
+  char str1[] = "Hello\n, world!";
   char str2[] =
       "These are the functions that will make our lives easier! You know, "
       "deciphering Enigma by brute force…I'd rather marry Joan than we do "
@@ -86,17 +79,17 @@ START_TEST(memcmp_7) {
 END_TEST
 
 START_TEST(memcmp_8) {
-  char str1[] = "2002world!";
-  char str2[] = "2002world!";
-  s21_size_t n = 11;
+  char str1[] = "";
+  char str2[] = "";
+  s21_size_t n = 0;
   ck_assert_int_eq(memcmp(str1, str2, n), s21_memcmp(str1, str2, n));
 }
 END_TEST
 
 START_TEST(memcmp_9) {
   char str1[] = "2002 world";
-  char str2[] = "2002 ";
-  s21_size_t n = 5;
+  char str2[] = "2002";
+  s21_size_t n = 0;
   ck_assert_int_eq(memcmp(str1, str2, n), s21_memcmp(str1, str2, n));
 }
 END_TEST

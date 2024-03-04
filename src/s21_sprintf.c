@@ -50,14 +50,12 @@ int parce_setting_mode(int i, const char *format, setting *modified,
     i += 1;
   }
 
-  // Далее проверяется, равен ли символ в строке format на позиции i точке '.'.
-  // Если это так, то выполняется следующий блок кода:
-
+  // Если символ в строке format i равен '.'
   if (format[i] == '.') {
     // Проверяется, является ли следующий символ в строке format символом '-'
     for (i += 1; format[i] == '-'; i += 1) continue;
 
-    // В цикле for проверяется, является ли символ в строке format на позиции i
+    // В цикле проверяется, является ли символ в строке format на позиции i
     // цифрой 0-9. При этом значение accuracy структуры modified умножается на
     // 10 и прибавляется значение символа в строке format.
 
@@ -130,29 +128,32 @@ int proc_setting_mode(char *str, char symbol, setting modified,
   else if (symbol == 's') {
     str_formating(str + indent, params, accuracy, modified.type);
   }
-  // если символ форматирования 'f'
+  // если символ форматирования 'f'вызывается функция...
   // else if (symbol == 'f') {
-  //   // и если тип конфигурации равен 'L', вызывается функция ...
-  //   if (modified.type == 'L') {
-  //     ...;
-  //   }
-  //   // иначе вызывается функция s21_ftoa для форматирования аргумента.
-  //   else {
-  //     ...;
-  //   }
   // }
-  //
   // else if (s21_strchr("gG", symbol)) {
-  //   ..;
   // } else if (s21_strchr("eE", symbol)) {
-  //   ...;
   // } else if (s21_strchr("xX", symbol)) {
-  //   ...;
-  // } else if (symbol == 'o') {
-  //   ...;
   // }
+  else if (symbol == 'o') {
+    // и если тип конфигурации равен 'h', вызывается функция
+    // short_convert_unsig_to_str для форматирования аргумента.
+    if (modified.type == 'h')
+      short_convert_unsig_to_str(str + indent, va_arg(*params, unsigned int), 8,
+                                 accuracy, flag);
 
-  else if (symbol == 'u') {
+    // и если тип конфигурации равен 'l', вызывается функция
+    // long_convert_unsig_to_str для форматирования аргумента.
+    else if (modified.type == 'l')
+      long_convert_unsig_to_str(
+          str + indent, va_arg(*params, long unsigned int), 8, accuracy, flag);
+
+    // иначе вызывается функция convert_unsig_to_str для форматирования
+    // аргумента
+    else
+      convert_unsig_to_str(str + indent, va_arg(*params, unsigned int), 8,
+                           accuracy, flag);
+  } else if (symbol == 'u') {
     if (modified.type == 'h')
       short_convert_unsig_to_str(str + indent, va_arg(*params, unsigned int),
                                  10, accuracy, flag);

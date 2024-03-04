@@ -13,23 +13,31 @@ typedef struct {
   char type;
 } setting;
 
-int parce_setting_mode(int x, const char *format, setting *config,
+int parce_setting_mode(int i, const char *format, setting *modified,
                        va_list *params);
 int proc_setting_mode(char *str, char symbol, setting config, va_list *params);
-int modifier_c(char *str, va_list *params, char *flag, int accuracy, char type);
-char *s21_conf(char *str, setting config);
-char *str_to_str(char *str, va_list *params, int accuracy, char type);
-char *int_to_str(char *str, int number, int accuracy, char *flag);
-char *long_length(char *str, long int number, int accuracy, char *flag);
-void reverse_str(char str[]);
-char *short_length(char *str, short int number, int accuracy, char *flag);
-char *u_to_str(char *str, unsigned int number, int format, int accuracy,
-               char *flag);
-char *long_u_to_str(char *str, unsigned long int number, int format,
-                    int accuracy, char *flag);
-char *short_u_to_str(char *str, unsigned short int number, int format,
-                     int accuracy, char *flag);
-char *s21_strcat(char *dest, const char *src);
-void *s21_memmove(void *dest, const void *src, s21_size_t n);
+int format_string(char *str, va_list *params, char *flag, int accuracy,
+                  char type);
+char *s21_conf(char *str, setting modified, char symbol);
+
+int should_proc(setting modified, char symbol, char *str);
+
+void trim_zero(char *str);
+
+void adjust_width(char *str, setting modified, char symbol);
+
+void fill_space(char *aux, int count_fill, char filler);
+
+char *str_formating(char *str, va_list *params, int accuracy, char type);
+char *convert_int_to_str(char *str, int number, int accuracy, char *flag);
+char *long_len(char *str, long int number, int accuracy, char *flag);
+
+char *short_len(char *str, short int number, int accuracy, char *flag);
+char *convert_unsig_to_str(char *str, unsigned int number, int format,
+                           int accuracy, char *flag);
+char *long_convert_unsig_to_str(char *str, unsigned long int number, int format,
+                                int accuracy, char *flag);
+char *short_convert_unsig_to_str(char *str, unsigned short int number,
+                                 int format, int accuracy, char *flag);
 
 #endif  // S21_SPRINTF_H_

@@ -2,7 +2,6 @@
 #include "s21_sprintf.h"
 
 int s21_sprintf(char *str, const char *format, ...) {
-  str[0] = '\0';
   va_list params;
   va_start(params, format);
   int counter = 0;
@@ -12,42 +11,85 @@ int s21_sprintf(char *str, const char *format, ...) {
       i = parce_setting_mode(i, format, &modified, &params);
       counter += proc_setting_mode(str + counter, format[i], modified, &params);
     } else {
-      str[counter] = format[i];
-      str[counter += 1] = '\0';
+      str[counter++] = format[i];
+      str[counter] = '\0';
     }
   }
   va_end(params);
   return counter;
 }
 
+// ПАРСЕР выполняет поиск и обработку модификаторов формата строки в переменной
+// format и сохранение их в структуре modified.
+
 int parce_setting_mode(int i, const char *format, setting *modified,
                        va_list *params) {
-  // ищем флаги "-+ ".Если уесть, то в массиве flag в modified устанавливаем
-  // 'o'.
-  for (i += 1; s21_strchr("-+ ", format[i]); i += 1)
-    (modified->flag)[5 - s21_strlen(s21_strchr("-+ ", format[i]))] = 'o';
-  // ищем ширину "0123456789".Если уесть, то в массиве flag в modified
-  // устанавливаем 'o'.
-  for (; s21_strchr("0123456789", format[i]); i += 1)
-    modified->width = (modified->width * 10) + (format[i] - 48);
+  // В цикле for сначала увеличивается значение i на 1, а затем проверяется,
+  // является ли символ в строке format на позиции i одним из символов
+  // -/+/пробел. Если это так, то соответствующий элемент в массиве flag
+  // структуры modified устанавливается в символ 'o'.
 
-  for (; format[i] == '*'; i += 1) modified->width = va_arg(*params, int);
+  for (i++; s21_strchr("-+ ", format[i]); i++) {
+    (modified->flag)[5 - s21_strlen(s21_strchr("-+ ", format[i]))] = 'o';
+    i++;
+  }
+  // В цикле проверяется, является ли символ в строке format на
+  // позиции i цифрой 0-9. Если это так, то значение width структуры modified
+  // умножается на 10 и прибавляется значение символа в строке format.
+
+  while (s21_strchr("0123456789", format[i])) {
+    modified->width = (modified->width * 10) + (format[i] - '0');
+    i++;
+  }
+  // В цикле проверяется, равен ли символ в строке format на позиции
+  // i звездочке '*'. Если это так, то значение width структуры modified
+  // устанавливается в значение аргумента типа int из переменной params.
+
+  while (format[i] == '*') {
+    modified->width = va_arg(*params, int);
+    i += 1;
+  }
+
+  // Далее проверяется, равен ли символ в строке format на позиции i точке '.'.
+  // Если это так, то выполняется следующий блок кода:
+
   if (format[i] == '.') {
+    // Проверяется, является ли следующий символ в строке format символом '-'
     for (i += 1; format[i] == '-'; i += 1) continue;
+
+    // В цикле for проверяется, является ли символ в строке format на позиции i
+    // цифрой 0-9. При этом значение accuracy структуры modified умножается на
+    // 10 и прибавляется значение символа в строке format.
+
     for (; s21_strchr("0123456789", format[i]); i += 1)
-      modified->accuracy = (modified->accuracy * 10) + (format[i] - 48);
+      modified->accuracy = (modified->accuracy * 10) + (format[i] - '0');
+
+    // В цикле проверяется, равен ли символ в строке format на позиции i
+    // звездочке '*'.  Если это так, то значение accuracy структуры modified
+    // устанавливается в значение аргумента типа int из переменной params.
+
     for (; format[i] == '*'; i += 1) modified->accuracy = va_arg(*params, int);
     modified->accuracy < 0 ? modified->accuracy = 0 : 0;
   }
-  for (; s21_strchr("hlL", format[i]); i += 1) modified->type = format[i];
+  // проверяется, является ли символ в строке format на i одним из символов
+  // 'hl'. Если это так, то значение type структуры modified устанавливается в
+  // текущий символ.
+
+  while (s21_strchr("hl", format[i])) {
+    modified->type = format[i];
+    i++;
+  }
+
   return i;
 }
-// обработка флагов
+
+// Обработка параметров форматирования строки.
 int proc_setting_mode(char *str, char symbol, setting modified,
                       va_list *params) {
   char *flag = modified.flag;
   int indent = 0;
   int accuracy = modified.accuracy;
+  // точность по умолчанию
   if (accuracy < 0) {
     if (s21_strchr("du", symbol)) {
       accuracy = 1;
@@ -57,60 +99,127 @@ int proc_setting_mode(char *str, char symbol, setting modified,
       accuracy = 0;
     }
   }
+  // если символ форматирования равен '%', он добавляется к строке.
   if (symbol == '%') {
     s21_strcat(str, "%");
-  } else if (symbol == 'c') {
-    return modifier_c(str + indent, params, flag, modified.width,
-                      modified.type);
-  } else if (s21_strchr("di", symbol)) {
-    if (modified.type == 'h')
-      short_length(str + indent, va_arg(*params, int), accuracy, flag);
-    else if (modified.type == 'l')
-      long_length(str + indent, va_arg(*params, long int), accuracy, flag);
-    else
-      int_to_str(str + indent, va_arg(*params, int), accuracy, flag);
-  } else if (symbol == 's') {
-    str_to_str(str + indent, params, accuracy, modified.type);
-  } else if (symbol == 'u') {
-    if (modified.type == 'h')
-      short_u_to_str(str + indent, va_arg(*params, unsigned int), 10, accuracy,
-                     flag);
-    else if (modified.type == 'l')
-      long_u_to_str(str + indent, va_arg(*params, long unsigned int), 10,
-                    accuracy, flag);
-    else
-      u_to_str(str + indent, va_arg(*params, unsigned int), 10, accuracy, flag);
   }
-  (s21_strchr("n%c", symbol)) ? 0 : s21_conf(str + indent, modified);
+  // если символ форматирования равен 'c'
+  else if (symbol == 'c') {
+    return format_string(str + indent, params, flag, modified.width,
+                         modified.type);
+  }
+  // если символ форматирования 'd' или 'i'
+  else if (s21_strchr("di", symbol)) {
+    // и если тип аргумента равен 'h', вызывается функция short_len для
+    // форматирования аргумента.
+    if (modified.type == 'h')
+      short_len(str + indent, va_arg(*params, int), accuracy, flag);
+    // и если тип аргумента равен 'l', вызывается функция long_len для
+    // форматирования аргумента.
+    else if (modified.type == 'l')
+      long_len(str + indent, va_arg(*params, long int), accuracy, flag);
+    // и если тип аргумента не равен 'h' или 'l'
+    else
+      convert_int_to_str(str + indent, va_arg(*params, int), accuracy, flag);
+  }
+  // если символ форматирования равен 'p', вызывается функция...
+  // else if (symbol == 'p') {
+  //
+  // }
+  // если символ форматирования равен 's'
+  else if (symbol == 's') {
+    str_formating(str + indent, params, accuracy, modified.type);
+  }
+  // если символ форматирования 'f'
+  // else if (symbol == 'f') {
+  //   // и если тип конфигурации равен 'L', вызывается функция ...
+  //   if (modified.type == 'L') {
+  //     ...;
+  //   }
+  //   // иначе вызывается функция s21_ftoa для форматирования аргумента.
+  //   else {
+  //     ...;
+  //   }
+  // }
+  //
+  // else if (s21_strchr("gG", symbol)) {
+  //   ..;
+  // } else if (s21_strchr("eE", symbol)) {
+  //   ...;
+  // } else if (s21_strchr("xX", symbol)) {
+  //   ...;
+  // } else if (symbol == 'o') {
+  //   ...;
+  // }
+
+  else if (symbol == 'u') {
+    if (modified.type == 'h')
+      short_convert_unsig_to_str(str + indent, va_arg(*params, unsigned int),
+                                 10, accuracy, flag);
+    else if (modified.type == 'l')
+      long_convert_unsig_to_str(
+          str + indent, va_arg(*params, long unsigned int), 10, accuracy, flag);
+    else
+      convert_unsig_to_str(str + indent, va_arg(*params, unsigned int), 10,
+                           accuracy, flag);
+  }
+  (s21_strchr("n%c", symbol)) ? 0 : s21_conf(str + indent, modified, symbol);
   return s21_strlen(str);
 }
 
-char *s21_conf(char *str, setting modified) {
-  char *aux = str;
-  char filler = ' ';
-  int filling_counter =
-      modified.width > 0 ? modified.width - s21_strlen(str) : 0;
-  if (filling_counter > 0) {
-    for (s21_memmove(aux + filling_counter, aux, s21_strlen(aux) + 1);
-         filling_counter != 0;) {
-      aux[filling_counter - 1] = filler;
-      filling_counter -= 1;
-    }
+char *s21_conf(char *str, setting modified, char symbol) {
+  if (should_proc(modified, symbol, str)) {
+    trim_zero(str);
   }
+  adjust_width(str, modified, symbol);
   return str;
 }
 
-void reverse_str(char str[]) {
-  int length = s21_strlen(str);
-  for (int i = 0; i < length / 2; i++) {
-    char temp = str[i];
-    str[i] = str[length - 1 - i];
-    str[length - 1 - i] = temp;
+int should_proc(setting modified, char symbol, char *str) {
+  if (s21_strcmp(modified.flag, "xxxxx") || modified.width >= 0 ||
+      modified.type != 'x') {
+    if (s21_strchr("gG", symbol) && modified.flag[3] != 'o') {
+      if (!(s21_strlen(str) == 1 && str[0] == '0')) {
+        return 1;
+      }
+    }
+  }
+  return 0;
+}
+
+void trim_zero(char *str) {
+  for (int x = (s21_strlen(str) - 1); str[x] == '0'; str[x] = '\0', x -= 1) {
+    continue;
   }
 }
 
-int modifier_c(char *str, va_list *params, char *flag, int accuracy,
-               char type) {
+void adjust_width(char *str, setting modified, char symbol) {
+  char *aux = str;
+  char filler = ' ';
+  int count_fill = modified.width > 0 ? modified.width - s21_strlen(str) : 0;
+
+  if (modified.flag[4] == 'o') {
+    aux[0] == '-' ? aux += 1 : 0;
+    s21_strchr("cs", symbol) ? 0 : (filler = '0');
+  } else if (modified.flag[0] == 'o') {
+    aux += s21_strlen(aux);
+  }
+
+  fill_space(aux, count_fill, filler);
+}
+
+void fill_space(char *aux, int count_fill, char filler) {
+  if (count_fill > 0) {
+    for (s21_memmove(aux + count_fill, aux, s21_strlen(aux) + 1);
+         count_fill != 0;) {
+      aux[count_fill - 1] = filler;
+      count_fill -= 1;
+    }
+  }
+}
+
+int format_string(char *str, va_list *params, char *flag, int accuracy,
+                  char type) {
   int counter = 0;
   accuracy = accuracy < 1 ? 1 : accuracy;
   if (type == 'l') {
@@ -130,7 +239,7 @@ int modifier_c(char *str, va_list *params, char *flag, int accuracy,
   return counter;
 }
 
-char *str_to_str(char *str, va_list *params, int accuracy, char type) {
+char *str_formating(char *str, va_list *params, int accuracy, char type) {
   if (type == 'l') {
     wcstombs(str, va_arg(*params, wchar_t *), 512);
   } else {
@@ -141,8 +250,8 @@ char *str_to_str(char *str, va_list *params, int accuracy, char type) {
   return str;
 }
 
-char *u_to_str(char *str, unsigned int number, int format, int accuracy,
-               char *flag) {
+char *convert_unsig_to_str(char *str, unsigned int number, int format,
+                           int accuracy, char *flag) {
   int lenStr = 0, type = 97, numb = number;
   format == 32 ? format /= 2 : (type = 65);
   for (; (lenStr < accuracy - 1) || (number / format) != 0;
@@ -158,11 +267,11 @@ char *u_to_str(char *str, unsigned int number, int format, int accuracy,
   (flag[3] == 'o' && format == 16 && type == 97 && numb != 0)
       ? s21_strcat(str, "x0")
       : 0;
-  reverse_str(str);
+  s21_strrev(str);
   return str;
 }
 
-char *int_to_str(char *str, int number, int accuracy, char *flag) {
+char *convert_int_to_str(char *str, int number, int accuracy, char *flag) {
   int lenStr = 0, minus = number < 0 ? (number *= (-1)) : 0;
   if (number < 0) {
     for (; ((lenStr < accuracy) || (-(number / 10) != 0) ||
@@ -179,12 +288,12 @@ char *int_to_str(char *str, int number, int accuracy, char *flag) {
   if (str[lenStr - 1] != '-' && (flag[1] == 'o' || flag[2] == 'o'))
     str[lenStr++] = flag[1] == 'o' ? '+' : ' ';
   str[lenStr] = '\0';
-  reverse_str(str);
+  s21_strrev(str);
   return str;
 }
 
-char *long_u_to_str(char *str, long unsigned int number, int format,
-                    int accuracy, char *flag) {
+char *long_convert_unsig_to_str(char *str, long unsigned int number, int format,
+                                int accuracy, char *flag) {
   int lenStr = 0, type = 97, numb = number;
   format == 32 ? format /= 2 : (type = 65);
   for (; (lenStr < accuracy - 1) || (number / format) != 0;
@@ -200,11 +309,11 @@ char *long_u_to_str(char *str, long unsigned int number, int format,
   (flag[3] == 'o' && format == 16 && type == 97 && numb != 0)
       ? s21_strcat(str, "x0")
       : 0;
-  reverse_str(str);
+  s21_strrev(str);
   return str;
 }
 
-char *long_length(char *str, long int number, int accuracy, char *flag) {
+char *long_len(char *str, long int number, int accuracy, char *flag) {
   int lenStr = 0;
   long int minus = number < 0 ? (number *= (-1)) : 0;
   if (number < 0) {
@@ -222,12 +331,12 @@ char *long_length(char *str, long int number, int accuracy, char *flag) {
   if (str[lenStr - 1] != '-' && (flag[1] == 'o' || flag[2] == 'o'))
     str[lenStr++] = flag[1] == 'o' ? '+' : ' ';
   str[lenStr] = '\0';
-  reverse_str(str);
+  s21_strrev(str);
   return str;
 }
 
-char *short_u_to_str(char *str, short unsigned int number, int format,
-                     int accuracy, char *flag) {
+char *short_convert_unsig_to_str(char *str, short unsigned int number,
+                                 int format, int accuracy, char *flag) {
   int lenStr = 0, type = 97, numb = number;
   format == 32 ? format /= 2 : (type = 65);
   for (; (lenStr < accuracy - 1) || (number / format) != 0;
@@ -243,11 +352,11 @@ char *short_u_to_str(char *str, short unsigned int number, int format,
   (flag[3] == 'o' && format == 16 && type == 97 && numb != 0)
       ? s21_strcat(str, "x0")
       : 0;
-  reverse_str(str);
+  s21_strrev(str);
   return str;
 }
 
-char *short_length(char *str, short int number, int accuracy, char *flag) {
+char *short_len(char *str, short int number, int accuracy, char *flag) {
   int lenStr = 0, minus = number < 0 ? (number *= (-1)) : 0;
   if (number < 0) {
     for (; ((lenStr < accuracy) || (-(number / 10) != 0) ||
@@ -264,40 +373,6 @@ char *short_length(char *str, short int number, int accuracy, char *flag) {
   if (str[lenStr - 1] != '-' && (flag[1] == 'o' || flag[2] == 'o'))
     str[lenStr++] = flag[1] == 'o' ? '+' : ' ';
   str[lenStr] = '\0';
-  reverse_str(str);
+  s21_strrev(str);
   return str;
-}
-
-char *s21_strcat(char *dest, const char *src) {
-  char *ptr_dest = dest;
-  while (*dest) {
-    dest++;
-  }
-  while (*src) {
-    *dest = *src;
-    dest++;
-    src++;
-  }
-  *dest = '\0';
-
-  return ptr_dest;
-}
-
-void *s21_memmove(void *dest, const void *src, s21_size_t n) {
-  char *d = (char *)dest;
-  const char *s = (const char *)src;
-
-  if (d <= s || d >= s + n) {
-    while (n--) {
-      *d++ = *s++;
-    }
-  } else {
-    d += n - 1;
-    s += n - 1;
-    while (n--) {
-      *d-- = *s--;
-    }
-  }
-
-  return dest;
 }

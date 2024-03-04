@@ -83,26 +83,11 @@ char *s21_strchr(const char *str, int c);
 int s21_strncmp(const char *str1, const char *str2, s21_size_t n);
 
 char *s21_strncpy(char *dest, const char *src, s21_size_t n);
-
-// определяет максимальную длину начальной подстроки, состоящей исключительно
-// из байтов, не перечисленных в reject
-// s21_size_t s21_strcspn(const char *str1, const char *str2);
 s21_size_t s21_strcspn(const char *str1, const char *str2);
-// возвращает строковое представление сообщения об ошибке errno (не
-// потоко-безопасная)
 char *s21_strerror(int errnum);
-
-// возвращает длину строки
 s21_size_t s21_strlen(const char *str);
-
 char *s21_strpbrk(const char *str1, const char *str2);
-
-// возвращает адрес символа c в строке s, начиная с хвоста, или NULL, если
-// строка s не содержит символ c
 char *s21_strrchr(const char *str, int c);
-
-// находит первое вхождение строки needle в haystack
-// char *s21_strstr(const char *haystack, const char *needle);
 char *s21_strstr(const char *haystack, const char *needle);
 // преобразует строку в последовательность токенов. Не потоко-безопасная, не
 // реентерабельная.
@@ -110,5 +95,9 @@ char *s21_strstr(const char *haystack, const char *needle);
 
 // int s21_sscanf(const char *str, const char *format, ...);
 int s21_sprintf(char *str, const char *format, ...);
+char *s21_strcat(char *dest, const char *src);
+void *s21_memmove(void *dest, const void *src, s21_size_t n);
+char *s21_strrev(char *str);
+int s21_strcmp(char *str1, char *str2);
 
 #endif  // SRC_S21_STRING_H_

@@ -18,7 +18,7 @@ int parce_setting_mode(int i, const char *format, setting *modified,
 int proc_setting_mode(char *str, char symbol, setting config, va_list *params);
 int format_string(char *str, va_list *params, char *flag, int accuracy,
                   char type);
-char *s21_conf(char *str, setting modified, char symbol);
+char *adjust_width_space(char *str, setting modified, char symbol);
 
 int should_proc(setting modified, char symbol, char *str);
 

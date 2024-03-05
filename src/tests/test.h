@@ -22,5 +22,6 @@ Suite *test_strpbrk(void);
 Suite *test_strerror(void);
 Suite *test_strcspn(void);
 Suite *test_strstr(void);
+Suite *suite_sprintf(void);
 
 #endif  // SRC_TESTS_TEST_H_

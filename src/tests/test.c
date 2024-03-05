@@ -16,6 +16,7 @@ int main(void) {
                    test_strerror(),
                    test_strcspn(),
                    test_strstr(),
+  suite_sprintf(),
                    NULL};
   SRunner *sr;
   int i = 0;

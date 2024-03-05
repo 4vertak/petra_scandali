@@ -164,11 +164,11 @@ int proc_setting_mode(char *str, char symbol, setting modified,
       convert_unsig_to_str(str + indent, va_arg(*params, unsigned int), 10,
                            accuracy, flag);
   }
-  (s21_strchr("n%c", symbol)) ? 0 : s21_conf(str + indent, modified, symbol);
+  (s21_strchr("n%c", symbol)) ? 0 : adjust_width_space(str + indent, modified, symbol);
   return s21_strlen(str);
 }
 
-char *s21_conf(char *str, setting modified, char symbol) {
+char *adjust_width_space(char *str, setting modified, char symbol) {
   if (should_proc(modified, symbol, str)) {
     trim_zero(str);
   }
@@ -189,31 +189,31 @@ int should_proc(setting modified, char symbol, char *str) {
 }
 
 void trim_zero(char *str) {
-  for (int x = (s21_strlen(str) - 1); str[x] == '0'; str[x] = '\0', x -= 1) {
+  for (int i = (s21_strlen(str) - 1); str[i] == '0'; str[i] = '\0', i -= 1) {
     continue;
   }
 }
 
 void adjust_width(char *str, setting modified, char symbol) {
-  char *aux = str;
+  char *tmp = str;
   char filler = ' ';
   int count_fill = modified.width > 0 ? modified.width - s21_strlen(str) : 0;
 
   if (modified.flag[4] == 'o') {
-    aux[0] == '-' ? aux += 1 : 0;
+    tmp[0] == '-' ? tmp += 1 : 0;
     s21_strchr("cs", symbol) ? 0 : (filler = '0');
   } else if (modified.flag[0] == 'o') {
-    aux += s21_strlen(aux);
+    tmp += s21_strlen(tmp);
   }
 
-  fill_space(aux, count_fill, filler);
+  fill_space(tmp, count_fill, filler);
 }
 
-void fill_space(char *aux, int count_fill, char filler) {
+void fill_space(char *tmp, int count_fill, char filler) {
   if (count_fill > 0) {
-    for (s21_memmove(aux + count_fill, aux, s21_strlen(aux) + 1);
+    for (s21_memmove(tmp + count_fill, tmp, s21_strlen(tmp) + 1);
          count_fill != 0;) {
-      aux[count_fill - 1] = filler;
+      tmp[count_fill - 1] = filler;
       count_fill -= 1;
     }
   }

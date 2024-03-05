@@ -26,8 +26,6 @@ void trim_zero(char *str);
 
 void adjust_width(char *str, setting modified, char symbol);
 
-void fill_space(char *aux, int count_fill, char filler);
-
 char *str_formating(char *str, va_list *params, int accuracy, char type);
 char *convert_int_to_str(char *str, int number, int accuracy, char *flag);
 char *long_len(char *str, long int number, int accuracy, char *flag);

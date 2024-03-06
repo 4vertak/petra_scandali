@@ -1,7 +1,10 @@
 #ifndef SRC_HEADERS_S21_SPRINTF_H_
 #define SRC_HEADERS_S21_SPRINTF_H_
 
+#include <ctype.h>
 #include <limits.h>
+#include <locale.h>
+#include <math.h>
 #include <stdarg.h>
 
 #include "./s21_string.h"
@@ -9,33 +12,39 @@
 typedef struct {
   char flag[10];
   int width;
-  int accuracy;
+  int precision;
   char type;
 } setting;
 
 int parce_setting_mode(int i, const char *format, setting *modified,
                        va_list *params);
-int proc_setting_mode(char *str, char symbol, setting config, va_list *params);
-int format_string(char *str, va_list *params, char *flag, int accuracy,
+int proc_setting_mode(char *str, char spec, setting modified, va_list *params);
+int format_string(char *str, va_list *params, char *flag, int precision,
                   char type);
-char *adjust_width_space(char *str, setting modified, char symbol);
-
-int should_proc(setting modified, char symbol, char *str);
-
+char *adjust_width_space(char *str, setting modified, char spec);
+int should_proc(setting modified, char spec, char *str);
 void trim_zero(char *str);
-
-void adjust_width(char *str, setting modified, char symbol);
-
-char *str_formating(char *str, va_list *params, int accuracy, char type);
-char *convert_int_to_str(char *str, int number, int accuracy, char *flag);
-char *long_len(char *str, long int number, int accuracy, char *flag);
-
-char *short_len(char *str, short int number, int accuracy, char *flag);
-char *convert_unsig_to_str(char *str, unsigned int number, int format,
-                           int accuracy, char *flag);
-char *long_convert_unsig_to_str(char *str, unsigned long int number, int format,
-                                int accuracy, char *flag);
-char *short_convert_unsig_to_str(char *str, unsigned short int number,
-                                 int format, int accuracy, char *flag);
+void adjust_width(char *str, setting modified, char spec);
+int fspec_c(char *str, va_list *params, char *flag, int precision, char type);
+char *fspec_s(char *str, va_list *params, int precision, char type);
+char *fspec_p(char *str, int *variable);
+char *fspec_xXou(char *str, unsigned int number, int format, int precision,
+                 char *flag);
+char *fspec_eEL(char *str, long double number, int precision, char *flag,
+                int spec, int ptr_accuracy);
+char *fspec_di(char *str, int number, int precision, char *flag);
+char *fspec_xXou_long(char *str, long unsigned int number, int format,
+                      int precision, char *flag);
+char *fspec_di_long(char *str, long int number, int precision, char *flag);
+char *fspec_xXou_short(char *str, short unsigned int number, int format,
+                       int precision, char *flag);
+char *fspec_di_short(char *str, short int number, int precision, char *flag);
+char *fspec_f_long(char *str, long double number, int afterpoint, char *flag,
+                   int ptr_accuracy);
+char *fspec_gG_long(char *str, long double number, int precision, char *flag,
+                    int spec);
+char *fspec_xXou_long(char *str, long unsigned int number, int format,
+                      int precision, char *flag);
+char *fspec_gG(char *str, double number, int precision, char *flag, int spec);
 
 #endif  // S21_SPRINTF_H_

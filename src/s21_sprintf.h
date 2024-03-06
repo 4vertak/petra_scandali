@@ -1,5 +1,5 @@
-#ifndef SRC_HEADERS_S21_SPRINTF_H_
-#define SRC_HEADERS_S21_SPRINTF_H_
+#ifndef SRC_S21_SPRINTF_H_
+#define SRC_S21_SPRINTF_H_
 
 #include <ctype.h>
 #include <limits.h>
@@ -19,8 +19,6 @@ typedef struct {
 int parce_setting_mode(int i, const char *format, setting *modified,
                        va_list *params);
 int proc_setting_mode(char *str, char spec, setting modified, va_list *params);
-int format_string(char *str, va_list *params, char *flag, int precision,
-                  char type);
 char *adjust_width_space(char *str, setting modified, char spec);
 int should_proc(setting modified, char spec, char *str);
 void trim_zero(char *str);
@@ -30,6 +28,8 @@ char *fspec_s(char *str, va_list *params, int precision, char type);
 char *fspec_p(char *str, int *variable);
 char *fspec_xXou(char *str, unsigned int number, int format, int precision,
                  char *flag);
+char *fspec_eE(char *str, double number, int precision, char *flag, int spec,
+               int ptr_accuracy);
 char *fspec_eEL(char *str, long double number, int precision, char *flag,
                 int spec, int ptr_accuracy);
 char *fspec_di(char *str, int number, int precision, char *flag);
@@ -46,5 +46,7 @@ char *fspec_gG_long(char *str, long double number, int precision, char *flag,
 char *fspec_xXou_long(char *str, long unsigned int number, int format,
                       int precision, char *flag);
 char *fspec_gG(char *str, double number, int precision, char *flag, int spec);
+char *fspec_f(char *str, double number, int afterpoint, char *flag,
+              int ptr_accuracy);
 
 #endif  // S21_SPRINTF_H_

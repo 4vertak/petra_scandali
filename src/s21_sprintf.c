@@ -13,8 +13,8 @@ int s21_sprintf(char *str, const char *format, ...) {
       if (format[i] == 'n') {
         *(va_arg(params, int *)) = counter;
       } else {
-        counter += insertStringBySettingifier(str + counter, format[i],
-                                              modified, &params);
+        counter +=
+            proc_setting_mode(str + counter, format[i], modified, &params);
       }
     } else {
       str[counter] = format[i];
@@ -52,10 +52,19 @@ int setBasePrecisionValue(int precision, int spec) {
   return precision;
 }
 
-int insertStringBySettingifier(char *str, char spec, setting modified,
-                               va_list *params) {
+int proc_setting_mode(char *str, char spec, setting modified, va_list *params) {
   char *flag = modified.flag;
-  int indent = 0, precision = setBasePrecisionValue(modified.precision, spec);
+  int indent = 0;
+  int precision = modified.precision;
+  if (precision < 0) {
+    if (s21_strchr("du", spec)) {
+      precision = 1;
+    } else if (s21_strchr("f", spec)) {
+      precision = 6;
+    } else {
+      precision = 0;
+    }
+  }
   if (spec == '%') {
     s21_strcat(str, "%");
   } else if (spec == 'c') {
@@ -120,7 +129,8 @@ int insertStringBySettingifier(char *str, char spec, setting modified,
       fspec_xXou(str + indent, va_arg(*params, unsigned int), 10, precision,
                  flag);
   }
-  s21_strchr("n%c", spec) ? 0 : s21_conf(str + indent, modified, spec);
+  s21_strchr("n%c", spec) ? 0
+                          : adjust_width_space(str + indent, modified, spec);
   return s21_strlen(str);
 }
 

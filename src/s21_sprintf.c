@@ -43,24 +43,17 @@ int parce_setting_mode(int i, const char *format, setting *modified,
   return i;
 }
 
-int setBasePrecisionValue(int precision, int spec) {
-  if (precision < 0) {
-    s21_strchr("diouxX", spec) ? precision = 1 : 0;
-    s21_strchr("eEfgG", spec) ? precision = 6 : 0;
-    s21_strchr("p", spec) ? precision = 16 : 0;
-  }
-  return precision;
-}
-
 int proc_setting_mode(char *str, char spec, setting modified, va_list *params) {
   char *flag = modified.flag;
   int indent = 0;
   int precision = modified.precision;
   if (precision < 0) {
-    if (s21_strchr("du", spec)) {
+    if (s21_strchr("diouxX", spec)) {
       precision = 1;
-    } else if (s21_strchr("f", spec)) {
+    } else if (s21_strchr("eEfgG", spec)) {
       precision = 6;
+    } else if (s21_strchr("p", spec)) {
+      precision = 16;
     } else {
       precision = 0;
     }
@@ -180,36 +173,6 @@ void adjust_width(char *str, setting modified, char spec) {
     }
   }
 }
-
-// char *s21_conf(char *str, setting modified, char spec) {
-//   if (s21_strcmp(modified.flag, "xxxxx") || modified.width >= 0 ||
-//       modified.type != 'x') {
-//     if (s21_strchr("gG", spec) && modified.flag[3] != 'o') {
-//       if (!(s21_strlen(str) == 1 && str[0] == '0')) {
-//         for (int i = (s21_strlen(str) - 1); str[i] == '0';
-//              str[i] = '\0', i -= 1)
-//           continue;
-//       }
-//     }
-//   }
-//   char *tmp = str;
-//   char filler = ' ';
-//   int countFill = modified.width > 0 ? modified.width - s21_strlen(str) : 0;
-//   if (modified.flag[4] == 'o') {
-//     tmp[0] == '-' ? tmp += 1 : 0;
-//     s21_strchr("cs", spec) ? 0 : (filler = '0');
-//   } else if (modified.flag[0] == 'o') {
-//     tmp += s21_strlen(tmp);
-//   }
-//   if (countFill > 0) {
-//     for (s21_memmove(tmp + countFill, tmp, s21_strlen(tmp) + 1);
-//          countFill != 0;) {
-//       tmp[countFill - 1] = filler;
-//       countFill -= 1;
-//     }
-//   }
-//   return str;
-// }
 
 int fspec_c(char *str, va_list *params, char *flag, int precision, char type) {
   int counter = 0;

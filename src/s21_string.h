@@ -100,4 +100,7 @@ void *s21_memmove(void *dest, const void *src, s21_size_t n);
 char *s21_strrev(char *str);
 int s21_strcmp(char *str1, char *str2);
 
+void *s21_to_lower(const char *str);
+void *s21_to_upper(const char *str);
+
 #endif  // SRC_S21_STRING_H_

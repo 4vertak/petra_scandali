@@ -32,9 +32,9 @@ test: clean covered test.a
 	$(CC) $(FLAGS) --coverage -o $(TEST).o $(TEST).c -c
 	$(CC) $(TEST).o $(TEST).a s21_string.a -o $(TEST) --coverage $(FLAGS) $(TEST_FLAGS)
 	./$(TEST)
-# 	mkdir ./report
-# 	mv *.gcda ./report/
-#	 mv *.gcno ./report/
+	mkdir ./report
+	mv *.gcda ./report/
+	mv *.gcno ./report/
 
 leaks: test
 	valgrind --leak-check=yes  ./$(TEST)
@@ -46,6 +46,8 @@ clean:
 rebuild: clean all
 
 gcov_report: test
-	lcov -t "s21_string" -o s21_string.info -c -d .
-	genhtml -o gcov_report s21_string.info
-#	gcovr -r . --html --html-nested --html-self-contained --txt-metric branch --exclude-unreachable-branches --exclude-lines="s21_string" -o ./report/gcov_report.html
+#	lcov -t "s21_string" -o s21_string.info -c -d .
+#	genhtml -o gcov_report s21_string.info
+	pip install gcovr
+	~/.local/bin/gcovr -r . --html --html-nested --html-self-contained --txt-metric branch --exclude-unreachable-branches --exclude-lines="s21_string" -o ./report/gcov_report.html
+	firefox report/gcov_report.html

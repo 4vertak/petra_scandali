@@ -41,14 +41,14 @@ char *fspec_di_long(char *str, long int number, int precision, char *flag);
 char *fspec_xXou_short(char *str, short unsigned int number, int format,
                        int precision, char *flag);
 char *fspec_di_short(char *str, short int number, int precision, char *flag);
-char *fspec_f_long(char *str, long double number, int afterpoint, char *flag,
+char *fspec_f_long(char *str, long double number, int decimal_ptr, char *flag,
                    int ptr_accuracy);
 char *fspec_gG_long(char *str, long double number, int precision, char *flag,
                     int spec);
 char *fspec_xXou_long(char *str, long unsigned int number, int format,
                       int precision, char *flag);
 char *fspec_gG(char *str, double number, int precision, char *flag, int spec);
-char *fspec_f(char *str, double number, int afterpoint, char *flag,
+char *fspec_f(char *str, double number, int decimal_ptr, char *flag,
               int ptr_accuracy);
 
 #endif  // S21_SPRINTF_H_

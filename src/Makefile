@@ -48,6 +48,6 @@ rebuild: clean all
 gcov_report: test
 #	lcov -t "s21_string" -o s21_string.info -c -d .
 #	genhtml -o gcov_report s21_string.info
-	pip install gcovr
+#	pip install gcovr
 	~/.local/bin/gcovr -r . --html --html-nested --html-self-contained --txt-metric branch --exclude-unreachable-branches --exclude-lines="s21_string" -o ./report/gcov_report.html
-	firefox report/gcov_report.html
+#	firefox report/gcov_report.html

@@ -24,5 +24,7 @@ Suite *test_strcspn(void);
 Suite *test_strstr(void);
 Suite *test_memmove(void);
 Suite *test_sprintf(void);
+Suite *test_to_lower(void);
+Suite *test_to_upper(void);
 
 #endif  // SRC_TESTS_TEST_H_

@@ -18,6 +18,8 @@ int main(void) {
                    test_strstr(),
                    test_memmove(),
                    test_sprintf(),
+                   test_to_lower(),
+                   test_to_upper(),
                    NULL};
   SRunner *sr;
   int i = 0;

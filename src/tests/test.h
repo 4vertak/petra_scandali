@@ -2,6 +2,7 @@
 #define SRC_TESTS_TEST_H_
 
 #include <check.h>
+#include <limits.h>
 #include <stdio.h>
 #include <stdlib.h>
 #include <string.h>

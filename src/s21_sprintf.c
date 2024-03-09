@@ -5,24 +5,23 @@ int s21_sprintf(char *str, const char *format, ...) {
   str[0] = '\0';
   va_list params;
   va_start(params, format);
-  int counter = 0;
+  int count = 0;
   for (int i = 0; format[i] != '\0'; i += 1) {
     if (format[i] == '%') {
-      setting modified = {"xxxxx", INT_MIN, INT_MIN, 'x'};
+      setting modified = {"xxxxx", MY_INT_MIN, MY_INT_MIN, 'x'};
       i = parce_setting_mode(i, format, &modified, &params);
       if (format[i] == 'n') {
-        *(va_arg(params, int *)) = counter;
+        *(va_arg(params, int *)) = count;
       } else {
-        counter +=
-            proc_setting_mode(str + counter, format[i], modified, &params);
+        count += proc_setting_mode(str + count, format[i], modified, &params);
       }
     } else {
-      str[counter] = format[i];
-      str[counter += 1] = '\0';
+      str[count] = format[i];
+      str[count += 1] = '\0';
     }
   }
   va_end(params);
-  return counter;
+  return count;
 }
 
 int parce_setting_mode(int i, const char *format, setting *modified,
@@ -54,8 +53,6 @@ int proc_setting_mode(char *str, char spec, setting modified, va_list *params) {
       precision = 6;
     } else if (s21_strchr("p", spec)) {
       precision = 16;
-    } else {
-      precision = 0;
     }
   }
   if (spec == '%') {
@@ -175,23 +172,23 @@ void adjust_width(char *str, setting modified, char spec) {
 }
 
 int fspec_c(char *str, va_list *params, char *flag, int precision, char type) {
-  int counter = 0;
+  int count = 0;
   precision = precision < 1 ? 1 : precision;
   if (type == 'l') {
     wchar_t w_c = va_arg(*params, wchar_t);
-    counter = wcstombs(str + counter, &w_c, 512);
+    count = wcstombs(str + count, &w_c, 512);
   } else {
-    str[counter++] = va_arg(*params, int);
-    str[counter] = '\0';
+    str[count++] = va_arg(*params, int);
+    str[count] = '\0';
   }
-  if (flag[0] != 'o' && precision - counter > 0) {
-    s21_memmove(str + (precision - counter), str, counter + 1);
-    for (int i = 0; i < precision - counter; i += 1) str[i] = ' ';
-    counter = precision;
+  if (flag[0] != 'o' && precision - count > 0) {
+    s21_memmove(str + (precision - count), str, count + 1);
+    for (int i = 0; i < precision - count; i += 1) str[i] = ' ';
+    count = precision;
   }
-  for (int i = counter; flag[0] == 'o' && i < (precision); i += 1)
-    str[counter++] = ' ';
-  return counter;
+  for (int i = count; flag[0] == 'o' && i < (precision); i += 1)
+    str[count++] = ' ';
+  return count;
 }
 
 char *fspec_s(char *str, va_list *params, int precision, char type) {
@@ -266,9 +263,7 @@ char *fspec_eEL(char *str, long double number, int precision, char *flag,
            (ptr_precision == 0 ? (roundl(number * powl(10, len_num)))
                                : (number * powl(10, len_num))),
            1, flag);
-  (ptr_precision != 0 || flag[3] == 'o')
-      ? s21_strcat(str, (localeconv()->decimal_point))
-      : 0;
+  (ptr_precision != 0 || flag[3] == 'o') ? s21_strcat(str, ".") : 0;
   for (len_str = s21_strlen(str); number < 0; number *= (-1)) continue;
   for (result = len_num; (precision != 0 && (len_num + 1) <= 0);
        precision -= 1) {
@@ -291,9 +286,7 @@ char *fspec_eEL(char *str, long double number, int precision, char *flag,
   if (ptr_accuracy == 1 && flag[3] != 'o') {
     for (int i = s21_strlen(str) - 1; s21_strchr("0.", str[i]); str[i--] = '\0')
       continue;
-    for (int i = s21_strlen(str) - 1;
-         s21_strchr((localeconv()->decimal_point), str[i]);)
-      str[i--] = '\0';
+    for (int i = s21_strlen(str) - 1; s21_strchr(".", str[i]);) str[i--] = '\0';
   }
   len_str = s21_strlen(str);
   str[len_str++] = spec;
@@ -302,22 +295,20 @@ char *fspec_eEL(char *str, long double number, int precision, char *flag,
   return str;
 }
 
-char *fspec_f_long(char *str, long double number, int afterpoint, char *flag,
+char *fspec_f_long(char *str, long double number, int decimal_ptr, char *flag,
                    int ptr_accuracy) {
   char flagX[10] = "xxxxx";
-  int len_str = 0, minus = 0, ptr_precision = afterpoint, k3 = 0;
+  int len_str = 0, minus = 0, ptr_precision = decimal_ptr, k3 = 0;
   for (; number < 0; number *= (-1), minus = 1) continue;
   long double tmp =
-      ceill((number - truncl(number)) * powl(10, afterpoint) - 0.5);
-  for (; ((afterpoint != 0) || ((tmp / 10) > 1) || (fmodl(tmp, 10) > 1));
-       afterpoint -= 1, tmp /= 10) {
+      ceill((number - truncl(number)) * powl(10, decimal_ptr) - 0.5);
+  for (; ((decimal_ptr != 0) || ((tmp / 10) > 1) || (fmodl(tmp, 10) > 1));
+       decimal_ptr -= 1, tmp /= 10) {
     str[len_str++] = ((int)fmodl(tmp, 10)) + 48;
     str[len_str] = '\0';
   }
   tmp == 1 ? k3 = 1 : 0;
-  (ptr_precision != 0 || flag[3] == 'o')
-      ? str[len_str++] = (localeconv()->decimal_point)[0]
-      : 0;
+  (ptr_precision != 0 || flag[3] == 'o') ? str[len_str++] = '.' : 0;
   ptr_precision == 0 ? number = roundl(number) : 0;
   for (tmp = k3 == 1 ? round(number) : number; ((tmp / 10) >= 1);
        tmp /= 10, str[len_str] = '\0')
@@ -333,7 +324,7 @@ char *fspec_f_long(char *str, long double number, int afterpoint, char *flag,
   if (ptr_accuracy == 1 && flag[3] != 'o') {
     int i = s21_strlen(str) - 1;
     for (; s21_strchr("0", str[i]); str[i--] = '\0') continue;
-    str[i] == (localeconv()->decimal_point)[0] ? str[i] = '\0' : 0;
+    str[i] == '.' ? str[i] = '\0' : 0;
   }
   return str;
 }
@@ -490,9 +481,7 @@ char *fspec_eE(char *str, double number, int precision, char *flag, int spec,
            (ptr_precision == 0 ? (round(number * pow(10, len_num)))
                                : (number * pow(10, len_num))),
            1, flag);
-  (ptr_precision != 0 || flag[3] == 'o')
-      ? s21_strcat(str, (localeconv()->decimal_point))
-      : 0;
+  (ptr_precision != 0 || flag[3] == 'o') ? s21_strcat(str, ".") : 0;
   for (len_str = s21_strlen(str); number < 0; number *= (-1)) continue;
   for (result = len_num; (precision != 0 && (len_num + 1) <= 0);
        precision -= 1) {
@@ -512,9 +501,7 @@ char *fspec_eE(char *str, double number, int precision, char *flag, int spec,
   if (ptr_accuracy == 1 && flag[3] != 'o') {
     for (int i = s21_strlen(str) - 1; s21_strchr("0", str[i]); str[i--] = '\0')
       continue;
-    for (int i = s21_strlen(str) - 1;
-         s21_strchr((localeconv()->decimal_point), str[i]);)
-      str[i--] = '\0';
+    for (int i = s21_strlen(str) - 1; s21_strchr(".", str[i]);) str[i--] = '\0';
   }
   len_str = s21_strlen(str);
   str[len_str++] = spec;
@@ -523,21 +510,19 @@ char *fspec_eE(char *str, double number, int precision, char *flag, int spec,
   return str;
 }
 
-char *fspec_f(char *str, double number, int afterpoint, char *flag,
+char *fspec_f(char *str, double number, int decimal_ptr, char *flag,
               int ptr_accuracy) {
   char flagX[10] = "xxxxx";
-  int len_str = 0, minus = 0, ptr_precision = afterpoint, k3 = 0;
+  int len_str = 0, minus = 0, ptr_precision = decimal_ptr, k3 = 0;
   for (; number < 0; number *= (-1), minus = 1) continue;
-  double tmp = ceil((number - trunc(number)) * pow(10, afterpoint) - 0.5);
-  for (; ((afterpoint != 0) || ((tmp / 10) > 1) || (fmod(tmp, 10) > 1));
-       afterpoint -= 1, tmp /= 10) {
+  double tmp = ceil((number - trunc(number)) * pow(10, decimal_ptr) - 0.5);
+  for (; ((decimal_ptr != 0) || ((tmp / 10) > 1) || (fmod(tmp, 10) > 1));
+       decimal_ptr -= 1, tmp /= 10) {
     str[len_str++] = ((int)fmod(tmp, 10)) + 48;
     str[len_str] = '\0';
   }
   tmp == 1 ? k3 = 1 : 0;
-  (ptr_precision != 0 || flag[3] == 'o')
-      ? str[len_str++] = (localeconv()->decimal_point)[0]
-      : 0;
+  (ptr_precision != 0 || flag[3] == 'o') ? str[len_str++] = '.' : 0;
   ptr_precision == 0 ? number = round(number) : 0;
   for (tmp = k3 == 1 ? round(number) : number; (tmp / 10 >= 1);
        tmp /= 10, str[len_str] = '\0')
@@ -553,14 +538,13 @@ char *fspec_f(char *str, double number, int afterpoint, char *flag,
   if (ptr_accuracy == 1 && flag[3] != 'o') {
     int i = s21_strlen(str) - 1;
     for (; s21_strchr("0", str[i]); str[i--] = '\0') continue;
-    str[i] == (localeconv()->decimal_point)[0] ? str[i] = '\0' : 0;
+    str[i] == '.' ? str[i] = '\0' : 0;
   }
   return str;
 }
 char *fspec_gG(char *str, double number, int precision, char *flag, int spec) {
   int len_num = 0;
   precision = (precision == 0) ? 1 : precision;
-
   if (number == 0) {
     fspec_f(str, number, precision - 1, flag, 1);
   } else {
@@ -573,7 +557,6 @@ char *fspec_gG(char *str, double number, int precision, char *flag, int spec) {
                 ? tmp
                 : 0;
     }
-
     if (len_num <= 0) {
       (precision + len_num <= 0)
           ? fspec_eE(str, number, precision - 1, flag, spec - 2, 1)
@@ -583,6 +566,5 @@ char *fspec_gG(char *str, double number, int precision, char *flag, int spec) {
                   : fspec_f(str, number, len_num + (precision - 1), flag, 1);
     }
   }
-
   return str;
 }

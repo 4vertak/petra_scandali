@@ -2,12 +2,14 @@
 #define SRC_S21_SPRINTF_H_
 
 #include <ctype.h>
-#include <limits.h>
-#include <locale.h>
 #include <math.h>
 #include <stdarg.h>
 
 #include "./s21_string.h"
+
+#define BUFF_SIZE 512
+
+#define MY_INT_MIN (-2147483647 - 1)
 
 typedef struct {
   char flag[10];

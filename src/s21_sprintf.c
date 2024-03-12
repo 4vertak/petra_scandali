@@ -26,8 +26,11 @@ int s21_sprintf(char *str, const char *format, ...) {
 
 int parce_setting_mode(int i, const char *format, setting *modified,
                        va_list *params) {
-  for (i += 1; s21_strchr("-+ #0", format[i]); i += 1)
-    (modified->flag)[5 - s21_strlen(s21_strchr("-+ #0", format[i]))] = 'o';
+  for (i += 1; s21_strchr("-+ #0", format[i]); i += 1) {
+    char current_char = format[i];
+    int index = 5 - s21_strlen(s21_strchr("-+ #0", current_char));
+    modified->flag[index] = 'o';
+  }
   for (; s21_strchr("0123456789", format[i]); i += 1)
     modified->width = (modified->width * 10) + (format[i] - 48);
   for (; format[i] == '*'; i += 1) modified->width = va_arg(*params, int);
@@ -188,6 +191,7 @@ int fspec_c(char *str, va_list *params, char *flag, int precision, char type) {
   }
   for (int i = count; flag[0] == 'o' && i < (precision); i += 1)
     str[count++] = ' ';
+  str[count] = '\0';
   return count;
 }
 
@@ -223,7 +227,9 @@ char *fspec_p(char *str, int *variable) {
 char *fspec_xXou(char *str, unsigned int number, int format, int precision,
                  char *flag) {
   int len_str = 0, type = 97, numb = number;
+
   format == 32 ? format /= 2 : (type = 65);
+
   for (; (len_str < precision - 1) || (number / format) != 0;
        number /= format, len_str += 1)
     str[len_str] = (number % format) < 10 ? (number % format) + 48
@@ -289,16 +295,18 @@ char *fspec_eEL(char *str, long double number, int precision, char *flag,
     for (int i = s21_strlen(str) - 1; s21_strchr(".", str[i]);) str[i--] = '\0';
   }
   len_str = s21_strlen(str);
-  str[len_str++] = spec;
+  if (spec == 'e') str[len_str++] = 'e';
+  if (spec == 'E') str[len_str++] = 'E';
   str[len_str] = '\0';
   fspec_di(str + (len_str), -result, 2, flag1);
+
   return str;
 }
 
 char *fspec_f_long(char *str, long double number, int decimal_ptr, char *flag,
                    int ptr_accuracy) {
   char flagX[10] = "xxxxx";
-  int len_str = 0, minus = 0, ptr_precision = decimal_ptr, k3 = 0;
+  int len_str = 0, minus = 0, ptr_precision = decimal_ptr, ptr_tmp = 0;
   for (; number < 0; number *= (-1), minus = 1) continue;
   long double tmp =
       ceill((number - truncl(number)) * powl(10, decimal_ptr) - 0.5);
@@ -307,10 +315,10 @@ char *fspec_f_long(char *str, long double number, int decimal_ptr, char *flag,
     str[len_str++] = ((int)fmodl(tmp, 10)) + 48;
     str[len_str] = '\0';
   }
-  tmp == 1 ? k3 = 1 : 0;
+  tmp == 1 ? ptr_tmp = 1 : 0;
   (ptr_precision != 0 || flag[3] == 'o') ? str[len_str++] = '.' : 0;
   ptr_precision == 0 ? number = roundl(number) : 0;
-  for (tmp = k3 == 1 ? round(number) : number; ((tmp / 10) >= 1);
+  for (tmp = ptr_tmp == 1 ? round(number) : number; ((tmp / 10) >= 1);
        tmp /= 10, str[len_str] = '\0')
     str[len_str++] = ((int)fmodl(tmp, 10)) + 48;
   fspec_di(str + len_str, fmodl(tmp, 10), 1, flagX);
@@ -344,35 +352,43 @@ char *fspec_gG_long(char *str, long double number, int precision, char *flag,
              10 < fabsl(number) * powl(10, len_num))
                 ? tmp
                 : 0;
-    if (len_num <= 0)
+    if (len_num <= 0) {
       (precision + len_num <= 0)
           ? fspec_eEL(str, number, precision - 1, flag, spec - 2, 1)
           : fspec_f_long(str, number, (precision - 1) + len_num, flag, 1);
-    else
+    }
+
+    else {
       (precision - 1) <= len_num
           ? fspec_eEL(str, number, precision - 1, flag, spec - 2, 1)
           : fspec_f_long(str, number, len_num + (precision - 1), flag, 1);
+    }
   }
+
   return str;
 }
 
 char *fspec_di(char *str, int number, int precision, char *flag) {
   int len_str = 0, minus = number < 0 ? (number *= (-1)) : 0;
-  if (number < 0) {
-    for (; ((len_str < precision) || (-(number / 10) != 0) ||
-            (-(number % 10) != 0));
-         number /= 10)
-      str[len_str++] = (-(number % 10)) + 48;
+  if (number == 0 && flag[1] != 'o' && flag[2] != 'o' && !precision) {
+    str[len_str] = '\0';
   } else {
-    for (; ((len_str < precision) || ((number / 10) != 0) ||
-            ((number % 10) != 0));
-         number /= 10)
-      str[len_str++] = (number % 10) + 48;
+    if (number < 0) {
+      for (; ((len_str < precision) || (-(number / 10) != 0) ||
+              (-(number % 10) != 0));
+           number /= 10)
+        str[len_str++] = (-(number % 10)) + 48;
+    } else {
+      for (; ((len_str < precision) || ((number / 10) != 0) ||
+              ((number % 10) != 0));
+           number /= 10)
+        str[len_str++] = (number % 10) + 48;
+    }
+    minus != 0 ? str[len_str++] = '-' : 0;
+    if (str[len_str - 1] != '-' && (flag[1] == 'o' || flag[2] == 'o'))
+      str[len_str++] = flag[1] == 'o' ? '+' : ' ';
+    str[len_str] = '\0';
   }
-  minus != 0 ? str[len_str++] = '-' : 0;
-  if (str[len_str - 1] != '-' && (flag[1] == 'o' || flag[2] == 'o'))
-    str[len_str++] = flag[1] == 'o' ? '+' : ' ';
-  str[len_str] = '\0';
   s21_strrev(str);
   return str;
 }
@@ -513,7 +529,7 @@ char *fspec_eE(char *str, double number, int precision, char *flag, int spec,
 char *fspec_f(char *str, double number, int decimal_ptr, char *flag,
               int ptr_accuracy) {
   char flagX[10] = "xxxxx";
-  int len_str = 0, minus = 0, ptr_precision = decimal_ptr, k3 = 0;
+  int len_str = 0, minus = 0, ptr_precision = decimal_ptr, ptr_tmp = 0;
   for (; number < 0; number *= (-1), minus = 1) continue;
   double tmp = ceil((number - trunc(number)) * pow(10, decimal_ptr) - 0.5);
   for (; ((decimal_ptr != 0) || ((tmp / 10) > 1) || (fmod(tmp, 10) > 1));
@@ -521,10 +537,10 @@ char *fspec_f(char *str, double number, int decimal_ptr, char *flag,
     str[len_str++] = ((int)fmod(tmp, 10)) + 48;
     str[len_str] = '\0';
   }
-  tmp == 1 ? k3 = 1 : 0;
+  tmp == 1 ? ptr_tmp = 1 : 0;
   (ptr_precision != 0 || flag[3] == 'o') ? str[len_str++] = '.' : 0;
   ptr_precision == 0 ? number = round(number) : 0;
-  for (tmp = k3 == 1 ? round(number) : number; (tmp / 10 >= 1);
+  for (tmp = ptr_tmp == 1 ? round(number) : number; (tmp / 10 >= 1);
        tmp /= 10, str[len_str] = '\0')
     str[len_str++] = ((int)fmod(tmp, 10)) + 48;
   fspec_di(str + len_str, fmod(tmp, 10), 1, flagX);

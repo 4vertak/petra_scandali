@@ -2,25 +2,14 @@
 
 int main(void) {
   int number_failed = 0;
-  Suite *test[] = {test_memchr(),
-                   test_memcmp(),
-                   test_memcpy(),
-                   test_strlen(),
-                   test_memset(),
-                   test_strncmp(),
-                   test_strchr(),
-                   test_strrchr(),
-                   test_strncpy(),
-                   test_strncat(),
-                   test_strpbrk(),
-                   test_strerror(),
-                   test_strcspn(),
-                   test_strstr(),
-                   test_memmove(),
-                   test_sprintf(),
-                   test_to_lower(),
-                   test_to_upper(),
-                   NULL};
+  Suite *test[] = {test_memchr(), test_memcmp(), test_memcpy(), test_memmove(),
+                   test_strlen(), test_memset(), test_strncmp(), test_strchr(),
+                   test_strrchr(), test_strncpy(), test_strncat(),
+                   test_strpbrk(), test_strerror(), test_strcspn(),
+                   test_strstr(),  // test_strtok(),
+                   test_to_lower(), test_to_upper(), test_insert(),
+                   //  test_trim(),
+                   test_sscanf(), test_sprintf(), NULL};
   SRunner *sr;
   int i = 0;
   while (test[i] != NULL) {
@@ -39,7 +28,13 @@ int main(void) {
     printf("\033[32;1m=========FAILED: %d =========\033[0;0m\n", number_failed);
   }
 
-  return (number_failed == 0) ? EXIT_SUCCESS : EXIT_FAILURE;
+  if (number_failed == 0) {
+    return EXIT_SUCCESS;
+  } else {
+    return EXIT_FAILURE;
+  }
+
+  // return (number_failed == 0) ? 0 : 1;
 }
 
 // int main(void) {

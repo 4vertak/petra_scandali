@@ -12,6 +12,7 @@
 Suite *test_memchr(void);
 Suite *test_memcmp(void);
 Suite *test_memcpy(void);
+Suite *test_memmove(void);
 Suite *test_strlen(void);
 Suite *test_memset(void);
 Suite *test_strncmp(void);
@@ -23,9 +24,14 @@ Suite *test_strpbrk(void);
 Suite *test_strerror(void);
 Suite *test_strcspn(void);
 Suite *test_strstr(void);
-Suite *test_memmove(void);
-Suite *test_sprintf(void);
-Suite *test_to_lower(void);
+// Suite *test_strtok(void);
+
 Suite *test_to_upper(void);
+Suite *test_to_lower(void);
+Suite *test_insert(void);
+// Suite *test_trim(void);
+Suite *test_sscanf(void);
+
+Suite *test_sprintf(void);
 
 #endif  // SRC_TESTS_TEST_H_

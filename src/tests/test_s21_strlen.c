@@ -38,7 +38,7 @@ START_TEST(strlen_6) {
 END_TEST
 
 START_TEST(strlen_7) {
-  char str[] = "Hello@world!";
+  char str[] = "Hello@world!\0";
   ck_assert_int_eq(strlen(str), s21_strlen(str));
 }
 END_TEST

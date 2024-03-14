@@ -91,7 +91,7 @@ END_TEST
 Suite *test_memset(void) {
   Suite *s;
   TCase *tc;
-  s = suite_create("\n\033[37;1m=========S21_MEMSET=========\033[0m");
+  s = suite_create("\n\033[37;1m==========| S21MEMSET |=========\033[0m");
 
   tc = tcase_create("memset_tc");
   tcase_add_test(tc, memset_1);

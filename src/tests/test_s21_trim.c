@@ -6,7 +6,6 @@ START_TEST(test_trim_1) {
   char s4[] = "hello, world";
   char *s2 = s21_trim(s1, s3);
   ck_assert_str_eq(s4, s2);
-  if (s2) free(s2);
 }
 END_TEST
 
@@ -16,7 +15,6 @@ START_TEST(test_trim_2) {
   char *s4 = "";
   char *s2 = s21_trim(s1, s3);
   ck_assert_str_eq(s4, s2);
-  if (s2) free(s2);
 }
 END_TEST
 
@@ -25,8 +23,7 @@ START_TEST(test_trim_3) {
   char s3[] = "";
   char *s4 = s21_NULL;
   char *s2 = s21_trim(s1, s3);
-  ck_assert_str_eq(s4, s2);
-  if (s2) free(s2);
+  ck_assert_msg(s4 == s2, "test_trim_3 fail");
 }
 END_TEST
 
@@ -36,7 +33,6 @@ START_TEST(test_trim_4) {
   char s4[] = "abcdefghij";
   char *s2 = s21_trim(s1, s3);
   ck_assert_str_eq(s4, s2);
-  if (s2) free(s2);
 }
 END_TEST
 
@@ -46,7 +42,6 @@ START_TEST(test_trim_5) {
   char *s4 = "abc";
   char *s2 = s21_trim(s1, s3);
   ck_assert_str_eq(s4, s2);
-  if (s2) free(s2);
 }
 END_TEST
 
@@ -56,7 +51,6 @@ START_TEST(test_trim_6) {
   char *s4 = "hello, world";
   char *s2 = s21_trim(s1, s3);
   ck_assert_str_eq(s4, s2);
-  if (s2) free(s2);
 }
 END_TEST
 
@@ -65,8 +59,7 @@ START_TEST(test_trim_7) {
   char *s3 = s21_NULL;
   char *s4 = s21_NULL;
   char *s2 = s21_trim(s1, s3);
-  ck_assert_str_eq(s4, s2);
-  if (s2) free(s2);
+  ck_assert_msg(s4 == s2, "test_trim_7 fail");
 }
 END_TEST
 
@@ -76,7 +69,6 @@ START_TEST(test_trim_8) {
   char s4[] = "";
   char *s2 = s21_trim(s1, s3);
   ck_assert_str_eq(s4, s2);
-  if (s2) free(s2);
 }
 END_TEST
 
@@ -86,7 +78,6 @@ START_TEST(test_trim_9) {
   char *s4 = " wtf ";
   char *s2 = s21_trim(s1, s3);
   ck_assert_str_eq(s4, s2);
-  if (s2) free(s2);
 }
 END_TEST
 
@@ -96,12 +87,12 @@ START_TEST(test_trim_10) {
   char *s4 = " wtf ";
   char *s2 = s21_trim(s1, s3);
   ck_assert_str_eq(s4, s2);
-  if (s2) free(s2);
 }
 END_TEST
 
 Suite *test_trim(void) {
-  Suite *s = suite_create("\n\033[37;1m=========S21_TRIM=========\033[0m");
+  Suite *s =
+      suite_create("\n\033[37;1m==========| S21_TRIM  |=========\033[0m");
   TCase *tc = tcase_create("trim_tc");
 
   tcase_add_test(tc, test_trim_1);

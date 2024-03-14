@@ -1,7 +1,7 @@
 #include "s21_string.h"
 
 void *s21_insert(const char *src, const char *str, size_t start_index) {
-  char *insert = s21_NULL;
+  static char insert[MAX_LENGTH];
   if (src == s21_NULL || str == s21_NULL) {
     return s21_NULL;
   }
@@ -16,7 +16,6 @@ void *s21_insert(const char *src, const char *str, size_t start_index) {
   if (start_index > (long unsigned int)src_length) {
     return s21_NULL;
   }
-  insert = malloc((str_length + src_length + 1) * sizeof(char));
   if (insert != s21_NULL) {
     for (; (unsigned long)i < start_index; i++) {
       ((char *)insert)[i] = src[i];

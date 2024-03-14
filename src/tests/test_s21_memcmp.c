@@ -113,7 +113,7 @@ END_TEST
 Suite *test_memcmp(void) {
   Suite *s;
   TCase *tc;
-  s = suite_create("\n\033[37;1m=========S21_MEMCMP=========\033[0m");
+  s = suite_create("\n\033[37;1m==========| S21MEMCMP |=========\033[0m");
   tc = tcase_create("memcmp_tc");
   tcase_add_test(tc, memcmp_1);
   tcase_add_test(tc, memcmp_2);

@@ -6,8 +6,7 @@ START_TEST(test_insert_1) {
   char s4[] = "hello, hELLO, WORLD!world!";
   s21_size_t num = 7;
   char *s2 = s21_insert(s1, s3, num);
-  ck_assert_ptr_eq(s4, s2);
-  if (s2) free(s2);
+  ck_assert_str_eq(s4, s2);
 }
 END_TEST
 
@@ -18,7 +17,6 @@ START_TEST(test_insert_2) {
   s21_size_t num = 7;
   char *s2 = s21_insert(s1, s3, num);
   ck_assert_ptr_eq(s4, s2);
-  if (s2) free(s2);
 }
 END_TEST
 
@@ -29,7 +27,6 @@ START_TEST(test_insert_3) {
   s21_size_t num = 0;
   char *s2 = s21_insert(s1, s3, num);
   ck_assert_ptr_eq(s4, s2);
-  if (s2) free(s2);
 }
 END_TEST
 
@@ -39,8 +36,7 @@ START_TEST(test_insert_4) {
   char s4[] = "abc\'I WAS HERE\'defghij";
   s21_size_t num = 3;
   char *s2 = s21_insert(s1, s3, num);
-  ck_assert_ptr_eq(s4, s2);
-  if (s2) free(s2);
+  ck_assert_str_eq(s4, s2);
 }
 END_TEST
 
@@ -51,7 +47,6 @@ START_TEST(test_insert_5) {
   s21_size_t num = 10;
   char *s2 = s21_insert(s1, s3, num);
   ck_assert_ptr_eq(s4, s2);
-  if (s2) free(s2);
 }
 END_TEST
 
@@ -62,7 +57,6 @@ START_TEST(test_insert_6) {
   s21_size_t num = -1;
   char *s2 = s21_insert(s1, s3, num);
   ck_assert_ptr_eq(s4, s2);
-  if (s2) free(s2);
 }
 END_TEST
 
@@ -73,7 +67,6 @@ START_TEST(test_insert_7) {
   s21_size_t num = 0;
   char *s2 = s21_insert(s1, s3, num);
   ck_assert_ptr_eq(s4, s2);
-  if (s2) free(s2);
 }
 END_TEST
 
@@ -83,8 +76,7 @@ START_TEST(test_insert_8) {
   char s4[] = "";
   s21_size_t num = 0;
   char *s2 = s21_insert(s1, s3, num);
-  ck_assert_ptr_eq(s4, s2);
-  if (s2) free(s2);
+  ck_assert_str_eq(s4, s2);
 }
 END_TEST
 
@@ -95,7 +87,6 @@ START_TEST(test_insert_9) {
   s21_size_t num = 0;
   char *s2 = s21_insert(s1, s3, num);
   ck_assert_ptr_eq(s4, s2);
-  if (s2) free(s2);
 }
 END_TEST
 
@@ -106,12 +97,12 @@ START_TEST(test_insert_10) {
   s21_size_t num = 0;
   char *s2 = s21_insert(s1, s3, num);
   ck_assert_ptr_eq(s2, s4);
-  if (s2) free(s2);
 }
 END_TEST
 
 Suite *test_insert(void) {
-  Suite *s = suite_create("\n\033[37;1m=========S21_INSERT=========\033[0m");
+  Suite *s =
+      suite_create("\n\033[37;1m==========| S21INSERT |=========\033[0m");
   TCase *tc = tcase_create("insert_tc");
 
   tcase_add_test(tc, test_insert_1);

@@ -670,7 +670,7 @@ END_TEST
 Suite *test_strerror(void) {
   Suite *s;
   TCase *tc;
-  s = suite_create("\n\033[37;1m=========S21_STRERROR=========\033[0m");
+  s = suite_create("\n\033[37;1m==========|S21STRERROR|=========\033[0m");
 
   tc = tcase_create("strerror_tc");
   tcase_add_test(tc, strerror_0);

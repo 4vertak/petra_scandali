@@ -1,3 +1,4 @@
+SHELL :=/bin/bash
 CC=gcc
 FLAGS=-g -Wall -Wextra -Werror -std=c11
 TEST_FLAGS=-lcheck -lpthread -pthread -lm -lrt -lsubunit -lgcov
@@ -31,7 +32,7 @@ style: clean
 test: clean covered test.a
 	$(CC) $(FLAGS) --coverage -o $(TEST).o $(TEST).c -c
 	$(CC) $(TEST).o $(TEST).a s21_string.a -o $(TEST) --coverage $(FLAGS) $(TEST_FLAGS)
-	./$(TEST)
+	-./$(TEST)
 	mkdir ./report
 	mv *.gcda ./report/
 	mv *.gcno ./report/

@@ -7,8 +7,6 @@
 #include <stdlib.h>
 #include <string.h>
 
-#define variable_color ;
-
 #include "../s21_string.h"
 
 Suite *test_memchr(void);
@@ -31,7 +29,7 @@ Suite *test_to_upper(void);
 Suite *test_to_lower(void);
 Suite *test_insert(void);
 Suite *test_trim(void);
-// Suite *test_sscanf(void);
+Suite *test_sscanf(void);
 Suite *test_sprintf(void);
 
 #endif  // SRC_TESTS_TEST_H_

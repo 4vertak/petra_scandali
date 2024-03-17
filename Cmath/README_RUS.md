@@ -7,7 +7,7 @@ Implementation of your own version of the math.h library.
 1. [Chapter I](#chapter-i) \
     1.1. [Introduction](#introduction)
 2. [Chapter II](#chapter-ii) \
-    2.1. [Information](#information)\
+    2.1. [Information](#information)
     2.2. [Overview of some "math.h" functions](#Overview of some "math.h" functions)
 3. [Chapter III](#chapter-iii) \
     3.1. [Part 1](#part-1-Implementing the math.h library functions)  

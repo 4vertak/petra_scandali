@@ -10,5 +10,6 @@
 
 Suite *test_abs(void);
 Suite *test_atan(void);
+Suite *test_asin(void);
 
 #endif  // SRC_TESTS_TEST_H_

@@ -5,12 +5,14 @@
 #include <stdio.h>
 #include <stdlib.h>
 
-#define S21_M_PI_2 1.57079632679489661923  // pi/2
+#define S21_M_PI 3.14159265358979323846     // pi
+#define S21_M_PI_2 1.57079632679489661923   // pi/2
+#define S21_M_PI_4 0.785398163397448309616  // pi/4
 #define ACCURACY 1E-15
 
 int s21_abs(int x);
-// long double s21_acos(double x);
-// long double s21_asin(double x);
+long double s21_acos(double x);
+long double s21_asin(double x);
 long double s21_atan(double x);
 // long double s21_ceil(double x);
 // long double s21_cos(double x);

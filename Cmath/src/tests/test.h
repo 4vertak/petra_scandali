@@ -9,5 +9,6 @@
 #include "../s21_math.h"
 
 Suite *test_abs(void);
+Suite *test_atan(void);
 
 #endif  // SRC_TESTS_TEST_H_

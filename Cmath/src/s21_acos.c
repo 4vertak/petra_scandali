@@ -2,14 +2,14 @@
 
 long double s21_acos(double x) {
   long double result = 0;
-  if (fabs(x) > 1) {
+  if (fabs(x) > 1) { //Не забудь переделать fabs
     result = __builtin_nan("");
-  } else if (x > M_PI_4) {
-    result = s21_asin(sqrt(1 - x * x));
-  } else if (x < -M_PI_4) {
-    result = M_PI - s21_asin(sqrt(1 - x * x));
+  } else if (x > S21_M_PI_4) {
+    result = s21_asin(sqrt(1 - x * x)); //Не забудь переделать sqrt
+  } else if (x < -S21_M_PI_4) {
+    result = S21_M_PI - s21_asin(sqrt(1 - x * x)); //Не забудь переделать sqrt
   } else {
-    result = M_PI_2 - s21_asin(x);
+    result = S21_M_PI_2 - s21_asin(x);
   }
   return result;
 }

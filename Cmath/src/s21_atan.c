@@ -36,10 +36,9 @@ long double s21_atan(double x) {
     coefficient = 1.0L / (2 * n + 1);
     temp *= -x * x;
     result +=
-        coefficient * init_val;  // Добавление следующего члена ряда Тейлора
+        coefficient * temp;  // Добавление следующего члена ряда Тейлора
     n++;
   }
-  // }
   return result;
 }
 

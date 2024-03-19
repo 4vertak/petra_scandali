@@ -32,7 +32,7 @@ long double s21_atan(double x) {
   }
   long double coefficient = 1L;
   long double n = 1L;
-  while (s21_ld_abs(coefficient * temp) > ACCURACY && n < 20) {
+  while (s21_fabs(coefficient * temp) > ACCURACY && n < 20) {
     coefficient = 1.0L / (2 * n + 1);
     temp *= -x * x;
     result +=

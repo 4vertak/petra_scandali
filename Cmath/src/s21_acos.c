@@ -2,7 +2,7 @@
 
 long double s21_acos(double x) {
   long double result = 0;
-  if (fabs(x) > 1) { //Не забудь переделать fabs
+  if (s21_fabs(x) > 1) { //Не забудь переделать fabs
     result = __builtin_nan("");
   } else if (x > S21_M_PI_4) {
     result = s21_asin(sqrt(1 - x * x)); //Не забудь переделать sqrt

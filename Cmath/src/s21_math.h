@@ -2,8 +2,8 @@
 #define SRC_S21_MATH_H_
 
 #include <math.h>  // не забудь убрать)
-#include <stdio.h>
-#include <stdlib.h>
+#include <stdio.h> // не забудь убрать)
+#include <stdlib.h> // не забудь убрать)
 
 #define S21_M_PI 3.14159265358979323846     // pi
 #define S21_M_PI_2 1.57079632679489661923   // pi/2

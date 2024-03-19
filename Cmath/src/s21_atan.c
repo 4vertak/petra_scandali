@@ -18,11 +18,11 @@ long double s21_atan(double x) {
   long double init_val;
   if (ind_direct) {  // Определение начального значения в зависимости от
                      // индикатора направления
-    init_val = x;
+    temp = x;
   } else {
-    init_val = -x;
+    temp = -x;
   }
-  result = init_val;
+  result = temp;
   if (!ind_direct) {  // Устанавливается начальное значение результата
     if (x > 0) {
       result += S21_M_PI_2;
@@ -32,9 +32,9 @@ long double s21_atan(double x) {
   }
   long double coefficient = 1L;
   long double n = 1L;
-  while (s21_ld_abs(coefficient * init_val) > ACCURACY && n < 20) {
+  while (s21_ld_abs(coefficient * temp) > ACCURACY && n < 20) {
     coefficient = 1.0L / (2 * n + 1);
-    init_val *= -x * x;
+    temp *= -x * x;
     result +=
         coefficient * init_val;  // Добавление следующего члена ряда Тейлора
     n++;

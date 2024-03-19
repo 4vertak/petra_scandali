@@ -2,12 +2,12 @@
 
 long double s21_asin(double x) {
   long double res = x;
-  if (fabs(x) > 1) {
+  if (fabs(x) > 1) { // не забудь переделать fabs
     res = __builtin_nan("");
-  } else if (x > M_PI_4) {
-    res = s21_acos(sqrt(1 - x * x));
-  } else if (x < -M_PI_4) {
-    res = -s21_acos(sqrt(1 - x * x));
+  } else if (x > S21_M_PI_4) {
+    res = s21_acos(sqrt(1 - x * x)); // не забудь переделать sqrt
+  } else if (x < -S21_M_PI_4) { 
+    res = -s21_acos(sqrt(1 - x * x)); // не забудь переделать sqrt
   } else {
     long double initial_value = x;
     long double n = 1L;

@@ -46,8 +46,8 @@ return result;
 }
 
 // int main() {
-//   long double x = 0;   // 1E-7
-//   long double y = -1;  // 1E-8
+//   long double x = 0;   
+//   long double y = -1;  
 
 //   printf("1E-7v2: %Lf\n1E-7orig: %f\n\n", s21_asin(x), asin(x));
 //   printf("1E-8 v2: %Lf\n1E-8 orig: %f\n", s21_asin(y), asin(y));

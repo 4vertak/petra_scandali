@@ -9,11 +9,11 @@ long double s21_asin(double x) {
   } else if (x < -S21_M_PI_4) { 
     res = -s21_acos(sqrt(1 - x * x)); // не забудь переделать sqrt
   } else {
-    long double initial_value = x;
+    long double temp = x;
     long double n = 1L;
-    for (; (initial_value > 0 ? initial_value : -initial_value) > ACCURACY; n++) {
-    initial_value = (pow(-1, n) * s21_factorial(2*n-1) * x * x) / (s21_factorial(2*n) * (2*n + 1)); //не забудь pow переделать
-    res += initial_value;
+    for (; (temp > 0 ? temp : -temp) > ACCURACY; n++) {
+    temp = (pow(-1, n) * s21_factorial(2*n-1) * x * x) / (s21_factorial(2*n) * (2*n + 1)); //не забудь pow переделать
+    res += temp;
 }
   }
   return res;

@@ -28,5 +28,6 @@ long double s21_atan(double x);
 
 // вспомогательные функции:
 long double s21_ld_abs(long double x);
+long double s21_factorial(long double n);
 
 #endif  // SRC_S21_MATH_H_

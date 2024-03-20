@@ -2,47 +2,41 @@
 
 // возвращает абсолютное значение числа, то есть значение без учета его знака
 
-// НЕ зАБЫТЬ asin sqrt - заменить на функции s21_...
+// НЕ зАБЫТЬ sqrt - заменить на функции s21_...
 
 long double s21_atan(double x) {
   long double result = 0;
-  int ind_direct =
-      (s21_fabs(x) < 1);  // Определение переменной индикатора направления, в
-                      // зависимости от абсолютного значения x
-  if (ind_direct) {  // Адаптация x в зависимости от значения индикатора
-                     // направления
-    x = x;
+  if (s21_fabs(x) > 0.4 && s21_fabs(x) < 10) {
+    result = s21_asin(x * sqrt(1 / (1 + x * x)));  // не забудь поменять sqrt
   } else {
-    x = 1 / x;
-  }
-  long double init_val;
-  if (ind_direct) {  // Определение начального значения в зависимости от
-                     // индикатора направления
-    temp = x;
-  } else {
-    temp = -x;
-  }
-  result = temp;
-  if (!ind_direct) {  // Устанавливается начальное значение результата
-    if (x > 0) {
-      result += S21_M_PI_2;
+    int dir_val = (s21_fabs(x) < 1);
+    if (dir_val) {
+      x = x;
     } else {
-      result -= S21_M_PI_2;
+      x = 1 / x;
     }
-  }
-  long double coefficient = 1L;
-  long double n = 1L;
-  while (s21_fabs(coefficient * temp) > ACCURACY && n < 20) {
-    coefficient = 1.0L / (2 * n + 1);
-    temp *= -x * x;
-    result +=
-        coefficient * temp;  // Добавление следующего члена ряда Тейлора
-    n++;
+    long double temp;
+    if (dir_val) {
+      temp = x;
+    } else {
+      temp = -x;
+    }
+    result = temp;
+    if (!dir_val) {
+      if (x > 0) {
+        result += S21_M_PI_2;
+      } else {
+        result -= S21_M_PI_2;
+      }
+    }
+    long double coef = 1L;
+    long double n = 1L;
+    while (s21_fabs(coef * temp) > ACCURACY && n < 20) {
+      coef = 1.0L / (2 * n + 1);
+      temp *= -x * x;
+      result += coef * temp;
+      n++;
+    }
   }
   return result;
 }
-
-// используем разложение ряда Тейлора - позволяет приближенно вычислять
-// значения функций в окрестности заданной точки и находить их разложения в
-// бесконечную сумму))) f(x) = f(a) + f'(a)(x-a)/1! + f''(a)(x-a)^2/2! +
-// f'''(a)*(x-a)^3/3! + ...

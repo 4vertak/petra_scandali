@@ -2,7 +2,8 @@
 
 int main(void) {
   int number_failed = 0;
-  Suite *test[] = {test_abs(), test_atan(), test_asin(), NULL};
+  Suite *test[] = {test_abs(),  test_fabs(), test_fmod(), test_asin(),
+                   test_acos(), test_atan(), NULL};
   SRunner *sr;
   int i = 0;
   while (test[i] != NULL) {

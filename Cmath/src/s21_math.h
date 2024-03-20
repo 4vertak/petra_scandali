@@ -1,14 +1,16 @@
 #ifndef SRC_S21_MATH_H_
 #define SRC_S21_MATH_H_
 
-#include <math.h>  // не забудь убрать)
-#include <stdio.h> // не забудь убрать)
-#include <stdlib.h> // не забудь убрать)
+#include <math.h>    // не забудь убрать)
+#include <stdio.h>   // не забудь убрать)
+#include <stdlib.h>  // не забудь убрать)
 
+#define S21_INF 1.0 / 0.0
 #define S21_M_PI 3.14159265358979323846     // pi
 #define S21_M_PI_2 1.57079632679489661923   // pi/2
 #define S21_M_PI_4 0.785398163397448309616  // pi/4
-#define ACCURACY 1E-15
+#define ACCURACY 1E-17
+#define S21_NAN __builtin_nan("")
 
 int s21_abs(int x);
 long double s21_acos(double x);
@@ -25,9 +27,5 @@ long double s21_fmod(double x, double y);
 // long double s21_sin(double x);
 // long double s21_sqrt(double x);
 // long double s21_tan(double x);
-
-// вспомогательные функции:
-long double s21_ld_abs(long double x);
-long double s21_factorial(long double n);
 
 #endif  // SRC_S21_MATH_H_

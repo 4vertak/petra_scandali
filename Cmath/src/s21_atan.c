@@ -6,7 +6,7 @@
 
 long double s21_atan(double x) {
   long double result = 0;
-  if (s21_fabs(x) > 0.77 && s21_fabs(x) < 11) {
+  if (s21_fabs(x) > 0.77 && s21_fabs(x) < 10) {
     result = s21_asin(x * sqrt(1 / (1 + x * x)));  // не забудь поменять sqrt  
   } else {
     int dir_val = (s21_fabs(x) < 1);

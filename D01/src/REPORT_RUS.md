@@ -192,36 +192,42 @@
   > - *размер свободного пространства: 5.9G*
   > - *процент использования: 45%*
 
-## Part 12. Использование утилиты **du**
+## Part 12. Использование утилиты **du**   
+- Запустк команды du.
+  <p align="center"><img src="./img/part12.1.png" style="width:50%; height:auto;"></p>
 
-##### ![Запусти команду du](./img/part12.1.png)
+- Вывод размеров папок /home, /var, /var/log (в байтах, в человекочитаемом виде).
+  <p align="center"><img src="./img/part12.2.png" style="width:50%; height:auto;"></p>
 
-##### ![Выведи размер папок /home, /var, /var/log (в байтах, в человекочитаемом виде)](./img/part12.2.png)
+- Вывод размеров всего содержимого в /var/log (не общее, а каждого вложенного элемента, используя *).   
+  <p align="center"><img src="./img/part12.3.png" style="width:50%; height:auto;"></p>
 
-##### ![Выведи размер всего содержимого в /var/log (не общее, а каждого вложенного элемента, используя *)](./img/part12.3.png)
+## Part 13. Установка и использование утилиты **ncdu**   
+- Установка утилиты ncdu   
+  <p align="center"><img src="./img/part13.1.png" style="width:50%; height:auto;"></p>
 
-## Part 13. Установка и использование утилиты **ncdu**
-
-##### ![Установи утилиту ncdu](./img/part13.1.png)
-
-##### ![Выведи размер папок /home, /var, /var/log](./img/part13.2.png)
+- Вывод размеров папок /home, /var, /var/log   
+  <p align="center"><img src="./img/part13.2.png" style="width:50%; height:auto;"></p>
 
 ## Part 14. Работа с системными журналами
+- Вывод время последней успешной авторизации, имя пользователя и метод входа в систему
+  > *Mar 22 01:22:28 user-2 sudo: woodysyl : TTY=tty1 : PWD=/home/woodysyl*  
+  > *Mar 22 01:22:28 user-2  sudo: pam_unix(sudo:session): session opened for user root by woodysyl*  
+  <p align="center"><img src="./img/part14.1.png" style="width:50%; height:auto;"></p>
 
-##### Открой для просмотра:
-##### 1. /var/log/dmesg
-##### 2. /var/log/syslog
-##### 3. /var/log/auth.log  
-
-- ![время последней успешной авторизации, имя пользователя и метод входа в систему](./img/part14.1.png)
-Mar 22 01:22:28 user-2 sudo: woodysyl : TTY=tty1 : PWD=/home/woodysyl
-Mar 22 01:22:28 user-2  sudo: pam_unix(sudo:session): session opened for user root by woodysyl
-- sudo systemctl restart sshd;
-- ![скрин с сообщением о рестарте службы SSHd](./img/part14.2.png)
+- Cообщение о рестарте службы SSHd
+  > *команда: sudo systemctl restart sshd*  
+  <p align="center"><img src="./img/part14.2.png" style="width:50%; height:auto;"></p> 
 
 ## Part 15. Использование планировщика заданий **CRON**
 
-##### Используя планировщик заданий, запусти команду uptime через каждые 2 минуты.
-- ![Выведи на экран список текущих заданий для CRONt](./img/part15.1.png);
-- ![Найди в системных журналах строчки (минимум две в заданном временном диапазоне)](./img/part15.2.png);
-##### ![Удали все задания из планировщика заданий.](part15.3.png)
+- Используя планировщик заданий, запусти команду uptime через каждые 2 минуты.
+  >Вывод на экран списка текущих заданий для CRONt
+  <p align="center"><img src="./img/part15.1.png" style="width:50%; height:auto;"></p> 
+  
+- Найди в системных журналах строчки (минимум две в заданном временном диапазоне)
+  > *Демон запускаетсячерз две минуты, но: сообщение "no MTA installed, discarding output" означает, что в системе не установлен компонент MTA, который обычно используется для отправки вывода выполненных заданий cron на почту администратору системы.*
+  <p align="center"><img src="./img/part15.2.png" style="width:50%; height:auto;"></p> 
+  
+- Удали все задания из планировщика заданий.
+  <p align="center"><img src="./img/part15.3.png" style="width:50%; height:auto;"></p> 

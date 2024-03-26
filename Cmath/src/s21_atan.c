@@ -2,41 +2,44 @@
 
 // возвращает абсолютное значение числа, то есть значение без учета его знака
 
-// НЕ зАБЫТЬ sqrt - заменить на функции s21_...
+// НЕ зАБЫТЬ asin  sqrt - заменить на функции s21_...
+
+long double infinity_case(double x) {
+  long double result = (x > 0) ? S21_M_PI_2 : -1 * S21_M_PI_2;
+  return result;
+}
+
+long double boundary_case(double x) {
+  long double result = x * S21_M_PI_4;
+  return result;
+}
+
+long double taylorsseries(long double x, int dir_val) {
+  long double temp = x;
+  long double result = x;
+
+  for (long int i = 3; s21_fabs(temp) > ACCURACY; i += 2) {
+    temp *= -1 * pow(x, 2) * (i - 2) / i;  // не забудь поменять
+    result += temp;
+  }
+  if (dir_val) {
+    result = (x < 0) ? -1 * S21_M_PI_2 - result : 1 * S21_M_PI_2 - result;
+  }
+  return result;
+}
 
 long double s21_atan(double x) {
-  long double result = 0;
-  if (s21_fabs(x) > 0.77 && s21_fabs(x) < 10) {
-    result = s21_asin(x * sqrt(1 / (1 + x * x)));  // не забудь поменять sqrt  
+  long double result = 0.0L;
+  if (s21_isnan(x)) {
+    result = S21_NAN;
+  } else if (s21_isinf(x)) {
+    result = infinity_case(x);
+  } else if (s21_fabs(x) == 1) {
+    result = boundary_case(x);
   } else {
-    int dir_val = (s21_fabs(x) < 1);
-    if (dir_val) {
-      x = x;
-    } else {
-      x = 1 / x;
-    }
-    long double temp;
-    if (dir_val) {
-      temp = x;
-    } else {
-      temp = -x;
-    }
-    result = temp;
-    if (!dir_val) {
-      if (x > 0) {
-        result += S21_M_PI_2;
-      } else {
-        result -= S21_M_PI_2;
-      }
-    }
-    long double coef = 1L;
-    long double n = 1L;
-    while (s21_fabs(coef * temp) > ACCURACY && n < 20) {
-      coef = 1.0L / (2 * n + 1);
-      temp *= -x * x;
-      result += coef * temp;
-      n++;
-    }
+    int dir_val = (s21_fabs(x) > 1) ? 1 : 0;
+    if (s21_fabs(x) > 1) x = 1 / x;
+    result = taylorsseries(x, dir_val);
   }
   return result;
 }

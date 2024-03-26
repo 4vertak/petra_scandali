@@ -1,14 +1,12 @@
 #include "./s21_math.h"
 
 long double s21_fmod(double x, double y) {
-  long double result = 0.0;
+  long double result = 0.0L;
   int sign = 1;
-  if (__builtin_isinf(x) || x == -S21_INF || __builtin_isnan(x) ||
-      __builtin_isnan(y) || y == 0) {
-    if (__builtin_isinf(x)) {
-      result = -S21_NAN;
-    } else
-      result = S21_NAN;
+  if (s21_isinf(x)) {
+    result = -S21_NAN;
+  } else if (s21_isinf(y)) {
+    result = x;
   } else {
     if (x < 0) {
       sign = -1;

@@ -399,8 +399,8 @@ END_TEST
 START_TEST(test_fmod_36) {
   char str1[69] = {'\0'};
   char str2[69] = {'\0'};
-  double x = s21_fmod(0.1, 2.5);
-  double y = fmod(0.1, 2.5);
+  double x = s21_fmod(-NAN, 2.5);
+  double y = fmod(-NAN, 2.5);
   snprintf(str1, sizeof(str1), "%.6lf", x);
   snprintf(str2, sizeof(str1), "%.6lf", y);
   ck_assert_str_eq(str1, str2);

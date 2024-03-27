@@ -1,9 +1,5 @@
 #include "./s21_math.h"
 
-// возвращает абсолютное значение числа, то есть значение без учета его знака
-
-// НЕ зАБЫТЬ asin  sqrt - заменить на функции s21_...
-
 long double infinity_case(double x) {
   long double result = (x > 0) ? S21_M_PI_2 : -1 * S21_M_PI_2;
   return result;
@@ -19,7 +15,7 @@ long double taylorsseries(long double x, int dir_val) {
   long double result = x;
 
   for (long int i = 3; s21_fabs(temp) > ACCURACY; i += 2) {
-    temp *= -1 * pow(x, 2) * (i - 2) / i;  // не забудь поменять
+    temp *= -1 * (x * x) * (i - 2) / i;
     result += temp;
   }
   if (dir_val) {

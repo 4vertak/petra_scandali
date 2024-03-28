@@ -1,4 +1,4 @@
-# Отчет по выполненным задачам D01_Linux-1.
+# Отчет по выполненным задачам D02_Linux_network.
 
 ![alt text](img/devOps.png){width=100%}
 

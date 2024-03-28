@@ -46,7 +46,6 @@ START_TEST(test_atan_1) {
     snprintf(str1, sizeof(str1), "%.14Lf", x);
     snprintf(str2, sizeof(str1), "%.14lf", y);
     ck_assert_str_eq(str1, str2);
-    // ck_assert_ldouble_eq_tol(y, x, 0.000001);
   }
 }
 END_TEST
@@ -58,19 +57,16 @@ START_TEST(test_atan_2) {
   snprintf(str1, sizeof(str1), "%.17Lf", x);
   snprintf(str2, sizeof(str1), "%.17lf", NAN);
   ck_assert_str_eq(str1, str2);
-  // ck_assert_ldouble_eq_tol(NAN, x, 0.000001);
 
   x = s21_atan(+INFINITY);
   snprintf(str1, sizeof(str1), "%.17Lf", x);
   snprintf(str2, sizeof(str1), "%.17lf", S21_M_PI_2);
   ck_assert_str_eq(str1, str2);
-  // ck_assert_ldouble_eq_tol( S21_M_PI_2, x, 0.000001);
 
   x = s21_atan(-INFINITY);
   snprintf(str1, sizeof(str1), "%.17Lf", x);
   snprintf(str2, sizeof(str1), "%.17lf", -S21_M_PI_2);
   ck_assert_str_eq(str1, str2);
-  // ck_assert_ldouble_eq_tol(-S21_M_PI_2, x, 0.000001);
 }
 END_TEST
 

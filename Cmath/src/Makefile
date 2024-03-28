@@ -27,6 +27,7 @@ covered:
 style: clean
 	cp ../materials/linters/.clang-format ../src/.clang-format
 	clang-format -style=Google -n *.c *.h
+	clang-format -style=Google -i *.c *.h
 	rm .clang-format
 
 test: clean covered test.a

@@ -10,10 +10,9 @@ long double boundary_case(double x) {
   return result;
 }
 
-long double taylorsseries(long double x, int dir_val) {
+long double taylors_series(long double x, int dir_val) {
   long double temp = x;
   long double result = x;
-
   for (long int i = 3; s21_fabs(temp) > ACCURACY; i += 2) {
     temp *= -1 * (x * x) * (i - 2) / i;
     result += temp;
@@ -35,7 +34,7 @@ long double s21_atan(double x) {
   } else {
     int dir_val = (s21_fabs(x) > 1) ? 1 : 0;
     if (s21_fabs(x) > 1) x = 1 / x;
-    result = taylorsseries(x, dir_val);
+    result = taylors_series(x, dir_val);
   }
   return result;
 }

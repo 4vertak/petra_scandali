@@ -49,6 +49,6 @@ rebuild: clean all
 gcov_report: test
 #	lcov -t "s21_math" -o s21_math.info -c -d .
 #	genhtml -o gcov_report s21_math.info
-#	pip install gcovr
+	pip install gcovr
 	~/.local/bin/gcovr -r . --html --html-nested --html-self-contained --txt-metric branch --exclude-unreachable-branches --exclude-lines="s21_math" -o ./report/gcov_report.html
-#	firefox report/gcov_report.html
+	firefox report/gcov_report.html

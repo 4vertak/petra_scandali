@@ -48,7 +48,7 @@ C mathematical operations are a group of functions in the standard library of th
 
 ## Part 1. Implementing the math.h library functions
 
-Тебе необходимо реализовать описанные [выше](#stringh-функции) функции библиотеки string.h: 
+Тебе необходимо реализовать описанные [выше](#Overview of some "math.h" functions) функции библиотеки math.h: 
 
 - The functions of the math.h library must be implemented (only those directly described above):
 

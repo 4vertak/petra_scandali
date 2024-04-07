@@ -10,3 +10,4 @@ src/tests/*.o
 src/tests/*.gcda
 src/tests/*.gcno
 src/tests/test
+VM/

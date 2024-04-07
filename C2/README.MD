@@ -1,12 +1,8 @@
-# s21_string+
+# my_string+
 
 Implementation of the string.h library with additions.
 
-The russian version of the task can be found in the repository.
-
-
 ## Contents
-0. [Preamble](#preamble)
 1. [Chapter I](#chapter-i) \
     1.1. [Introduction](#introduction)
 2. [Chapter II](#chapter-ii) \
@@ -17,41 +13,6 @@ The russian version of the task can be found in the repository.
     3.3. [Part 3](#part-3-bonus-implementation-of-some-format-modifiers-of-the-sprintf-function)  
     3.4. [Part 4](#part-4-bonus-implementation-of-the-sscanf-function)  
     3.5. [Part 5](#part-5-bonus-implementation-of-special-string-processing-functions)  
-
-
-## Preamble
-
-![s21_string+](misc/eng/images/s21_stringplus.png)
-
-1942, late evening, Bletchley Park, Alan Turing's desk. 
-
-For almost a year, a group of the brightest mathematicians, linguists and crossword puzzle enthusiasts have been trying to solve the most difficult problem of deciphering the German Enigma cipher, whose codes change every day and the number of possible combinations is about two to the power of 64. The group often had to come up with different algorithms, and they even developed a special set of keywords and their syntax for ease of communication and logging, which is exactly like the well-known C language in our universe. What a remarkable coincidence! But there was a catch - the people at Bletchley Park had to remember the whole sequence of actions described in this language. 
-
-As you walk past Turing's desk, you notice a sheet of paper that says "For processing letters, punctuation marks, words and sentences". 
-
-*"What is this, Alan?"* you asked the thoughtful young man standing at the window.
-
-*"These are the functions that will make our lives easier! You know, cracking Enigma by brute force… I'd rather marry Joan than do that. So it seems we have to keep analysing texts, looking for patterns and coincidences. And so we're going to have to come up with different algorithms that are related to the processing of that very text and describe them. So we need a set of functions to help us do that. I'm working on them now."*
-
-*"And you are doing this using our new tool for representing unified algorithms?"*
-
-*"Yes, that is exactly what I am doing. Where else could we use these functions?"* Having said that, Turing looked at you as if you were an idiot. You noticed that and decided to show off your knowledge of the question: 
-
-*"You know I think we really need this. I just recently learnt this 'specific language of algorithm transfer'."*
-
-*"Seriously?"* Alan asked with some interest.
-
-*"Well, yes."*
-
-After a few seconds, Turing came to the logical conclusion of entrusting you with the job:
-
-*"Listen, do you want to do it yourself? Get some not-so-busy 
-and get on with it. And I'll continue to work on my mechanical code-breaking machine.*
-
-After thinking about it for a few seconds, you decide it's a great idea:
-
-*"Yes, I'll do everything in the best possible way!"*
-
 
 ## Chapter I
 
@@ -233,5 +194,3 @@ Bonus assignment for extra points. You need to implement some string processing 
 - All of the requirements outlined in [the first part](#part-1-implementation-of-the-stringh-library-functions) are applied to functions implementation;
   excluding the requirement to compare your implementation with the standard.
 
-
-💡 [Tap here](https://forms.yandex.ru/cloud/6418126b02848f263d78c4a1/) **to leave your feedback on the project**. Product Team really tries to make your educational experience better.

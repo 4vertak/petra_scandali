@@ -1,38 +1,38 @@
 # Отчет по выполненным задачам D02_Linux_network.
 
-![alt text](img/devOps.png){width=100%}
+<p align ="center"><img src="img/devOps.png" style="width:100%; height:auto;"></p>
 
 > *Дорогие ревьюеры, из этого репорта вы узнаете: как я нашел выход из лабиринта настроек, как избежал падения в черную дыру багов и как не потерял себя в мире командной строки, пока ходил по этому мирному острову стабильности без запинки и смеха!* :neckbeard:
 
 ## Part 1. Инструмент **ipcalc**
 ### 1.1. Сети и маски
   - Адрес сети *192.167.38.54/13*\
-  ![alt text](img/part1.1.1.png){width=50%}
+  <p align ="center"><img src="img/part1.1.1.png" style="width:50%; height:auto;"></p>
 
   - Перевод маски *255.255.255.0*:
     > в префиксной: */24* \
     > в двоичной: *11111111.11111111.11111111.00000000*\
 
-  ![Перевод маски *255.255.255.0*](img/part1.1.2.png){width=50%}
+  <p align ="center"><img src="img/part1.1.2.png" style="width:50%; height:auto;"></p>
 
   - Перевод маски */15*: 
     > в обычную: *255.254.0.0* \
     > в двоичную: *11111111.11111110.00000000.00000000*\
 
-  ![Перевод маски */15*](img/part1.1.3.png){width=50%}
+  <p align ="center"><img src="img/part1.1.3.png" style="width:50%; height:auto;"></p>
 
   - Перевод маски *11111111.11111111.11111111.11110000*: 
 
     > в обычную: *255.255.255.240* \ 
     > в префиксную: */15*\
 
-  ![Перевод маски *11111111.11111111.11111111.11110000*](img/part1.1.4.png){width=50%}
+  <p align ="center"><img src="img/part1.1.4.png" style="width:50%; height:auto;"></p>
 
   - Минимальный и максимальный хост в сети *12.167.38.4* 
 
   > при масках: */8*, *11111111.11111111.00000000.00000000*, *255.255.254.0* и */4*\
 
-  ![Минимальный и максимальный хост в сети *12.167.38.4*](img/part1.1.5.png){width=50%}
+  <p align ="center"><img src="img/part1.1.5.png" style="width:50%; height:auto;"></p>
 
 ###1.2. localhost
   > *Oтчёт, можно ли обратиться к приложению, работающему на localhost, со следующими IP:* 
@@ -40,7 +40,7 @@
   > - *127.0.0.2* - да, 
   > - *127.1.0.1* - да, 
   > - *128.0.0.1* - нет.\
-  ![alt text](img/part1.2.png){width=50%}
+  <p align ="center"><img src="img/part1.2.png" style="width:50%; height:auto;"></p>
 
 ### 1.3. Диапазоны и сегменты сетей
 1. Какие из перечисленных IP можно использовать в качестве публичного, а какие только в качестве частных: 
@@ -71,23 +71,23 @@
 
 - Команда `ip a` - существующие сетевые интерфейсы ws1 и ws2.\
 
-![alt text](img/part2.0.1.png){width=50%}
+<p align ="center"><img src="img/part2.0.1.png" style="width:50%; height:auto;"></p>
 
 - Описан сетевой интерфейс, соответствующий внутренней сети, на обеих машинах и задать следующие адреса и маски: ws1 - *192.168.100.10*, маска */16*, ws2 - *172.24.116.8*, маска */12*.
 
   > скрин с содержанием изменённого файла *etc/netplan/00-installer-config.yaml* для каждой машины.\
 
-  ![alt text](img/part2.0.2.png){width=50%}
+  <p align ="center"><img src="img/part2.0.2.png" style="width:50%; height:auto;"></p>
 
 -  команда `netplan apply` для перезапуска сервиса сети.\
 
-  ![alt text](img/part2.0.3.png){width=50%}
+  <p align ="center"><img src="img/part2.0.3.png" style="width:50%; height:auto;"></p>
 
 #### 2.1. Добавление статического маршрута вручную
 
 -  команды: `ip r add` и  `ping`.\
 
-  ![alt text](img/part2.1.png){width=50%}
+  <p align ="center"><img src="img/part2.1.png" style="width:50%; height:auto;"></p>
 
 
 #### 2.2. Добавление статического маршрута с сохранением
@@ -96,11 +96,11 @@
 
 - Добавление статического маршрута с помощью файла *etc/netplan/00-installer-config.yaml*.\
 
-  ![alt text](img/part2.2.1.png){width=50%}
+  <p align ="center"><img src="img/part2.2.1.png" style="width:50%; height:auto;"></p>
 
 - Пропингуй соединение между машинами.\
 
-  ![alt text](img/part2.2.2.png){width=50%}
+  <p align ="center"><img src="img/part2.2.2.png" style="width:50%; height:auto;"></p>
 
 ## Part 3. Утилита **iperf3**
 
@@ -114,23 +114,23 @@
 
 - скорость соединения между ws1 и ws2.\
 
-    ![alt text](img/part3.1.1.png){width=50%}
+    <p align ="center"><img src="img/part3.1.1.png" style="width:50%; height:auto;"></p>
 
 ## Part 4. Сетевой экран
 
 #### 4.1. Утилита **iptables**
 - Файл */etc/firewall.sh*, имитирующий фаерволл, на `ws1` и `ws2`:\
-   ![alt text](img/part4.1.1.png){width=50%}
+   <p align ="center"><img src="img/part4.1.1.png" style="width:50%; height:auto;"></p>
 
 
 - Запуск файлы на обеих машинах командами `chmod +x /etc/firewall.sh` и `/etc/firewall.sh`.\
-    ![alt text](img/part4.1.2.png){width=50%}
+    <p align ="center"><img src="img/part4.1.2.png" style="width:50%; height:auto;"></p>
     > Если сначала стоит запрещающее правило, то оно имеет приоритет перед последующим разрешающим.
 
 #### 4.2. Утилита **nmap**
 - Cкрины с вызовом и выводом использованных команд **ping** и **nmap**.\
 
-    ![alt text](img/part4.2.png){width=50%}
+    <p align ="center"><img src="img/part4.2.png" style="width:50%; height:auto;"></p>
     > *Проверка: в выводе nmap должно быть сказано: `Host is up`*.
 
 
@@ -144,25 +144,25 @@
 
 - В отчёт помести скрины с содержанием файла *etc/netplan/00-installer-config.yaml* для каждой машины.\
 
-    ![alt text](img/part5.1.1.png){width=50%}
+    <p align ="center"><img src="img/part5.1.1.png" style="width:50%; height:auto;"></p>
 
 ##### Проверка командой `ip -4 a`, и `ping` ws22 с ws21. Аналогично пропингуй r1 с ws11.
   - скрины с вызовом и выводом использованных команд\
 
-  ![alt text](img/part5.1.2.png){width=50%}.
+  <p align ="center"><img src="img/part5.1.2.png" style="width:50%; height:auto;"></p>.
 
 
 #### 5.2. Включение переадресации IP-адресов
 
   - выполнение команды `sysctl -w net.ipv4.ip_forward=1`на роутерах:\
 
-  ![alt text](img/part5.2.1.png){width=50%}.
+  <p align ="center"><img src="img/part5.2.1.png" style="width:50%; height:auto;"></p>.
 
   > *При таком подходе переадресация не будет работать после перезагрузки системы.*
 
   - содержание изменённого файла */etc/sysctl.conf*.\
 
-  ![alt text](img/part5.2.2.png){width=50%}.
+  <p align ="center"><img src="img/part5.2.2.png" style="width:50%; height:auto;"></p>.
 
   > *При использовании этого подхода, IP-переадресация включена на постоянной основе.*
 
@@ -170,15 +170,15 @@
 
   - Настройка маршрута по-умолчанию (шлюз) для рабочих станций. Содержание файла *etc/netplan/00-installer-config.yaml*;\
 
-  ![alt text](img/part5.3.1.png){width=50%}.
+  <p align ="center"><img src="img/part5.3.1.png" style="width:50%; height:auto;"></p>.
 
   - Вызов и вывод `ip r`\
 
-  ![alt text](img/part5.3.2.png){width=50%}.
+  <p align ="center"><img src="img/part5.3.2.png" style="width:50%; height:auto;"></p>.
 
   - Вызов и вывод `ping` и `tcpdump -tn -i eth0`\
 
-  ![alt text](img/part5.3.3.png){width=50%}.
+  <p align ="center"><img src="img/part5.3.3.png" style="width:50%; height:auto;"></p>.
 
 
 #### 5.4. Добавление статических маршрутов
@@ -187,15 +187,15 @@
 
   - содержание изменённого файла *etc/netplan/00-installer-config.yaml* для каждого роутера.\
 
-  ![alt text](img/part5.4.1.png){width=50%}.
+  <p align ="center"><img src="img/part5.4.1.png" style="width:50%; height:auto;"></p>.
 
   - скрин с вызовом и выводом `ip r` на обоих роутерах. \
 
-  ![alt text](img/part5.4.2.png){width=50%}.
+  <p align ="center"><img src="img/part5.4.2.png" style="width:50%; height:auto;"></p>.
 
   - скрин с вызовом и выводом  на ws11: `ip r list 10.10.0.0/18` и `ip r list 0.0.0.0/0`\
 
-  ![alt text](img/part5.4.3.png){width=50%}.
+  <p align ="center"><img src="img/part5.4.3.png" style="width:50%; height:auto;"></p>.
 
   > Для адреса 10.10.0.0/18 был выбран маршрут, отличный от 0.0.0.0/0, потому что при наличии нескольких маршрутов одинаковой длины выбирается тот маршрут, который задан наиболее точно.
 
@@ -203,7 +203,7 @@
 
   - cкрин с вызовом и выводом использованных команд (tcpdump и traceroute);\
   
-  ![alt text](img/part5.5.png){width=50%}.
+  <p align ="center"><img src="img/part5.5.png" style="width:50%; height:auto;"></p>.
 
   > Принцип работы построения пути при помощи **traceroute**:\
     - Traceroute это утилита, служащая для диагностики сети. Она отслеживает пути, по которым пакеты данных проходят от источника к хосту назначенияпо протоколу UDP (User Datagram Protocol – «протокол пользовательских датаграмм») Traceroute отправляет последовательность IP-пакетов. Всего таких пакетов по умолчанию может быть 3.\
@@ -216,7 +216,7 @@
 
   - Скрин с вызовом и выводом  `tcpdump -n -i eth0 icmp` и `ping -c 1 10.30.0.111`.\
 
-  ![alt text](img/part5.6.png){width=50%}.
+  <p align ="center"><img src="img/part5.6.png" style="width:50%; height:auto;"></p>.
 
 ## Part 6. Динамическая настройка IP с помощью **DHCP**
 
@@ -224,58 +224,58 @@
 
   > Адрес маршрутизатора по-умолчанию, DNS-сервер и адрес внутренней сети.\
 
-  ![alt text](img/part6.1.png){width=50%}.
+  <p align ="center"><img src="img/part6.1.png" style="width:50%; height:auto;"></p>.
 
   - скрины В файле *resolv.conf* пропиши `nameserver 8.8.8.8`.\
 
-  ![alt text](img/part6.2.png){width=50%}.
+  <p align ="center"><img src="img/part6.2.png" style="width:50%; height:auto;"></p>.
 
   - вызов и вывод комманд `systemctl restart isc-dhcp-server`. Машину ws21 перезагрузи при помощи `reboot` и через `ip a` покажи, что она получила адрес. Также пропингуй ws22 с ws21.\
 
-  ![alt text](img/part6.3.1.png){width=50%}.\
+  <p align ="center"><img src="img/part6.3.1.png" style="width:50%; height:auto;"></p>.\
 
-  ![alt text](img/part6.3.2.png){width=50%}.\
+  <p align ="center"><img src="img/part6.3.2.png" style="width:50%; height:auto;"></p>.\
 
-  ![alt text](img/part6.3.3.png){width=50%}.\
+  <p align ="center"><img src="img/part6.3.3.png" style="width:50%; height:auto;"></p>.\
 
 - Для r1 настрой аналогично r2, но сделай выдачу адресов с жесткой привязкой к MAC-адресу (ws11). Проведи аналогичные тесты.\
 
- ![alt text](img/part6.4.1.png){width=50%}.\
+ <p align ="center"><img src="img/part6.4.1.png" style="width:50%; height:auto;"></p>.\
 
- ![alt text](img/part6.4.2.png){width=50%}.\
+ <p align ="center"><img src="img/part6.4.2.png" style="width:50%; height:auto;"></p>.\
 
 - Запроси с ws21 обновление ip адреса.\
 
- ![alt text](img/part6.4.3.png){width=50%}.
+ <p align ="center"><img src="img/part6.4.3.png" style="width:50%; height:auto;"></p>.
 
 ## Part 7. **NAT**
 
-![alt text](img/part7.1.png){width=50%}.
+<p align ="center"><img src="img/part7.1.png" style="width:50%; height:auto;"></p>.
 
-![alt text](img/part7.2.png){width=50%}.
+<p align ="center"><img src="img/part7.2.png" style="width:50%; height:auto;"></p>.
 
-![alt text](img/part7.4.png){width=50%}.
+<p align ="center"><img src="img/part7.4.png" style="width:50%; height:auto;"></p>.
 
-![alt text](img/part7.4.2.png){width=50%}.
+<p align ="center"><img src="img/part7.4.2.png" style="width:50%; height:auto;"></p>.
 
-![alt text](img/part7.4.png){width=50%}. 
+<p align ="center"><img src="img/part7.4.png" style="width:50%; height:auto;"></p>. 
 
-![alt text](img/part7.5.png){width=50%}.
+<p align ="center"><img src="img/part7.5.png" style="width:50%; height:auto;"></p>.
 
-![alt text](img/part7.6.png){width=50%}.
+<p align ="center"><img src="img/part7.6.png" style="width:50%; height:auto;"></p>.
 
 ## Part 8. Дополнительно. Знакомство с **SSH Tunnels**
 
-![alt text](img/part8.1.png){width=50%}.
+<p align ="center"><img src="img/part8.1.png" style="width:50%; height:auto;"></p>.
 
-![alt text](img/part8.2.png){width=50%}.
+<p align ="center"><img src="img/part8.2.png" style="width:50%; height:auto;"></p>.
 
-![alt text](img/part8.3.png){width=50%}.
+<p align ="center"><img src="img/part8.3.png" style="width:50%; height:auto;"></p>.
 
-![alt text](img/part8.4.png){width=50%}.
+<p align ="center"><img src="img/part8.4.png" style="width:50%; height:auto;"></p>.
 
-![alt text](img/part8.5.png){width=50%}.
+<p align ="center"><img src="img/part8.5.png" style="width:50%; height:auto;"></p>.
 
 
 
-![alt text](img/finish.png){width=100%}
+<p align ="center"><img src="img/finish.png" style="width:100%; height:auto;"></p>.

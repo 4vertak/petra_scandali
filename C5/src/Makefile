@@ -3,8 +3,8 @@ CC=gcc
 FLAGS=-g -Wall -Wextra -Werror -std=c11
 TEST_FLAGS=-lcheck -lpthread -pthread -lm -lrt -lsubunit -lgcov
 TEST = tests/test
-SRC = $(wildcard s21_*.c)
-OBJ = $(patsubst s21_%.c, s21_%.o, $(SRC))
+SRC = $(wildcard ./Arithmetic_operators*.c) $(wildcard ./Comparison_operators*.c) $(wildcard ./Convertors_parsers*.c) $(wildcard ./Other_functions*.c)
+OBJ = $(patsubst %.c, %.o, $(SRC))
 
 TEST_SRC = $(wildcard $(TEST)*.c)
 TEST_OBJ = $(patsubst $(TEST)%.c, $(TEST)%.o, $(TEST_SRC))
@@ -26,7 +26,7 @@ covered:
 
 style: clean
 	cp ../materials/linters/.clang-format ../src/.clang-format
-	clang-format -style=Google -n *.c *.h tests/*.c tests/*.h
+	clang-format -style=Google -n ./*/*.c *.h tests/*.c tests/*.h
 	rm .clang-format
 
 test: clean covered test.a
@@ -49,6 +49,6 @@ rebuild: clean all
 gcov_report: test
 #	lcov -t "s21_decimal" -o s21_decimal.info -c -d .
 #	genhtml -o gcov_report s21_decimal.info
-	pip install gcovr
+#	pip install gcovr
 	~/.local/bin/gcovr -r . --html --html-nested --html-self-contained --txt-metric branch --exclude-unreachable-branches --exclude-lines="s21_decimal" -o ./report/gcov_report.html
 #	firefox report/gcov_report.html

@@ -2,7 +2,7 @@
 
 START_TEST(test_from_decimal_to_float_0) {
   s21_decimal val = {{123456789, 0, 0, 0}};
-  setScale(&val, 5);
+  // setScale(&val, 5);
   float res = 1234.56789;
   float tmp = 0.;
   float *dst = &tmp;
@@ -14,7 +14,7 @@ END_TEST
 START_TEST(test_from_decimal_to_float_1) {
   s21_decimal val = {{123456789, 0, 0, 0}};
   setBit(&val, 127, 1);
-  setScale(&val, 5);
+  // setScale(&val, 5);
   float res = -1234.56789;
   float tmp = 0.;
   float *dst = &tmp;

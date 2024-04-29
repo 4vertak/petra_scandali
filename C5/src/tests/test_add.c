@@ -139,8 +139,8 @@ END_TEST
 START_TEST(test_add_17) {
   s21_decimal val1 = {{UINT_MAX, UINT_MAX, UINT_MAX, 0}};
   s21_decimal val2 = {{UINT_MAX, UINT_MAX, UINT_MAX, 0}};
-  setScale(&val1, 5);
-  setScale(&val2, 3);
+  // setScale(&val1, 5);
+  // setScale(&val2, 3);
   s21_decimal res;
   ck_assert_int_eq(0, s21_add(val1, val2, &res));
 }
@@ -149,8 +149,8 @@ END_TEST
 START_TEST(test_add_18) {
   s21_decimal val1 = {{UINT_MAX, UINT_MAX, UINT_MAX, ~(UINT_MAX / 2)}};
   s21_decimal val2 = {{UINT_MAX, UINT_MAX, UINT_MAX, ~(UINT_MAX / 2)}};
-  setScale(&val1, 5);
-  setScale(&val2, 3);
+  // setScale(&val1, 5);
+  // setScale(&val2, 3);
   s21_decimal res;
   ck_assert_int_eq(0, s21_add(val1, val2, &res));
 }

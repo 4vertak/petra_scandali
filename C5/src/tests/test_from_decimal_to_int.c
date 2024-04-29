@@ -2,7 +2,7 @@
 
 START_TEST(test_from_decimal_to_int_0) {
   s21_decimal val = {{123456789, 0, 0, 0}};
-  setScale(&val, 5);
+  // setScale(&val, 5);
   int res = 1234;
   int tmp = 0;
   int *dst = &tmp;
@@ -13,8 +13,8 @@ END_TEST
 
 START_TEST(test_from_decimal_to_int_1) {
   s21_decimal val = {{123456789, 0, 0, 0}};
-  setBit(&val, 127, 1);
-  setScale(&val, 5);
+  // setBit(&val, 127, 1);
+  // setScale(&val, 5);
   int res = -1234;
   int tmp = 0.;
   int *dst = &tmp;

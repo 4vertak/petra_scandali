@@ -116,4 +116,18 @@ int s21_round(s21_decimal value, s21_decimal *result);
 int s21_truncate(s21_decimal value, s21_decimal *result);
 int s21_negate(s21_decimal value, s21_decimal *result);
 
+// Помогаторы:
+
+// Устанавливает или сбрасывает бит в позиции pos в соответствии с параметром
+// bit
+s21_decimal *setBit(s21_decimal value, int position, int bit);
+// Возвращает размер/масштаб числа
+int get_scale(s21_decimal value);
+// Устанавливает размер/масштаб числа
+s21_decimal *setScale(s21_decimal value, int scale);
+// Возвращает значение знака числа.
+int get_sign(s21_decimal value);
+// Устанавливает значение знака числа.
+s21_decimal *setSign(s21_decimal value, int bit);
+
 #endif  // SRC_S21_DECIMAL_H_

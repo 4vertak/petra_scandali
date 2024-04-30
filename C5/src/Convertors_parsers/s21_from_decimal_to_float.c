@@ -1,6 +1,6 @@
-#include "../s21_decimal.h"
+#include <math.h>
 
-// в float
+#include "../s21_decimal.h"
 
 // Возвращаемое значение - код ошибки:
 // 0 - OK

@@ -3,7 +3,8 @@ CC=gcc
 FLAGS=-g -Wall -Wextra -Werror -std=c11
 TEST_FLAGS=-lcheck -lpthread -pthread -lm -lrt -lsubunit -lgcov
 TEST = tests/test
-SRC = $(wildcard ./Arithmetic_operators*.c) $(wildcard ./Comparison_operators*.c) $(wildcard ./Convertors_parsers*.c) $(wildcard ./Other_functions*.c)
+SRC = $(wildcard ./helper/*.c) $(wildcard ./Convertors_parsers/*.c)
+# $(wildcard ./Arithmetic_operators*.c) $(wildcard ./Comparison_operators*.c) $(wildcard ./Other_functions*.c) 
 OBJ = $(patsubst %.c, %.o, $(SRC))
 
 TEST_SRC = $(wildcard $(TEST)*.c)

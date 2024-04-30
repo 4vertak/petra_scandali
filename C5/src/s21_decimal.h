@@ -27,6 +27,50 @@ typedef struct {
   int bits[4];
 } s21_decimal;
 
+// Помогаторы:
+
+s21_decimal *set_bit(s21_decimal *value, int position,
+                     int bit);  // Устанавливает или сбрасывает бит в позиции
+                                // pos в соответствии с параметром bit
+
+int get_scale(s21_decimal value);  // Возвращает размер/масштаб числа
+
+s21_decimal *set_scale(s21_decimal *value,
+                       int scale);  // Устанавливает размер/масштаб числа
+
+int get_sign(s21_decimal value);  // Возвращает значение знака числа.
+
+s21_decimal *set_sign(s21_decimal *value,
+                      int bit);  // Устанавливает значение знака числа.
+
+// Преобразователи:
+
+// Возвращаемое значение - код ошибки:
+// 0 - OK
+// 1 - ошибка конвертации
+
+typedef enum s21_convertors_error_code {
+  S21_CONVERTORS_OK,
+  S21_CONVERTORS_ERROR,
+} s21_convertors_error_code;
+
+// Уточнение про преобразование числа типа float:
+// Если числа слишком малы (0 < |x| < 1e-28), вернуть ошибку и значение, равное
+// 0 Если числа слишком велики (|x| > 79,228,162,514,264,337,593,543,950,335)
+// или равны бесконечности, вернуть ошибку При обработке числа с типом float
+// преобразовывать все содержащиеся в нём значимые десятичные цифры. Если таких
+// цифр больше 7, то значение числа округляется к ближайшему, у которого не
+// больше 7 значимых цифр.
+
+// Уточнение про преобразование из числа типа decimal в тип int: Если в числе
+// типа decimal есть дробная часть, то её следует отбросить (например, 0.9
+// преобразуется 0)
+
+int s21_from_int_to_decimal(int src, s21_decimal *dst);
+int s21_from_float_to_decimal(float src, s21_decimal *dst);
+int s21_from_decimal_to_int(s21_decimal src, int *dst);
+int s21_from_decimal_to_float(s21_decimal src, float *dst);
+
 // Арифметические операторы:
 
 // Функции возвращают код ошибки:
@@ -74,34 +118,6 @@ typedef struct {
 // int s21_is_equal(s21_decimal, s21_decimal);
 // int s21_is_not_equal(s21_decimal, s21_decimal);
 
-// Преобразователи:
-
-// Возвращаемое значение - код ошибки:
-// 0 - OK
-// 1 - ошибка конвертации
-
-typedef enum s21_convertors_error_code {
-  S21_CONVERTORS_OK,
-  S21_CONVERTORS_ERROR,
-} s21_convertors_error_code;
-
-// Уточнение про преобразование числа типа float:
-// Если числа слишком малы (0 < |x| < 1e-28), вернуть ошибку и значение, равное
-// 0 Если числа слишком велики (|x| > 79,228,162,514,264,337,593,543,950,335)
-// или равны бесконечности, вернуть ошибку При обработке числа с типом float
-// преобразовывать все содержащиеся в нём значимые десятичные цифры. Если таких
-// цифр больше 7, то значение числа округляется к ближайшему, у которого не
-// больше 7 значимых цифр.
-
-// Уточнение про преобразование из числа типа decimal в тип int: Если в числе
-// типа decimal есть дробная часть, то её следует отбросить (например, 0.9
-// преобразуется 0)
-
-int s21_from_int_to_decimal(int src, s21_decimal *dst);
-int s21_from_float_to_decimal(float src, s21_decimal *dst);
-int s21_from_decimal_to_int(s21_decimal src, int *dst);
-int s21_from_decimal_to_float(s21_decimal src, float *dst);
-
 // Другие функции:
 
 // Возвращаемое значение - код ошибки:
@@ -117,21 +133,5 @@ int s21_from_decimal_to_float(s21_decimal src, float *dst);
 // int s21_round(s21_decimal value, s21_decimal *result);
 // int s21_truncate(s21_decimal value, s21_decimal *result);
 // int s21_negate(s21_decimal value, s21_decimal *result);
-
-// Помогаторы:
-
-s21_decimal *set_bit(s21_decimal *value, int position,
-                     int bit);  // Устанавливает или сбрасывает бит в позиции
-                                // pos в соответствии с параметром bit
-
-int get_scale(s21_decimal value);  // Возвращает размер/масштаб числа
-
-s21_decimal *set_scale(s21_decimal *value,
-                       int scale);  // Устанавливает размер/масштаб числа
-
-int get_sign(s21_decimal value);  // Возвращает значение знака числа.
-
-s21_decimal *set_sign(s21_decimal *value,
-                      int bit);  // Устанавливает значение знака числа.
 
 #endif  // SRC_S21_DECIMAL_H_

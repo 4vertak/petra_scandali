@@ -2,7 +2,8 @@
 
 int main(void) {
   int number_failed = 0;
-  Suite *test[] = {test_from_decimal_to_float(), NULL};
+  Suite *test[] = {test_from_decimal_to_float(), test_from_decimal_to_int(),
+                   NULL};
   SRunner *sr;
   int i = 0;
   while (test[i] != NULL) {

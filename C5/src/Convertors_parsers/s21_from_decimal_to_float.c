@@ -1,5 +1,3 @@
-#include <math.h>
-
 #include "../s21_decimal.h"
 
 // Возвращаемое значение - код ошибки:

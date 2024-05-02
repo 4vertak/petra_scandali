@@ -7,6 +7,7 @@ START_TEST(test_from_decimal_to_float_0) {
   float tmp = 0.;
   float *dst = &tmp;
   s21_from_decimal_to_float(val, dst);
+  printf("dst = %f\nres = %f\n", *dst, res);
   ck_assert_uint_eq(*dst, res);
 }
 END_TEST
@@ -19,6 +20,7 @@ START_TEST(test_from_decimal_to_float_1) {
   float tmp = 0.;
   float *dst = &tmp;
   s21_from_decimal_to_float(val, dst);
+  printf("dst = %f\nres = %f\n", *dst, res);
   ck_assert_uint_eq(*dst, res);
 }
 END_TEST

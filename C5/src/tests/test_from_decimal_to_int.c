@@ -7,6 +7,7 @@ START_TEST(test_from_decimal_to_int_0) {
   int tmp = 0;
   int *dst = &tmp;
   s21_from_decimal_to_int(val, dst);
+  printf("dst = %d\ntmp = %d\n", *dst, res);
   ck_assert_int_eq(*dst, res);
 }
 END_TEST
@@ -19,6 +20,7 @@ START_TEST(test_from_decimal_to_int_1) {
   int tmp = 0.;
   int *dst = &tmp;
   s21_from_decimal_to_int(val, dst);
+  printf("dst = %d\ntmp = %d\n", *dst, res);
   ck_assert_int_eq(*dst, res);
 }
 END_TEST

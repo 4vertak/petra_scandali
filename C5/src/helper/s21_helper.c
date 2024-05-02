@@ -29,7 +29,7 @@ s21_decimal *set_scale(s21_decimal *value, int scale) {
         ~(0xFF << 16);  // Устанавливает масштаб путём инвертирования битов
     value->bits[3] |= (scale << 16);  // присвоения нового значения scale.
     if (sign) set_sign(value, 1);  // если бит знака 1 то устанавливаем его
-    }
+  }
   return value;
 }
 

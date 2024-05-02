@@ -3,6 +3,7 @@
 int main(void) {
   int number_failed = 0;
   Suite *test[] = {test_from_decimal_to_float(), test_from_decimal_to_int(),
+                   test_from_int_to_decimal(), test_from_float_to_decimal(),
                    NULL};
   SRunner *sr;
   int i = 0;

@@ -13,7 +13,7 @@
 // больше 7 значимых цифр.
 
 int s21_from_float_to_decimal(float src, s21_decimal *dst) {
-  int result = S21_CONVERTORS_ERROR;
+  s21_convertors_error_code  error_code = S21_CONVERTORS_ERROR;
   int sign = 0, scale = 0;
   int exponent;
   double tmp;
@@ -59,8 +59,8 @@ int s21_from_float_to_decimal(float src, s21_decimal *dst) {
       // Установка знака и масштаба.
       set_sign(dst, sign);
       set_scale(dst, scale);
-      result = S21_CONVERTORS_OK;
+      error_code = S21_CONVERTORS_OK;
     }
   }
-  return result;
+  return error_code;
 }

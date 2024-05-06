@@ -17,7 +17,7 @@
 // (например, 0.9 преобразуется 0)
 
 int s21_from_decimal_to_float(s21_decimal src, float *dst) {
-  int result = S21_CONVERTORS_ERROR;
+  s21_convertors_error_code  error_code = S21_CONVERTORS_ERROR;
   if (dst) {
     double tmp = 0;
     int exp = 0;
@@ -34,7 +34,7 @@ int s21_from_decimal_to_float(s21_decimal src, float *dst) {
     if (get_sign(src)) {
       *dst *= -1;
     }
-    result = S21_CONVERTORS_OK;
+    error_code = S21_CONVERTORS_OK;
   }
-  return result;
+  return error_code;
 }

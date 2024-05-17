@@ -3,6 +3,9 @@
 
 #include <math.h>
 
+#define MAX_DEC powf(2.0f, 96.0f) - 1.0
+#define MIN_DEC -powf(2.0f, 96.0f) + 1.0
+
 // Двоичное представление Decimal состоит из 1-разрядного знака, 96-разрядного
 // целого числа и коэффициента масштабирования, используемого для деления целого
 // числа и указания того, какая его часть является десятичной дробью.
@@ -27,9 +30,12 @@ typedef struct {
 
 // Помогаторы:
 
+int get_bit(s21_decimal *value, int index);
+
 s21_decimal *set_bit(s21_decimal *value, int position,
                      int bit);  // Устанавливает или сбрасывает бит в позиции
                                 // pos в соответствии с параметром bit
+int get_exp(s21_decimal value);
 
 int get_scale(s21_decimal value);  // Возвращает размер/масштаб числа
 

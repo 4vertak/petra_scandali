@@ -1,5 +1,11 @@
 #include "../s21_decimal.h"
 
+int get_bit(s21_decimal *value, int index) {
+  int num_bit = index / 32;
+  int position = index % 32;
+  return (value->bits[num_bit] & (1 << position)) >> position;
+}
+
 // Устанавливает или сбрасывает бит в position в соответствии с параметром bit.
 // Если position / 32 < 4 и bit, то бит в position = 1 с
 // помощью операции |=(1u << (pos % 32)). Если же position / 32 < 4 и !bit, то
@@ -14,6 +20,15 @@ s21_decimal *set_bit(s21_decimal *value, int position, int bit) {
 }
 
 // Возвращает размер/масштаб числа используя его старший бит (value.bits3 >> 16)
+
+int get_exp(s21_decimal value) {
+  int power = 0, n = 0;
+  for (int i = 16; i <= 23; i++) {
+    power += pow(2, n) * get_bit(&value, i + 96);
+    n++;
+  }
+  return power;
+}
 
 int get_scale(s21_decimal value) {
   int result = (char)(value.bits[3] >> 16);

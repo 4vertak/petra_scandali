@@ -1,5 +1,7 @@
 {
     "files.associations": {
-        "check.h": "c"
+        "check.h": "c",
+        "type_traits": "c",
+        "cmath": "c"
     }
 }

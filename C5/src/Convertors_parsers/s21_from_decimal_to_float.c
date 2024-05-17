@@ -17,24 +17,20 @@
 // (например, 0.9 преобразуется 0)
 
 int s21_from_decimal_to_float(s21_decimal src, float *dst) {
-  s21_convertors_error_code  error_code = S21_CONVERTORS_ERROR;
-  if (dst) {
-    double tmp = 0;
-    int exp = 0;
-    for (int i = 0; i < 96; ++i) {
-      if ((src.bits[i / 32] & (1 << (i % 32))) != 0) {
-        tmp += pow(2, i);
-      }
+  long long int bits = 0;
+  for (int i = 95; i >= 0; i--)
+    if (get_bit(&src, i)) {
+      bits = i;
+      i = 0;
     }
-    if ((exp = get_scale(src)) > 0) {
-      for (int i = exp; i > 0; --i, tmp /= 10.0)
-        ;
-    }
-    *dst = (float)tmp;
-    if (get_sign(src)) {
-      *dst *= -1;
-    }
-    error_code = S21_CONVERTORS_OK;
-  }
+  int power = get_exp(src);
+
+  double number = 0;
+  for (int i = 0; i <= bits; i++) number += pow(2, i) * get_bit(&src, i);
+  number = number / pow(10, power);
+  if (get_bit(&src, 127)) number *= -1;
+  *dst = number;
+  s21_convertors_error_code error_code = S21_CONVERTORS_OK;
+
   return error_code;
 }

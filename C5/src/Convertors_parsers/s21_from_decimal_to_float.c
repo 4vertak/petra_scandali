@@ -17,6 +17,7 @@
 // (например, 0.9 преобразуется 0)
 
 int s21_from_decimal_to_float(s21_decimal src, float *dst) {
+  s21_convertors_error_code error_code = S21_CONVERTORS_OK;
   long long int bits = 0;
   for (int i = 95; i >= 0; i--)
     if (get_bit(&src, i)) {
@@ -30,7 +31,5 @@ int s21_from_decimal_to_float(s21_decimal src, float *dst) {
   number = number / pow(10, power);
   if (get_bit(&src, 127)) number *= -1;
   *dst = number;
-  s21_convertors_error_code error_code = S21_CONVERTORS_OK;
-
   return error_code;
 }

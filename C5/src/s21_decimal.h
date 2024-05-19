@@ -2,6 +2,8 @@
 #define SRC_S21_DECIMAL_H_
 
 #include <math.h>
+#include <stdio.h>
+#include <stdlib.h>
 
 #define MAX_DEC powf(2.0f, 96.0f) - 1.0
 #define MIN_DEC -powf(2.0f, 96.0f) + 1.0
@@ -25,27 +27,41 @@
 // положительный, а 1 означает отрицательный.
 
 typedef struct {
-  int bits[4];
+  unsigned int bits[4];
 } s21_decimal;
+
+typedef struct {
+  unsigned int bits[8];
+} s21_big_decimal;
 
 // Помогаторы:
 
+void init_decimal_null(s21_decimal *count);
+void init_big_decimal_null(s21_big_decimal *value);
 int get_bit(s21_decimal *value, int index);
-
-s21_decimal *set_bit(s21_decimal *value, int position,
-                     int bit);  // Устанавливает или сбрасывает бит в позиции
-                                // pos в соответствии с параметром bit
-int get_exp(s21_decimal value);
-
-int get_scale(s21_decimal value);  // Возвращает размер/масштаб числа
-
-s21_decimal *set_scale(s21_decimal *value,
-                       int scale);  // Устанавливает размер/масштаб числа
-
-int get_sign(s21_decimal value);  // Возвращает значение знака числа.
-
+void set_bit(s21_decimal *value, int position,
+             int bit);  // Устанавливает или сбрасывает бит в position в
+                        // соответствии с параметром bit.
+int get_exp(s21_decimal value);  // Возвращает размер/масштаб числа используя
+                                 // его старший бит (value.bits3 >> 16)
+int get_float_exp(float value);
+void set_exp(s21_decimal *value,
+             int pow);  // Устанавливает размер/масштаб числа
+int get_sign(
+    s21_decimal value);  // Возвращает значение знака числа используя битовую
+                         // маску (1u << 31) для определения знака
 s21_decimal *set_sign(s21_decimal *value,
-                      int bit);  // Устанавливает значение знака числа.
+                      int bit);  // Устанавливает значение знака числа используя
+                                 // битовую маску (1u << 31)
+void shift_left(s21_decimal *value);
+void shift_right(s21_decimal *value);
+int mul_ten(s21_decimal value_1, s21_decimal *result);
+void div_ten(s21_decimal *value);
+int normalized_decimal(s21_decimal *value_1, s21_decimal *value_2);
+
+int handle_add(s21_decimal value_1, s21_decimal value_2, s21_decimal *result);
+int handle_sub(s21_decimal value_1, s21_decimal value_2, s21_decimal *result);
+void set_big_decimal(s21_big_decimal *value_1, s21_decimal value_2);
 
 // Преобразователи:
 
@@ -83,25 +99,23 @@ int s21_from_decimal_to_float(s21_decimal src, float *dst);
 // 2 - число слишком мало или равно отрицательной бесконечности
 // 3 - деление на 0
 
-// typedef enum s21_arithmetic_error_code {
-//   S21_ARITHMETIC_OK,
-//   S21_ARITHMETIC_IS_TOO_LARGE_OR_EQUAL_INF,  // number is too large or equal
-//   to
-//                                              // infinity
-//   S21_ARITHMETIC_IS_TOO_SMALL_OR_EQUAL_NEG_INF,  // number is too small or
-//   equal
-//                                                  // to negative infinity
-//   S21_ARITHMETIC_DIV_BY_ZERO,
-// } s21_arithmetic_error_code;
+typedef enum s21_arithmetic_error_code {
+  S21_ARITHMETIC_OK,
+  S21_ARITHMETIC_IS_TOO_LARGE_OR_EQUAL_INF,  // number is too large or equal to
+                                             // infinity
+  S21_ARITHMETIC_IS_TOO_SMALL_OR_EQUAL_NEG_INF,  // number is too small or equal
+  // to negative infinity
+  S21_ARITHMETIC_DIV_BY_ZERO,
+} s21_arithmetic_error_code;
 
 // Уточнение про числа, не вмещающиеся в мантиссу: При получении чисел, не
 // вмещающихся в мантиссу при арифметических операциях, использовать банковское
 // округление (например, 79,228,162,514,264,337,593,543,950,335 - 0.6 =
 // 79,228,162,514,264,337,593,543,950,334)
 
-// int s21_add(s21_decimal value_1, s21_decimal value_2, s21_decimal *result);
-// int s21_sub(s21_decimal value_1, s21_decimal value_2, s21_decimal *result);
-// int s21_mul(s21_decimal value_1, s21_decimal value_2, s21_decimal *result);
+int s21_add(s21_decimal value_1, s21_decimal value_2, s21_decimal *result);
+int s21_sub(s21_decimal value_1, s21_decimal value_2, s21_decimal *result);
+int s21_mul(s21_decimal value_1, s21_decimal value_2, s21_decimal *result);
 // int s21_div(s21_decimal value_1, s21_decimal value_2, s21_decimal *result);
 
 // Операторы сравнение:
@@ -110,16 +124,16 @@ int s21_from_decimal_to_float(s21_decimal src, float *dst);
 // 0 - FALSE
 // 1 - TRUE
 
-// typedef enum s21_comparison_return_value {
-//   S21_COMPARISON_FALSE,
-//   S21_COMPARISON_TRUE,
-// } s21_comparison_return_value;
+typedef enum s21_comparison_return_value {
+  S21_COMPARISON_FALSE,
+  S21_COMPARISON_TRUE,
+} s21_comparison_return_value;
 
-// int s21_is_less(s21_decimal, s21_decimal);
-// int s21_is_less_or_equal(s21_decimal, s21_decimal);
-// int s21_is_greater(s21_decimal, s21_decimal);
-// int s21_is_greater_or_equal(s21_decimal, s21_decimal);
-// int s21_is_equal(s21_decimal, s21_decimal);
+int s21_is_less(s21_decimal value_1, s21_decimal value_2);
+int s21_is_less_or_equal(s21_decimal value_1, s21_decimal value_2);
+int s21_is_greater(s21_decimal value_1, s21_decimal value_2);
+int s21_is_greater_or_equal(s21_decimal value_1, s21_decimal value_2);
+int s21_is_equal(s21_decimal value_1, s21_decimal value_2);
 // int s21_is_not_equal(s21_decimal, s21_decimal);
 
 // Другие функции:

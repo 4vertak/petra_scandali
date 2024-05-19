@@ -9,17 +9,17 @@
 #include "../s21_decimal.h"
 
 // Арифметические операторы:
-// Suite *test_add(void);
-// Suite *test_sub(void);
-// Suite *test_mul(void);
+Suite *test_add(void);
+Suite *test_sub(void);
+Suite *test_mul(void);
 // Suite *test_div(void);
 
 // Операторы сравнение:
-// Suite *test_is_less(void);
-// Suite *test_is_less_or_equal(void);
-// Suite *test_is_greater(void);
-// Suite *test_is_greater_or_equal(void);
-// Suite *test_is_equal(void);
+Suite *test_is_less(void);
+Suite *test_is_less_or_equal(void);
+Suite *test_is_greater(void);
+Suite *test_is_greater_or_equal(void);
+Suite *test_is_equal(void);
 // Suite *test_is_not_equal(void);
 
 // Преобразователи:

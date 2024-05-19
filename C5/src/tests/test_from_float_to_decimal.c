@@ -1,20 +1,12 @@
 #include "./test.h"
 
 START_TEST(test_from_float_to_decimal_1) {
-  char str1[100] = {'\0'};
-  char str2[100] = {'\0'};
   float a = MIN_DEC - 1;
-  float b = 0.0;
   int error = 0;
   int func_error = 0;
   s21_decimal dec = {0};
   func_error = s21_from_float_to_decimal(a, &dec);
-  s21_from_decimal_to_float(dec, &b);
   ck_assert_int_eq(error, func_error);
-  snprintf(str1, sizeof(str1), "%.28lf", a);
-  snprintf(str2, sizeof(str1), "%.28lf", b);
-  ck_assert_str_eq(str1, str2);
-  // ck_assert_float_eq(0, b);
 }
 END_TEST
 

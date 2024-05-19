@@ -12,7 +12,7 @@
 Suite *test_add(void);
 Suite *test_sub(void);
 Suite *test_mul(void);
-// Suite *test_div(void);
+Suite *test_div(void);
 
 // Операторы сравнение:
 Suite *test_is_less(void);

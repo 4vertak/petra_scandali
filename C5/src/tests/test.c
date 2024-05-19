@@ -5,6 +5,7 @@ int main(void) {
   Suite *test[] = {test_add(),
                    test_sub(),
                    test_mul(),
+                   test_div(),
                    test_from_decimal_to_float(),
                    test_from_decimal_to_int(),
                    test_from_int_to_decimal(),

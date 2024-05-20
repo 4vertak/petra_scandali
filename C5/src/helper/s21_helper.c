@@ -3,6 +3,7 @@
 void init_decimal_null(s21_decimal *value) {
   for (int i = 0; i < 4; i++) value->bits[i] = 0;
 }
+
 void init_big_decimal_null(s21_big_decimal *value) {
   for (int i = 0; i < 8; i++) {
     value->bits[i] = 0;
@@ -159,17 +160,17 @@ int mul_ten(s21_decimal value_1, s21_decimal *result) {
 int normalized_decimal(s21_decimal *value_1, s21_decimal *value_2) {
   int power_1 = get_exp(*value_1);
   int power_2 = get_exp(*value_2);
-  s21_decimal copy_1 = *value_1;
-  s21_decimal copy_2 = *value_2;
-  int error = 0;
-  while (power_1 != power_2 && error == 0) {
-    copy_1 = *value_1;
-    copy_2 = *value_2;
+  s21_decimal tmp_1 = *value_1;
+  s21_decimal tmp_2 = *value_2;
+  int return_value = 0;
+  while (power_1 != power_2 && return_value == 0) {
+    tmp_1 = *value_1;
+    tmp_2 = *value_2;
     if (power_1 > power_2 && power_2 < 28) {
-      error = mul_ten(*value_2, value_2);
+      return_value = mul_ten(*value_2, value_2);
       power_2++;
     } else if (power_1 < power_2 && power_1 < 28) {
-      error = mul_ten(*value_1, value_1);
+      return_value = mul_ten(*value_1, value_1);
       power_1++;
     } else if (power_2 > 28) {
       div_ten(value_2);
@@ -179,9 +180,9 @@ int normalized_decimal(s21_decimal *value_1, s21_decimal *value_2) {
       power_1--;
     }
   }
-  if (error && power_1 > 3 && power_2 > 3) {
-    *value_1 = copy_1;
-    *value_2 = copy_2;
+  if (return_value && power_1 > 3 && power_2 > 3) {
+    *value_1 = tmp_1;
+    *value_2 = tmp_2;
     power_1 = get_exp(*value_1);
     power_2 = get_exp(*value_2);
     while (power_1 != power_2) {
@@ -193,9 +194,9 @@ int normalized_decimal(s21_decimal *value_1, s21_decimal *value_2) {
         power_1--;
       }
     }
-    error = 0;
+    return_value = 0;
   }
-  return error;
+  return return_value;
 }
 
 void set_big_decimal(s21_big_decimal *value_1, s21_decimal value_2) {

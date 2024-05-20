@@ -28,8 +28,8 @@ int s21_is_equal(s21_decimal value_1, s21_decimal value_2) {
     normalized_decimal(&value_1, &value_2);
     set_big_decimal(&big_value_1, value_1);
     set_big_decimal(&big_value_2, value_2);
-    for (int t = 6; t >= 0 && return_value; t--) {
-      if (big_value_1.bits[t] != big_value_2.bits[t]) {
+    for (int i = 6; i >= 0 && return_value; i--) {
+      if (big_value_1.bits[i] != big_value_2.bits[i]) {
         return_value = S21_COMPARISON_FALSE;
       }
     }

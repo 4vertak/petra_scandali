@@ -32,15 +32,15 @@ int s21_is_less(s21_decimal value_1, s21_decimal value_2) {
     if (s21_is_equal(value_1, value_2)) {
       return_value = S21_COMPARISON_FALSE;
     } else {
-      for (int t = 6; t >= 0; t--) {
-        if ((sign_value_1 == 1 && big_value_1.bits[t] < big_value_2.bits[t]) ||
-            (sign_value_1 == 0 && big_value_1.bits[t] > big_value_2.bits[t])) {
+      for (int i = 6; i >= 0; i--) {
+        if ((sign_value_1 == 1 && big_value_1.bits[i] < big_value_2.bits[i]) ||
+            (sign_value_1 == 0 && big_value_1.bits[i] > big_value_2.bits[i])) {
           return_value = S21_COMPARISON_FALSE;
           break;
         } else if ((sign_value_1 == 1 &&
-                    big_value_1.bits[t] > big_value_2.bits[t]) ||
+                    big_value_1.bits[i] > big_value_2.bits[i]) ||
                    (sign_value_1 == 0 &&
-                    big_value_1.bits[t] < big_value_2.bits[t])) {
+                    big_value_1.bits[i] < big_value_2.bits[i])) {
           return_value = S21_COMPARISON_TRUE;
           break;
         }

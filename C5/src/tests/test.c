@@ -15,6 +15,7 @@ int main(void) {
                    test_is_greater(),
                    test_is_greater_or_equal(),
                    test_is_equal(),
+                   test_is_not_equal(),
                    NULL};
   SRunner *sr;
   int i = 0;

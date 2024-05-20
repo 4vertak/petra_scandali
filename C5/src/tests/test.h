@@ -20,7 +20,7 @@ Suite *test_is_less_or_equal(void);
 Suite *test_is_greater(void);
 Suite *test_is_greater_or_equal(void);
 Suite *test_is_equal(void);
-// Suite *test_is_not_equal(void);
+Suite *test_is_not_equal(void);
 
 // Преобразователи:
 Suite *test_from_int_to_decimal(void);

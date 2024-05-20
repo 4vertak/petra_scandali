@@ -4,8 +4,7 @@ FLAGS=-g -Wall -Wextra -Werror -std=c11
 TEST_FLAGS=-lcheck -lpthread -pthread -lm -lrt -lsubunit -lgcov --coverage
 
 HEADERS =  s21_decimal.h $(wildcard ./*.c)
-SRC = $(wildcard ./helper/*.c) $(wildcard ./convertors_parsers/*.c) $(wildcard ./arithmetic_operators/*.c) $(wildcard ./comparison_operators/*.c) 
-# $(wildcard ./other_functions*.c) 
+SRC = $(wildcard ./helper/*.c) $(wildcard ./convertors_parsers/*.c) $(wildcard ./arithmetic_operators/*.c) $(wildcard ./comparison_operators/*.c) $(wildcard ./other_functions/*.c) 
 
 OBJ = $(patsubst %.c, %.o, $(SRC))
 

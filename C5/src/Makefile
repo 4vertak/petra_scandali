@@ -51,7 +51,7 @@ gcov_report: test
 
 style: clean
 	cp ../materials/linters/.clang-format ../src/.clang-format
-	clang-format -style=Google -n ./*/*.c *.h tests/*.c tests/*.h
+	clang-format -style=Google -n $(SRC) $(TEST_SRC) ./*.h ./*/*.h
 	rm .clang-format
 
 leaks: test

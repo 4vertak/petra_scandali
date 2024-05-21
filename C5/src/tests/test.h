@@ -29,9 +29,9 @@ Suite *test_from_decimal_to_int(void);
 Suite *test_from_decimal_to_float(void);
 
 // Другие функции:
-// Suite *test_floor(void);
-// Suite *test_round(void);
-// Suite *test_truncate(void);
-// Suite *test_negate(void);
+Suite *test_floor(void);
+Suite *test_round(void);
+Suite *test_truncate(void);
+Suite *test_negate(void);
 
 #endif  // SRC_TESTS_TEST_H_

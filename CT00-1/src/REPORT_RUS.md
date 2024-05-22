@@ -2,16 +2,14 @@
 
 Данное задание выполнено в MIRO ссылка: https://clck.ru/3An962
 
-![ccakrf](images/clck.png) {width=10%} 
+<p align ="right"><img src="./images/clck.png" style="width:10% height:auto"></p>
   
 ## Exercise 00 
 ### Колесо карьерного баланса
 
-![Колеса карьерных приоритетов](images/1.png) {width=100%}  
+<p align ="center"><img src="./images/1.png" style="width:100% height:auto"></p>
 
 ## Exercise 01
 ### Карьерные цели
 
-![Таблицы карьерных целей](images/2.png) {width=100%} 
-
->Пожалуйста, оставь обратную связь по проекту в [форме обратной связи.](https://forms.gle/vFexLEpTEgAJVRwY8)
+<p align ="center"><img src="./images/2.png" style="width:100% height:auto"></p>

@@ -1,8 +1,4 @@
 # Career track. Project 00
-
-Данное задание выполнено в MIRO ссылка: https://clck.ru/3An962
-
-<p align ="right"><img src="./images/clck.png" style="width:10% height:auto"></p>
   
 ## Exercise 00 
 ### Колесо карьерного баланса

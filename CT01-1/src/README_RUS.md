@@ -1,6 +1,6 @@
 # Career track. Project 01
 
-<p align ="left"><img src="./images/1.png" style="width:10% height:auto"></p>Ссылка на miro: https://clck.ru/3Anafh
+<p align ="left"><img src="./images/clck.png" style="width:10% height:auto"></p>Ссылка на miro: https://clck.ru/3Anafh
  
 ## Exercise 00 
 ### Колесо карьерного баланса

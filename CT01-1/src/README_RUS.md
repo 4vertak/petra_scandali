@@ -3,7 +3,7 @@
 <p align ="left"><img src="./images/clck.png" style="width:10% height:auto"></p>Ссылка на miro: https://clck.ru/3Anafh
  
 ## Exercise 00 
-### Колесо карьерного баланса
+### Выбор компании 
 
 <p align ="center"><img src="./images/1.png" style="width:100% height:auto"></p>
 

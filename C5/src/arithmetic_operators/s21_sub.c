@@ -13,37 +13,43 @@
 
 int s21_sub(s21_decimal value_1, s21_decimal value_2, s21_decimal *result) {
   s21_arithmetic_error_code error_code = S21_ARITHMETIC_OK;
-  init_decimal_null(result);
-  int error = normalized_decimal(&value_1, &value_2);
-  int sign_value_1 = get_bit(&value_1, 127);
-  int sign_value_2 = get_bit(&value_2, 127);
-  if (!error) {
-    int exp_value = get_exp(value_1);
-    set_exp(result, exp_value);
-    if (sign_value_1 && sign_value_2) {
-      if (s21_is_less(value_1, value_2)) {
-        handle_sub(value_1, value_2, result);
+  if (result == NULL) {
+    error_code = 1;
+  } else {
+    init_decimal_null(result);
+    int error = normalized_decimal(&value_1, &value_2);
+    int sign_value_1 = get_bit(&value_1, 127);
+    int sign_value_2 = get_bit(&value_2, 127);
+    if (!error) {
+      int exp_value = get_exp(value_1);
+      set_exp(result, exp_value);
+      if (sign_value_1 && sign_value_2) {
+        if (s21_is_less(value_1, value_2)) {
+          handle_sub(value_1, value_2, result);
+          set_sign(result, 1);
+        } else
+          handle_sub(value_2, value_1, result);
+      } else if (sign_value_1 && !sign_value_2) {
         set_sign(result, 1);
-      } else
-        handle_sub(value_2, value_1, result);
-    } else if (sign_value_1 && !sign_value_2) {
-      set_sign(result, 1);
-      set_sign(&value_1, 0);
-      error_code = handle_add(value_1, value_2, result);
-      if (error_code) error_code++;
-    } else if (!sign_value_1 && sign_value_2) {
-      set_sign(&value_2, 0);
-      error_code = handle_add(value_1, value_2, result);
-    } else {
-      if (s21_is_less(value_1, value_2)) {
-        handle_sub(value_2, value_1, result);
-        set_sign(result, 1);
-      } else
-        handle_sub(value_1, value_2, result);
+        set_sign(&value_1, 0);
+        error_code = handle_add(value_1, value_2, result);
+        if (error_code) error_code++;
+      } else if (!sign_value_1 && sign_value_2) {
+        set_sign(&value_2, 0);
+        error_code = handle_add(value_1, value_2, result);
+      } else {
+        if (s21_is_less(value_1, value_2)) {
+          handle_sub(value_2, value_1, result);
+          set_sign(result, 1);
+        } else
+          handle_sub(value_1, value_2, result);
+      }
+    } else
+      error_code = error;
+    if (error_code == 2) {
+      init_decimal_null(result);
     }
-  } else
-    error_code = error;
-
+  }
   return error_code;
 }
 

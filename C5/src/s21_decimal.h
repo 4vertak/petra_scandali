@@ -26,6 +26,7 @@ typedef enum s21_arithmetic_error_code {
   S21_ARITHMETIC_IS_TOO_LARGE_OR_EQUAL_INF,
   S21_ARITHMETIC_IS_TOO_SMALL_OR_EQUAL_NEG_INF,
   S21_ARITHMETIC_DIV_BY_ZERO,
+  S21_ARITHMETIC_NULL,
 } s21_arithmetic_error_code;
 
 typedef enum s21_comparison_return_value {
@@ -86,7 +87,8 @@ void set_exp(s21_decimal *value, int pow);
 int get_sign(s21_decimal value);
 // Устанавливает значение знака числа используя
 // битовую маску (1u << 31)
-s21_decimal *set_sign(s21_decimal *value, int bit);
+// s21_decimal *set_sign(s21_decimal *value, int bit);
+void set_sign(s21_decimal *value, int bit);
 void shift_left(s21_decimal *value);
 void shift_right(s21_decimal *value);
 int mul_ten(s21_decimal value_1, s21_decimal *result);
@@ -95,5 +97,6 @@ int normalized_decimal(s21_decimal *value_1, s21_decimal *value_2);
 
 int handle_add(s21_decimal value_1, s21_decimal value_2, s21_decimal *result);
 int handle_sub(s21_decimal value_1, s21_decimal value_2, s21_decimal *result);
+int check_for_zero(s21_decimal value);
 
 #endif  // SRC_S21_DECIMAL_H_

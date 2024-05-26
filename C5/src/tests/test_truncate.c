@@ -496,6 +496,88 @@ START_TEST(test_truncate_23) {
 }
 END_TEST
 
+// add test90
+START_TEST(test_truncate_24) {
+  s21_decimal value_2 = {{0, 0, 0, 0x80020000}};
+  s21_decimal value_1 = {0};
+  s21_decimal result = {0};
+  int return_value = s21_truncate(value_2, &result);
+  ck_assert_int_eq(return_value, 0);
+  ck_assert_int_eq(s21_is_equal(value_2, value_1), 1);
+}
+END_TEST
+
+START_TEST(test_truncate_25) {
+  s21_decimal value_2 = {{1111000, 0, 0, 0}};
+  s21_decimal value_1 = {0};
+  s21_decimal result = {0};
+  set_exp(&value_2, 7);
+  int return_value = s21_truncate(value_2, &result);
+  ck_assert_int_eq(return_value, 0);
+  ck_assert_int_eq(s21_is_equal(result, value_1), 1);
+}
+END_TEST
+
+START_TEST(test_truncate_26) {
+  s21_decimal value_1 = {{35, 0, 0, 0}};
+  s21_decimal check = {{3, 0, 0, 0}};
+  set_exp(&value_1, 1);
+  s21_truncate(value_1, &value_1);
+  ck_assert_int_eq(s21_is_equal(value_1, check), 1);
+}
+END_TEST
+
+START_TEST(test_truncate_27) {
+  s21_decimal value_1 = {{123456, 0, 0, 0}};
+  set_exp(&value_1, 3);
+  set_sign(&value_1, 1);
+  s21_decimal check = {{123, 0, 0, 0}};
+  set_sign(&check, 1);
+  s21_truncate(value_1, &value_1);
+  ck_assert_int_eq(s21_is_equal(value_1, check), 1);
+}
+END_TEST
+
+START_TEST(test_truncate_28) {
+  s21_decimal src1;
+  src1.bits[3] = 0x000A0000;
+  src1.bits[2] = 0x0;
+  src1.bits[1] = 0xFFFFFFFF;
+  src1.bits[0] = 0xFFFFFFFF;
+  s21_decimal result;
+  result.bits[3] = 0x0;
+  result.bits[2] = 0x0;
+  result.bits[1] = 0x0;
+  result.bits[0] = 0x6DF37F67;
+  s21_decimal res_od;
+  s21_truncate(src1, &res_od);
+  ck_assert_int_eq(res_od.bits[0], result.bits[0]);
+  ck_assert_int_eq(res_od.bits[1], result.bits[1]);
+  ck_assert_int_eq(res_od.bits[2], result.bits[2]);
+  ck_assert_int_eq(res_od.bits[3], result.bits[3]);
+}
+END_TEST
+
+START_TEST(test_truncate_29) {
+  s21_decimal src1;
+  src1.bits[0] = 0b00000000000000000000000001101101;
+  src1.bits[1] = 0b00000000000011000110010101011011;
+  src1.bits[2] = 0b00000000000000000011000000111001;
+  src1.bits[3] = 0b00000000000011100000000000000000;
+  s21_decimal result;
+  result.bits[0] = 0b10000111101111000001011000011110;
+  result.bits[1] = 0b00000000000000000000000000000000;
+  result.bits[2] = 0b00000000000000000000000000000000;
+  result.bits[3] = 0b00000000000000000000000000000000;
+  s21_decimal res_od;
+  s21_truncate(src1, &res_od);
+  ck_assert_int_eq(res_od.bits[0], result.bits[0]);
+  ck_assert_int_eq(res_od.bits[1], result.bits[1]);
+  ck_assert_int_eq(res_od.bits[2], result.bits[2]);
+  ck_assert_int_eq(res_od.bits[3], result.bits[3]);
+}
+END_TEST
+
 Suite *test_truncate(void) {
   Suite *s =
       suite_create("\n\033[37;1m==========| S21_TRUNCATE |=========\033[0m");
@@ -525,6 +607,12 @@ Suite *test_truncate(void) {
   tcase_add_test(tc, test_truncate_21);
   tcase_add_test(tc, test_truncate_22);
   tcase_add_test(tc, test_truncate_23);
+  tcase_add_test(tc, test_truncate_24);
+  tcase_add_test(tc, test_truncate_25);
+  tcase_add_test(tc, test_truncate_26);
+  tcase_add_test(tc, test_truncate_27);
+  tcase_add_test(tc, test_truncate_28);
+  tcase_add_test(tc, test_truncate_29);
 
   return s;
 }

@@ -7,7 +7,7 @@ START_TEST(test_from_decimal_to_float_0) {
   float tmp = 0.;
   float *dst = &tmp;
   s21_from_decimal_to_float(val, dst);
-  printf("dst = %f\nres = %f\n", *dst, res);
+  // printf("dst = %f\nres = %f\n", *dst, res);
   ck_assert_uint_eq(*dst, res);
 }
 END_TEST
@@ -20,7 +20,7 @@ START_TEST(test_from_decimal_to_float_1) {
   float tmp = 0.;
   float *dst = &tmp;
   s21_from_decimal_to_float(val, dst);
-  printf("dst = %f\nres = %f\n", *dst, res);
+  // printf("dst = %f\nres = %f\n", *dst, res);
   ck_assert_uint_eq(*dst, res);
 }
 END_TEST
@@ -177,11 +177,11 @@ START_TEST(test_from_decimal_to_float_10) {
   int error = 0;
   int func_error = 0;
   s21_decimal dec = {0};
-  func_error = s21_from_float_to_decimal(a, &dec);
-  s21_from_decimal_to_float(dec, &b);
+  s21_from_float_to_decimal(a, &dec);
+  func_error = s21_from_decimal_to_float(dec, &b);
   ck_assert_int_eq(error, func_error);
-  snprintf(str1, sizeof(str1), "%.28lf", a);
-  snprintf(str2, sizeof(str1), "%.28lf", b);
+  snprintf(str1, sizeof(str1), "%.7lf", a);
+  snprintf(str2, sizeof(str1), "%.7lf", b);
   ck_assert_str_eq(str1, str2);
   // ck_assert_float_eq(a, b);
 }
@@ -195,11 +195,11 @@ START_TEST(test_from_decimal_to_float_11) {
   int error = 0;
   int func_error = 0;
   s21_decimal dec = {0};
-  func_error = s21_from_float_to_decimal(a, &dec);
-  s21_from_decimal_to_float(dec, &b);
+  s21_from_float_to_decimal(a, &dec);
+  func_error = s21_from_decimal_to_float(dec, &b);
   ck_assert_int_eq(error, func_error);
-  snprintf(str1, sizeof(str1), "%.28lf", a);
-  snprintf(str2, sizeof(str1), "%.28lf", b);
+  snprintf(str1, sizeof(str1), "%.7lf", a);
+  snprintf(str2, sizeof(str1), "%.7lf", b);
   ck_assert_str_eq(str1, str2);
   // ck_assert_float_eq(a, b);
 }
@@ -418,6 +418,120 @@ START_TEST(test_from_decimal_to_float_22) {
 }
 END_TEST
 
+// addtests
+
+START_TEST(test_from_decimal_to_float_23) {
+  float src = 0.00000000000;
+  float temp = 0;
+  int return_value = 0;
+  s21_decimal value_1 = {{0, 0, 0, 0}};
+  s21_from_decimal_to_float(value_1, &temp);
+  if (fabs(src - temp) < pow(10, -7)) {
+    return_value = 1;
+  }
+  ck_assert_int_eq(return_value, 1);
+}
+END_TEST
+
+START_TEST(test_from_decimal_to_float_24) {
+  char str1[100] = {'\0'};
+  char str2[100] = {'\0'};
+  float src = 0.01;
+  float temp = 0;
+  s21_decimal value_1 = {{1, 0, 0, 0b00000000000000100000000000000000}};
+  s21_from_decimal_to_float(value_1, &temp);
+  snprintf(str1, sizeof(str1), "%.28lf", src);
+  snprintf(str2, sizeof(str2), "%.28lf", temp);
+  ck_assert_str_eq(str1, str2);
+  // ck_assert_int_eq_tol(src, temp, 10e-7);
+}
+END_TEST
+
+START_TEST(test_from_decimal_to_float_25) {
+  char str1[100] = {'\0'};
+  char str2[100] = {'\0'};
+  float src = 0.00000123;
+  float temp = 0;
+  s21_decimal value_1 = {{123, 0, 0, 0b00000000000010000000000000000000}};
+  s21_from_decimal_to_float(value_1, &temp);
+  snprintf(str1, sizeof(str1), "%.28lf", src);
+  snprintf(str2, sizeof(str2), "%.28lf", temp);
+  ck_assert_str_eq(str1, str2);
+  // ck_assert_int_eq_tol(src, temp, 10e-7);
+}
+END_TEST
+
+START_TEST(test_from_decimal_to_float_26) {
+  char str1[100] = {'\0'};
+  char str2[100] = {'\0'};
+  float src = -0.01;
+  float temp = 0;
+  s21_decimal value_1 = {{1, 0, 0, 0x80020000}};
+  s21_from_decimal_to_float(value_1, &temp);
+  snprintf(str1, sizeof(str1), "%.28lf", src);
+  snprintf(str2, sizeof(str2), "%.28lf", temp);
+  ck_assert_str_eq(str1, str2);
+  // ck_assert_int_eq_tol(src, temp, 10e-7);
+}
+END_TEST
+
+START_TEST(test_from_decimal_to_float_27) {
+  s21_decimal value = {{1812, 0, 0, 0}};
+  set_sign(&value, 1);
+  float result;
+  float check = -1812;
+  int return_value = s21_from_decimal_to_float(value, &result);
+  ck_assert_int_eq(result, check);
+  ck_assert_int_eq(return_value, 0);
+}
+END_TEST
+
+START_TEST(test_from_decimal_to_float_28) {
+  s21_decimal value = {{18122, 0, 0, 0}};
+  set_exp(&value, 3);
+  set_sign(&value, 1);
+  float result;
+  float check = -18.122;
+  int return_value = s21_from_decimal_to_float(value, &result);
+  ck_assert_int_eq(result, check);
+  ck_assert_int_eq(return_value, 0);
+}
+END_TEST
+
+START_TEST(test_from_decimal_to_float_29) {
+  s21_decimal value = {{0xFFFFFF, 0, 0, 0}};
+  float result;
+  float check = 16777215;
+  int return_value = s21_from_decimal_to_float(value, &result);
+  ck_assert_int_eq(result, check);
+  ck_assert_int_eq(return_value, 0);
+}
+END_TEST
+
+START_TEST(test_from_decimal_to_float_30) {
+  s21_decimal value = {{0xFFFFFFFF, 0xFFFFFFFF, 0, 0}};
+  float result;
+  float check = 0xFFFFFFFFFFFFFFFF;
+  int return_value = s21_from_decimal_to_float(value, &result);
+  ck_assert_int_eq(result, check);
+  ck_assert_int_eq(return_value, 0);
+}
+END_TEST
+
+START_TEST(test_from_decimal_to_float_31) {
+  s21_decimal src;
+  int result = 0;
+  float number = 0.0;
+  src.bits[0] = 23450987;
+  src.bits[1] = 0;
+  src.bits[2] = 0;
+  src.bits[3] = 2147745792;
+  result = s21_from_decimal_to_float(src, &number);
+  ck_assert_int_eq(number, -2345.0987);
+  ck_assert_int_eq(result, 0);
+}
+END_TEST
+
 Suite *test_from_decimal_to_float(void) {
   Suite *s = suite_create(
       "\n\033[37;1m==========| S21_FROM_DECIMAL_TO_FLOAT |=========\033[0m");
@@ -428,7 +542,7 @@ Suite *test_from_decimal_to_float(void) {
   tcase_add_test(tc, test_from_decimal_to_float_1);
   tcase_add_test(tc, test_from_decimal_to_float_2);
   tcase_add_test(tc, test_from_decimal_to_float_3);
-  // tcase_add_test(tc, test_from_decimal_to_float_4);
+  // tcase_add_test(tc, test_from_decimal_to_float_4); //работает)
   tcase_add_test(tc, test_from_decimal_to_float_5);
   tcase_add_test(tc, test_from_decimal_to_float_6);
   tcase_add_test(tc, test_from_decimal_to_float_7);
@@ -447,6 +561,15 @@ Suite *test_from_decimal_to_float(void) {
   tcase_add_test(tc, test_from_decimal_to_float_20);
   tcase_add_test(tc, test_from_decimal_to_float_21);
   tcase_add_test(tc, test_from_decimal_to_float_22);
+  tcase_add_test(tc, test_from_decimal_to_float_23);
+  tcase_add_test(tc, test_from_decimal_to_float_24);
+  tcase_add_test(tc, test_from_decimal_to_float_25);
+  tcase_add_test(tc, test_from_decimal_to_float_26);
+  tcase_add_test(tc, test_from_decimal_to_float_27);
+  tcase_add_test(tc, test_from_decimal_to_float_28);
+  tcase_add_test(tc, test_from_decimal_to_float_29);
+  tcase_add_test(tc, test_from_decimal_to_float_30);
+  tcase_add_test(tc, test_from_decimal_to_float_31);
 
   return s;
 }

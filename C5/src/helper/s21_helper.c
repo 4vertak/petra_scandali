@@ -1,5 +1,14 @@
 #include "../s21_decimal.h"
 
+int check_for_zero(s21_decimal value) {
+  s21_another_func_error_code error_code =
+      (value.bits[0] == 0 && value.bits[1] == 0 && value.bits[2] == 0)
+          ? S21_ANOTHER_FUNC_ERROR
+          : S21_ANOTHER_FUNC_OK;
+
+  return error_code;
+}
+
 void init_decimal_null(s21_decimal *value) {
   for (int i = 0; i < 4; i++) value->bits[i] = 0;
 }
@@ -22,17 +31,30 @@ int get_bit(s21_decimal *value, int index) {
 // бит в position = 0 с помощью операции &=~(1u << (pos % 32))
 
 void set_bit(s21_decimal *value, int position, int bit) {
+  // if (bit)
+  //   value->bits[position / 32] |= (1 << position % 32);
+  // else
+  //   value->bits[position / 32] &= ~(1 << position % 32);
+  int num_bit = position / 32;
+  int pos = position % 32;
   if (bit)
-    value->bits[position / 32] |= (1 << position % 32);
+    value->bits[num_bit] |= (1 << pos);
   else
-    value->bits[position / 32] &= ~(1 << position % 32);
+    value->bits[num_bit] &= ~(1 << pos);
 }
 
 // Возвращает размер/масштаб числа используя его старший бит (value.bits3 >> 16)
 
 int get_exp(s21_decimal value) {
-  int result = (char)(value.bits[3] >> 16);
-  return result;
+  // int result = (char)(value.bits[3] >> 16);
+  // return result;
+
+  int power = 0, n = 0;
+  for (int i = 16; i <= 23; i++) {
+    power += pow(2, n) * get_bit(&value, i + 96);
+    n++;
+  }
+  return power;
 }
 
 int get_float_exp(float count) {
@@ -48,32 +70,42 @@ int get_float_exp(float count) {
 // Устанавливает размер/масштаб числа
 
 void set_exp(s21_decimal *value, int scale) {
-  if (scale >= 0 && scale <= 28) {
-    int sign = get_sign(*value);  // получаем знак
-    value->bits[3] &=
-        ~(0xFF << 16);  // Устанавливает масштаб путём инвертирования битов
-    value->bits[3] |= (scale << 16);  // присвоения нового значения scale.
-    if (sign) set_sign(value, 1);  // если бит знака 1 то устанавливаем его
-  }
+  // if (scale >= 0 && scale <= 28) {
+  //   int sign = get_sign(*value);  // получаем знак
+  //   value->bits[3] &=
+  //       ~(0xFF << 16);  // Устанавливает масштаб путём инвертирования битов
+  //   value->bits[3] |= (scale << 16);  // присвоения нового значения scale.
+  //   if (sign) set_sign(value, 1);  // если бит знака 1 то устанавливаем его
+  // }
   // return value;
+  for (int i = 15; i <= 23; i++) {
+    set_bit(value, i + 97, scale & (1 << (i - 15)));
+  }
 }
 
 // Возвращает значение знака числа используя битовую маску (1u << 31) для
 // определения знака
 int get_sign(s21_decimal value) {
-  int result = !!(value.bits[3] & (1u << 31));
-  return result;
+  // int result = !!(value.bits[3] & (1u << 31));
+  // return result;
+  return (value.bits[3] & (1 << 31)) >> 31;
 }
 
 // Устанавливает значение знака числа используя битовую маску (1u << 31)
-s21_decimal *set_sign(s21_decimal *value, int bit) {
-  if (bit) {
-    value->bits[3] |=
-        (1u << 31);  // если знак минус (бит 1) то добавляем битовую маску
-  } else {
-    value->bits[3] &= ~(1u << 31);  // иначе инвертируем битовую маску
-  }
-  return value;
+// s21_decimal *set_sign(s21_decimal *value, int bit) {
+//   if (bit) {
+//     value->bits[3] |=
+//         (1u << 31);  // если знак минус (бит 1) то добавляем битовую маску
+//   } else {
+//     value->bits[3] &= ~(1u << 31);  // иначе инвертируем битовую маску
+//   }
+//   return value;
+// }
+void set_sign(s21_decimal *value, int bit) {
+  if (bit)
+    value->bits[3] |= (1 << 31);
+  else
+    value->bits[3] &= ~(1 << 31);
 }
 
 void shift_left(s21_decimal *value) {
@@ -126,23 +158,23 @@ void div_ten(s21_decimal *value) {
 }
 
 int mul_ten(s21_decimal value_1, s21_decimal *result) {
-  int arrary_2[100] = {0}, arrary_4[100] = {0};
+  int array_2[100] = {0}, array_4[100] = {0};
   int error = 0;
   int power = get_exp(value_1);
   int sign = get_bit(&value_1, 127);
   init_decimal_null(result);
   for (int j = 3; j <= 99; j++) {
-    arrary_2[j - 2] = get_bit(&value_1, j - 3);
-    arrary_4[j] = get_bit(&value_1, j - 3);
+    array_2[j - 2] = get_bit(&value_1, j - 3);
+    array_4[j] = get_bit(&value_1, j - 3);
   }
   int rest = 0;
   for (int j = 1; j <= 95; j++) {
-    if (arrary_2[j] + arrary_4[j] + rest == 1) {
+    if (array_2[j] + array_4[j] + rest == 1) {
       set_bit(result, j, 1);
       rest = 0;
-    } else if (arrary_2[j] + arrary_4[j] + rest == 2)
+    } else if (array_2[j] + array_4[j] + rest == 2)
       rest = 1;
-    else if (arrary_2[j] + arrary_4[j] + rest == 3) {
+    else if (array_2[j] + array_4[j] + rest == 3) {
       set_bit(result, j, 1);
       rest = 1;
     } else
@@ -204,4 +236,10 @@ void set_big_decimal(s21_big_decimal *value_1, s21_decimal value_2) {
     value_1->bits[t] = value_2.bits[t];
   }
   value_1->bits[7] = value_2.bits[3];
+}
+
+s21_decimal s21_decimal_get_max(void) {
+  s21_decimal result = {{0xFFFFFFFF, 0xFFFFFFFF, 0xFFFFFFFF, 0x0}};
+
+  return result;
 }

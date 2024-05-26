@@ -493,6 +493,83 @@ START_TEST(test_floor_24) {
 }
 END_TEST
 
+START_TEST(test_floor_25) {
+  s21_decimal value_2 = {{0xFFFFFFFF, 0, 0xFFFFFFFF, 0x80000000}};
+  s21_decimal result = {0};
+  int return_value = s21_floor(value_2, &result);
+  ck_assert_int_eq(return_value, 0);
+  ck_assert_int_eq(result.bits[2], 0xFFFFFFFF);
+}
+END_TEST
+
+START_TEST(test_floor_26) {
+  s21_decimal value_2 = {{UINT_MAX, UINT_MAX, UINT_MAX, 0x80010000}};
+  s21_decimal result = {0};
+  int return_value = s21_floor(value_2, &result);
+  ck_assert_int_eq(return_value, 0);
+}
+END_TEST
+
+START_TEST(test_floor_27) {
+  s21_decimal value_2 = {{UINT_MAX, UINT_MAX, UINT_MAX, 0}};
+  s21_decimal result = {0};
+  int return_value = s21_floor(value_2, &result);
+  ck_assert_int_eq(return_value, 0);
+}
+END_TEST
+
+START_TEST(test_floor_28) {
+  s21_decimal value_2 = {{UINT_MAX, UINT_MAX, 0, 0x80010000}};
+  s21_decimal result = {0};
+  int return_value = s21_floor(value_2, &result);
+  ck_assert_int_eq(return_value, 0);
+}
+END_TEST
+
+START_TEST(test_floor_29) {
+  s21_decimal value_1 = {{7444923, 0, 0, 0}};
+  set_exp(&value_1, 5);
+  s21_decimal check = {{74, 0, 0, 0}};
+  s21_decimal result;
+  int return_value = s21_floor(value_1, &result);
+  ck_assert_int_eq(s21_is_equal(result, check), 1);
+  ck_assert_int_eq(return_value, 0);
+}
+END_TEST
+
+START_TEST(test_floor_30) {
+  s21_decimal value_1 = {{7444923, 0, 0, 0}};
+  set_exp(&value_1, 5);
+  set_sign(&value_1, 1);
+  s21_decimal check = {{75, 0, 0, 0}};
+  set_sign(&check, 1);
+  s21_decimal result;
+  int return_value = s21_floor(value_1, &result);
+  ck_assert_int_eq(s21_is_equal(result, check), 1);
+  ck_assert_int_eq(return_value, 0);
+}
+END_TEST
+
+START_TEST(test_floor_31) {
+  s21_decimal src1;
+  src1.bits[0] = 0b00001111111111111111111111111111;
+  src1.bits[1] = 0b00111110001001010000001001100001;
+  src1.bits[2] = 0b00100000010011111100111001011110;
+  src1.bits[3] = 0b10000000000010100000000000000000;
+  s21_decimal res_od;
+  s21_floor(src1, &res_od);
+  s21_decimal result;
+  result.bits[0] = 0b10100111011001000000000000000000;
+  result.bits[1] = 0b00001101111000001011011010110011;
+  result.bits[2] = 0b00000000000000000000000000000000;
+  result.bits[3] = 0b10000000000000000000000000000000;
+  ck_assert_int_eq(res_od.bits[0], result.bits[0]);
+  ck_assert_int_eq(res_od.bits[1], result.bits[1]);
+  ck_assert_int_eq(res_od.bits[2], result.bits[2]);
+  ck_assert_int_eq(res_od.bits[3], result.bits[3]);
+}
+END_TEST
+
 Suite *test_floor(void) {
   Suite *s =
       suite_create("\n\033[37;1m==========| S21_FLOOR |=========\033[0m");
@@ -523,6 +600,13 @@ Suite *test_floor(void) {
   tcase_add_test(tc, test_floor_22);
   tcase_add_test(tc, test_floor_23);
   tcase_add_test(tc, test_floor_24);
+  tcase_add_test(tc, test_floor_25);
+  tcase_add_test(tc, test_floor_26);
+  tcase_add_test(tc, test_floor_27);
+  tcase_add_test(tc, test_floor_28);
+  tcase_add_test(tc, test_floor_29);
+  tcase_add_test(tc, test_floor_30);
+  tcase_add_test(tc, test_floor_31);
 
   return s;
 }

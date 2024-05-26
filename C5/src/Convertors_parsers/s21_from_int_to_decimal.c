@@ -9,7 +9,7 @@
 // (например, 0.9 преобразуется 0)
 
 int s21_from_int_to_decimal(int src, s21_decimal *dst) {
-  s21_convertors_error_code error_code = S21_CONVERTORS_ERROR;
+  s21_convertors_error_code error_code = S21_CONVERTORS_OK;
   if (dst) {
     dst->bits[0] = 0;
     dst->bits[1] = 0;
@@ -20,7 +20,9 @@ int s21_from_int_to_decimal(int src, s21_decimal *dst) {
       src *= -1;
     }
     dst->bits[0] = src;
-    error_code = S21_CONVERTORS_OK;
+
+  } else {
+    error_code = S21_CONVERTORS_ERROR;
   }
   return error_code;
 }

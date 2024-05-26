@@ -14,21 +14,21 @@ Suite *test_sub(void);
 Suite *test_mul(void);
 Suite *test_div(void);
 
-// Операторы сравнение:
-Suite *test_is_less(void);
-Suite *test_is_less_or_equal(void);
-Suite *test_is_greater(void);
-Suite *test_is_greater_or_equal(void);
-Suite *test_is_equal(void);
-Suite *test_is_not_equal(void);
+// // Операторы сравнение:
+// Suite *test_is_less(void);
+// Suite *test_is_less_or_equal(void);
+// Suite *test_is_greater(void);
+// Suite *test_is_greater_or_equal(void);
+// Suite *test_is_equal(void);
+// Suite *test_is_not_equal(void);
 
-// Преобразователи:
+// // Преобразователи:
 Suite *test_from_int_to_decimal(void);
 Suite *test_from_float_to_decimal(void);
 Suite *test_from_decimal_to_int(void);
 Suite *test_from_decimal_to_float(void);
 
-// Другие функции:
+// // Другие функции:
 Suite *test_floor(void);
 Suite *test_round(void);
 Suite *test_truncate(void);

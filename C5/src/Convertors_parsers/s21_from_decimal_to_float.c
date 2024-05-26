@@ -18,18 +18,22 @@
 
 int s21_from_decimal_to_float(s21_decimal src, float *dst) {
   s21_convertors_error_code error_code = S21_CONVERTORS_OK;
-  long long int bits = 0;
-  for (int i = 95; i >= 0; i--)
-    if (get_bit(&src, i)) {
-      bits = i;
-      i = 0;
-    }
-  int power = get_exp(src);
+  if (dst != NULL) {
+    long long int bits = 0;
+    for (int i = 95; i >= 0; i--)
+      if (get_bit(&src, i)) {
+        bits = i;
+        i = 0;
+      }
+    int power = get_exp(src);
 
-  double number = 0;
-  for (int i = 0; i <= bits; i++) number += pow(2, i) * get_bit(&src, i);
-  number = number / pow(10, power);
-  if (get_bit(&src, 127)) number *= -1;
-  *dst = number;
+    double number = 0;
+    for (int i = 0; i <= bits; i++) number += pow(2, i) * get_bit(&src, i);
+    number = number / pow(10, power);
+    if (get_bit(&src, 127)) number *= -1;
+    *dst = number;
+  } else {
+    error_code = S21_CONVERTORS_ERROR;
+  }
   return error_code;
 }

@@ -966,6 +966,14 @@ START_TEST(test_is_greater_64) {
 END_TEST
 
 START_TEST(test_is_greater_65) {
+  s21_decimal value_1 = {{0xD487DA, 0x0, 0x0, 0x1D0000}};
+  s21_decimal value_2 = {{0x342ED654, 0x114C, 0x0, 0x0}};
+  int code = 0;
+  int my_code = s21_is_greater(value_1, value_2);
+  ck_assert_int_eq(code, my_code);
+}
+
+START_TEST(test_is_greater_66) {
   s21_decimal src1 = {0};
   s21_decimal src2 = {0};
   // src1 = 0;
@@ -1056,6 +1064,6 @@ Suite *test_is_greater(void) {
   tcase_add_test(tc, test_is_greater_63);
   tcase_add_test(tc, test_is_greater_64);
   tcase_add_test(tc, test_is_greater_65);
-
+  tcase_add_test(tc, test_is_greater_65);
   return s;
 }

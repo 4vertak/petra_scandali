@@ -1137,6 +1137,14 @@ START_TEST(test_is_less_or_equal_5) {
 }
 END_TEST
 
+START_TEST(test_is_less_or_equal_80) {
+  s21_decimal value_1 = {{0xD487DA, 0x0, 0x0, 0x1D0000}};
+  s21_decimal value_2 = {{0x342ED654, 0x114C, 0x0, 0x0}};
+  int code = 0;
+  int my_code = s21_is_less_or_equal(value_1, value_2);
+  ck_assert_int_eq(code, my_code);
+}
+
 // START_TEST(test_is_less_or_equal_6) {
 //   s21_decimal src1 = {0};
 //   s21_decimal src2 = {0};
@@ -1241,6 +1249,6 @@ Suite *test_is_less_or_equal(void) {
   tcase_add_test(tc, test_is_less_or_equal_77);
   tcase_add_test(tc, test_is_less_or_equal_78);
   tcase_add_test(tc, test_is_less_or_equal_79);
-
+  tcase_add_test(tc, test_is_less_or_equal_80);
   return s;
 }

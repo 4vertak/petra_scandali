@@ -856,6 +856,14 @@ START_TEST(test_is_equal_50) {
 }
 END_TEST
 
+START_TEST(test_is_equal_51) {
+  s21_decimal value_1 = {{0xD487DA, 0x0, 0x0, 0x1D0000}};
+  s21_decimal value_2 = {{0x342ED654, 0x114C, 0x0, 0x0}};
+  int code = 0;
+  int my_code = s21_is_equal(value_1, value_2);
+  ck_assert_int_eq(code, my_code);
+}
+
 Suite *test_is_equal(void) {
   Suite *s =
       suite_create("\n\033[37;1m==========| S21_IS_EQUAL |=========\033[0m");
@@ -912,6 +920,7 @@ Suite *test_is_equal(void) {
   tcase_add_test(tc, test_is_equal_48);
   tcase_add_test(tc, test_is_equal_49);
   tcase_add_test(tc, test_is_equal_50);
+  tcase_add_test(tc, test_is_equal_51);
 
   return s;
 }

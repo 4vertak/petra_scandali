@@ -197,6 +197,14 @@ START_TEST(test_is_less_16) {
 }
 END_TEST
 
+START_TEST(test_is_less_17) {
+  s21_decimal value_1 = {{0xD487DA, 0x0, 0x0, 0x1D0000}};
+  s21_decimal value_2 = {{0x342ED654, 0x114C, 0x0, 0x0}};
+  int code = 0;
+  int my_code = s21_is_less(value_1, value_2);
+  ck_assert_int_eq(code, my_code);
+}
+
 Suite *test_is_less(void) {
   Suite *s =
       suite_create("\n\033[37;1m==========| S21_IS_LESS |=========\033[0m");
@@ -220,6 +228,7 @@ Suite *test_is_less(void) {
   tcase_add_test(tc, test_is_less_14);
   tcase_add_test(tc, test_is_less_15);
   tcase_add_test(tc, test_is_less_16);
+  tcase_add_test(tc, test_is_less_17);
 
   return s;
 }

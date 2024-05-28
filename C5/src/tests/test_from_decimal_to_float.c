@@ -2040,7 +2040,7 @@ END_TEST START_TEST(test_from_decimal_to_float_ok150) {
   ck_assert_int_eq(cast_result.int32_bytes, check);
   ck_assert_int_eq(code, 0);
 }
-END_TEST 
+END_TEST
 
 // START_TEST(test_from_decimal_to_float_ok151) {
 //   // 209954630662800494622.89146839

@@ -1650,8 +1650,7 @@ END_TEST START_TEST(test_is_equal_ok150) {
   int code = s21_is_equal(decimal1, decimal2);
   ck_assert_int_eq(code, check);
 }
-END_TEST 
-
+END_TEST
 
 // START_TEST(test_is_equal_ok151) {
 //   // -79228162514264337593543950335

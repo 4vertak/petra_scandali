@@ -1568,7 +1568,7 @@ END_TEST START_TEST(test_sub101) {
   int code = s21_sub(decimal1, decimal2, &result);
   ck_assert_int_eq(code, check);
 }
-END_TEST 
+END_TEST
 
 // START_TEST(test_sub102) {
 //   // -79228162514264337593543950335

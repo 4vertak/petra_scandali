@@ -50,8 +50,8 @@ gcov_report: test
 #	firefox report/gcov_report.html
 
 style: clean
-	cp ../materials/linters/.clang-format ../src/.clang-format
-	clang-format -style=Google -n $(SRC) $(TEST_SRC) ./*.h ./*/*.h
+#	cp ../materials/linters/.clang-format ../src/.clang-format
+	clang-format -style=Google -i $(SRC) $(TEST_SRC) ./*.h ./*/*.h
 	rm .clang-format
 
 leaks: test

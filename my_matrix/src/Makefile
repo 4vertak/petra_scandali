@@ -4,7 +4,7 @@ FLAGS=-g -Wall -Wextra -Werror -std=c11
 TEST_FLAGS=-lcheck -lpthread -pthread -lm -lrt -lsubunit -lgcov --coverage
 
 HEADERS =  s21_matrix.h $(wildcard ./*.c)
-SRC = $(wildcard ./create_remove_functions/*.c) $(wildcard ./arithmetic_functions/*.c) $(wildcard ./comparison_function/*.c) $(wildcard ./transformation_functions/*.c) $(wildcard ./other_functions/*.c) 
+SRC = $(wildcard ./create_remove_functions/*.c) $(wildcard ./arithmetic_functions/*.c) $(wildcard ./comparison_function/*.c) $(wildcard ./transpose_function/*.c) $(wildcard ./other_functions/*.c) $(wildcard ./helper/*.c) 
 
 OBJ = $(patsubst %.c, %.o, $(SRC))
 

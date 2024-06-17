@@ -1,27 +1,8 @@
-# my_string+
-
-Implementation of the string.h library with additions.
-
-## Contents
-1. [Chapter I](#chapter-i) \
-    1.1. [Introduction](#introduction)
-2. [Chapter II](#chapter-ii) \
-    2.1. [Information](#information)
-3. [Chapter III](#chapter-iii) \
-    3.1. [Part 1](#part-1-implementation-of-the-stringh-library-functions)  
-    3.2. [Part 2](#part-2-partial-implementation-of-the-sprintf-function)  
-    3.3. [Part 3](#part-3-bonus-implementation-of-some-format-modifiers-of-the-sprintf-function)  
-    3.4. [Part 4](#part-4-bonus-implementation-of-the-sscanf-function)  
-    3.5. [Part 5](#part-5-bonus-implementation-of-special-string-processing-functions)  
-
-## Chapter I
+# Implementation of the string.h library with additions.
 
 ## Introduction
 
 In this project you will develop your own implementation of the string.h library in the C programming language with some additions (with your own implementation of the sprintf and sscanf functions). The string.h library is the main C library for string handling. As part of the project, you'll work on tasks involving string data and consolidate the structured approach.
-
-
-## Chapter II
 
 ## Information
 
@@ -141,15 +122,15 @@ It is necessary to implement the described [above](#stringh-functions) functions
  - The library's code, including headers, makefile and library itself must be located in the src folder on the develop branch;    
  - Do not use outdated and legacy language constructions and library functions. Pay attention to the legacy and obsolete marks in the official documentation on the language and the libraries used. Use the POSIX.1-2017 standard; 
  - When writing code it is necessary to follow the Google style;
- - Make it as a static library named *s21_string.a* (with the header file s21_string.h);
+ - Make it as a static library named *my_string.a* (with the header file my_string.h);
  - The library must be developed in accordance with the principles of structured programming, duplication in the code must be avoided;
  - Prepare a full coverage of the library's functions by unit-tests using the Check library;
  - Test's code and the executable file must be located in the src folder or its any subfolder;
  - Unit-tests must check the results of your implementation by comparing them with the implementation of the standard string.h library;
  - Unit tests must cover at least 80% of each function (checked using gcov);
- - Provide a Makefile for building the library and tests (with the targets all, clean, test, s21_string.a, gcov_report);
+ - Provide a Makefile for building the library and tests (with the targets all, clean, test, my_string.a, gcov_report);
  - The gcov_report target should generate a gcov report in the form of an html page. Unit tests must be run with gcov flags to do this;
- - Use prefix s21_ before each function;
+ - Use prefix my_ before each function;
  - It is forbidden to copy the implementation of the standard string.h library and other string processing libraries and to use them anywhere, except unit-tests;
  - It is forbidden to use system errors arrays, including those not specified in POSIX (sys_nerr, sys_errlist). Instead, you need to implement your own platform-specific errors arrays, as it was mentioned in the description of the [strerror function](#stringh-functions);  
  - You must follow the logic of the standard string.h library (in terms of checks, working with memory and behavior in emergency situations - tests will help you with that);
@@ -158,7 +139,7 @@ It is necessary to implement the described [above](#stringh-functions) functions
 ## Part 2. Partial implementation of the sprintf function
 
 It is necessary to implement the sprintf function from the stdio.h library:
-- The function must be placed in the s21_string.h library;
+- The function must be placed in the my_string.h library;
 - All of the requirements outlined in [the first part](#part-1-implementation-of-the-stringh-library-functions) are applied to function implementation;
 - The next partial formatting must be supported:
   - Specifiers: c, d, f, s, u, %
@@ -167,10 +148,10 @@ It is necessary to implement the sprintf function from the stdio.h library:
   - Precision description: .(number)
   - Length description: h, l
 
-## Part 3. Bonus. Implementation of some format modifiers of the sprintf function
+## Part 3. Implementation of some format modifiers of the sprintf function
 
 Bonus assignment for extra points. You need to implement some format modifiers of the sprintf function from the stdio.h library:
-- The function must be placed in the s21_string.h library;
+- The function must be placed in the my_string.h library;
 - All of the requirements outlined in [the first part](#part-1-implementation-of-the-stringh-library-functions) are applied to function implementation;
 - The next additional format modifiers must be supported:
   - Specifiers: g, G, e, E, x, X, o, p
@@ -179,18 +160,18 @@ Bonus assignment for extra points. You need to implement some format modifiers o
   - Precision description: .*
   - Length description: L
 
-## Part 4. Bonus. Implementation of the sscanf function
+## Part 4. Implementation of the sscanf function
 
 Bonus assignment for extra points. You need to implement the sscanf function from the stdio.h library:
-- The function must be placed in the s21_string.h library;
+- The function must be placed in the my_string.h library;
 - All of the requirements outlined in [the first part](#part-1-implementation-of-the-stringh-library-functions) are applied to function implementation;
 - Full formatting (including flags, widths, precision, modifiers and conversion types) must be supported.
 
 
-## Part 5. Bonus. Implementation of special string processing functions
+## Part 5. Implementation of special string processing functions
 
 Bonus assignment for extra points. You need to implement some string processing functions from the String class (described [here](#special-string-processing-functions-from-the-string-class-in-c)):
-- The functions must be placed in the s21_string.h library;
+- The functions must be placed in the my_string.h library;
 - All of the requirements outlined in [the first part](#part-1-implementation-of-the-stringh-library-functions) are applied to functions implementation;
   excluding the requirement to compare your implementation with the standard.
 

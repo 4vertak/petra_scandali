@@ -1,10 +1,8 @@
-# s21_decimal
-
-Реализация собственной библиотеки s21_decimal.h.
+# Реализация собственной библиотеки my_decimal.h.
 
 ## Introduction
 
-В этом проекте тебе предстоит реализовать библиотеку s21_decimal.h на языке программирования С. Эта библиотека должна добавить возможность работы с типом «decimal», который отсутствует в стандарте языка. Тем не менее, этот тип критически важен, например, для финансовых расчетов, где недопустимы погрешности вычислений, свойственные типам с плавающей точкой. В рамках этого проекта ты познакомишься с задачами обработки финансовой информации, погрузишься в вопросы внутреннего представления различных типов данных и закрепишь структурный подход.  
+В этом проекте тебе предстоит реализовать библиотеку my_decimal.h на языке программирования С. Эта библиотека должна добавить возможность работы с типом «decimal», который отсутствует в стандарте языка. Тем не менее, этот тип критически важен, например, для финансовых расчетов, где недопустимы погрешности вычислений, свойственные типам с плавающей точкой. В рамках этого проекта ты познакомишься с задачами обработки финансовой информации, погрузишься в вопросы внутреннего представления различных типов данных и закрепишь структурный подход.  
 
 
 ## Chapter I
@@ -43,17 +41,17 @@ Decimal число может быть реализовано в виде чет
 typedef struct 
 {
     int bits[4];
-} s21_decimal;
+} my_decimal;
 ```
 
 ### Арифметические операторы
 
 | Название оператора | Оператор  | Функция                                                                            | 
 | ------ | ------ |------------------------------------------------------------------------------------|
-| Сложение | + | int s21_add(s21_decimal value_1, s21_decimal value_2, s21_decimal *result)         |
-| Вычитание | - | int s21_sub(s21_decimal value_1, s21_decimal value_2, s21_decimal *result)         |
-| Умножение | * | int s21_mul(s21_decimal value_1, s21_decimal value_2, s21_decimal *result) | 
-| Деление | / | int s21_div(s21_decimal value_1, s21_decimal value_2, s21_decimal *result) |
+| Сложение | + | int my_add(my_decimal value_1, my_decimal value_2, my_decimal *result)         |
+| Вычитание | - | int my_sub(my_decimal value_1, my_decimal value_2, my_decimal *result)         |
+| Умножение | * | int my_mul(my_decimal value_1, my_decimal value_2, my_decimal *result) | 
+| Деление | / | int my_div(my_decimal value_1, my_decimal value_2, my_decimal *result) |
 
 Функции возвращают код ошибки:  
 - 0 - OK  
@@ -69,12 +67,12 @@ typedef struct
 
 | Название оператора | Оператор  | Функция | 
 | ------ | ------ | ------ |
-| Меньше  | < | int s21_is_less(s21_decimal, s21_decimal) |
-| Меньше или равно | <= | int s21_is_less_or_equal(s21_decimal, s21_decimal) | 
-| Больше | \> |  int s21_is_greater(s21_decimal, s21_decimal) |
-| Больше или равно | \>= | int s21_is_greater_or_equal(s21_decimal, s21_decimal) | 
-| Равно | == |  int s21_is_equal(s21_decimal, s21_decimal) |
-| Не равно | != |  int s21_is_not_equal(s21_decimal, s21_decimal) |
+| Меньше  | < | int my_is_less(my_decimal, my_decimal) |
+| Меньше или равно | <= | int my_is_less_or_equal(my_decimal, my_decimal) | 
+| Больше | \> |  int my_is_greater(my_decimal, my_decimal) |
+| Больше или равно | \>= | int my_is_greater_or_equal(my_decimal, my_decimal) | 
+| Равно | == |  int my_is_equal(my_decimal, my_decimal) |
+| Не равно | != |  int my_is_not_equal(my_decimal, my_decimal) |
 
 Возвращаемое значение:
 - 0 - FALSE
@@ -84,10 +82,10 @@ typedef struct
 
 | Преобразователь | Функция | 
 | ------ | ------ |
-| Из int | int s21_from_int_to_decimal(int src, s21_decimal *dst) |
-| Из float  | int s21_from_float_to_decimal(float src, s21_decimal *dst) |
-| В int  | int s21_from_decimal_to_int(s21_decimal src, int *dst) |
-| В float  | int s21_from_decimal_to_float(s21_decimal src, float *dst) |
+| Из int | int my_from_int_to_decimal(int src, my_decimal *dst) |
+| Из float  | int my_from_float_to_decimal(float src, my_decimal *dst) |
+| В int  | int my_from_decimal_to_int(my_decimal src, int *dst) |
+| В float  | int my_from_decimal_to_float(my_decimal src, float *dst) |
 
 Возвращаемое значение - код ошибки:
  - 0 - OK
@@ -106,33 +104,11 @@ typedef struct
 
 | Описание | Функция                                                  | 
 | ------ |----------------------------------------------------------|
-| Округляет указанное Decimal число до ближайшего целого числа в сторону отрицательной бесконечности. | int s21_floor(s21_decimal value, s21_decimal *result)    |	
-| Округляет Decimal до ближайшего целого числа. | int s21_round(s21_decimal value, s21_decimal *result)    |
-| Возвращает целые цифры указанного Decimal числа; любые дробные цифры отбрасываются, включая конечные нули. | int s21_truncate(s21_decimal value, s21_decimal *result) |
-| Возвращает результат умножения указанного Decimal на -1. | int s21_negate(s21_decimal value, s21_decimal *result)   |
+| Округляет указанное Decimal число до ближайшего целого числа в сторону отрицательной бесконечности. | int my_floor(my_decimal value, my_decimal *result)    |	
+| Округляет Decimal до ближайшего целого числа. | int my_round(my_decimal value, my_decimal *result)    |
+| Возвращает целые цифры указанного Decimal числа; любые дробные цифры отбрасываются, включая конечные нули. | int my_truncate(my_decimal value, my_decimal *result) |
+| Возвращает результат умножения указанного Decimal на -1. | int my_negate(my_decimal value, my_decimal *result)   |
 
 Возвращаемое значение - код ошибки:
  - 0 - OK
  - 1 - ошибка вычисления
-
-## Chapter II
-
-## Part 1. Реализация функции библиотеки decimal.h
-
-Тебе необходимо реализовать описанные [выше](#information) функции библиотеки:
-
-- Библиотека должна быть разработана на языке С стандарта C11 с использованием компиятора gcc;
-- Код библиотеки должен находиться в папке src в ветке develop;
-- Не используй устаревшие и выведенные из употребления конструкции языка и библиотечные функции. Обрати внимания на пометки legacy и obsolete в официальной документации по языку и используемым библиотекам. Ориентируйся на стандарт POSIX.1-2017;
-- При написании кода необходимо придерживаться Google Style;
-- Оформи решение как статическую библиотеку с названием *s21_decimal.a* (с заголовочным файлом s21_decimal.h);
-- Библиотека должна быть разработана в соответствии с принципами структурного программирования;
-- Перед каждой функцией используй префикс s21_;
-- Подготовь полное покрытие unit-тестами функций библиотеки c помощью библиотеки Check;
-- Unit-тесты должны покрывать не менее 80% каждой функции;  
-- Предусмотри Makefile для сборки библиотеки и тестов (с целями all, clean, test, s21_decimal.a, gcov_report);
-- В цели gcov_report должен формироваться отчёт gcov в виде html страницы. Для этого unit-тесты должны запускаться с флагами gcov;  
-- При реализации decimal ориентируйся на [двоичное представление](#двоичное-представление) с целочисленным массивом `bits`, как указано в [примере выше](#пример). Соблюдай положение разрядов числа в массиве `bits`;
-- Запрещено использование типа __int128;
-- Конечные нули можно как оставлять, так и удалять (за исключением функции `s21_truncate`);
-- Определяемый тип должен поддерживать числа от -79,228,162,514,264,337,593,543,950,335 до +79,228,162,514,264,337,593,543,950,335.

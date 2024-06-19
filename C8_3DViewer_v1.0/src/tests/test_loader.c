@@ -1,7 +1,7 @@
 #include "./test.h"
 
 START_TEST(test_loader_01) {
-  char file_name[] = "./test_object.obj";
+  char file_name[] = "test_object.obj";
   data_t data = {0};
   double test_e[] = {0, 6, 6, 4, 4, 0, 0, 2, 2, 6, 6, 0, 0, 3, 3,
                      2, 2, 0, 0, 1, 1, 3, 3, 0, 2, 7, 7, 6, 6, 2,

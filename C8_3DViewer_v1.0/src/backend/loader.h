@@ -15,5 +15,6 @@ typedef struct {
 } data_t;
 
 int loader(data_t* data, char* file_name);
+void calc_count_vertex_edges(FILE* f, data_t* data, char* str);
 int calc_count(char* str);
 #endif

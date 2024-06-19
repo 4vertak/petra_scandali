@@ -3,33 +3,18 @@
 int loader(data_t* data, char* file_name) {
   FILE* f;
   f = fopen(file_name, "r");
-
   if (f != NULL) {
-    int count_vertex = 0, count_edges = 0;
     char str[100];
-    char c;
-    int numb = 0;
-    while (fgets(str, 100, f)) {
-      if (str[0] == 'v' && str[1] == ' ') {
-        count_vertex++;
-      }
-      if (str[0] == 'f' && str[1] == ' ') {
-        count_edges += calc_count(str);
-      }
-    }
-    fclose(f);
-    data->count_vertex = count_vertex;
-    data->count_edges = count_edges;
-
+    calc_count_vertex_edges(f, data, str);
     data->vertex = (double*)calloc(data->count_vertex * 3, sizeof(double));
     data->edges_points = (int*)calloc(data->count_edges * 2, sizeof(int));
-    int edges_numb = 0;
+    int edges_numb = 0, numb = 0;
+    char c;
     f = fopen(file_name, "r");
     while (fgets(str, 100, f)) {
       if (str[0] == 'v' && str[1] == ' ') {
         sscanf(str, "%c %lf %lf %lf", &c, &data->vertex[numb],
                &data->vertex[numb + 1], &data->vertex[numb + 2]);
-
         numb += 3;
       }
       if (str[0] == 'f' && str[1] == ' ') {
@@ -66,7 +51,6 @@ int loader(data_t* data, char* file_name) {
               edges_numb++;
               data->edges_points[edges_numb] = value;
             }
-
             count_edges_in_str--;
             edges_numb++;
             if (count_edges_in_str == 0) {
@@ -81,6 +65,21 @@ int loader(data_t* data, char* file_name) {
   }
 
   return 0;
+}
+
+void calc_count_vertex_edges(FILE* f, data_t* data, char* str) {
+  int count_vertex = 0, count_edges = 0;
+  while (fgets(str, 100, f)) {
+    if (str[0] == 'v' && str[1] == ' ') {
+      count_vertex++;
+    }
+    if (str[0] == 'f' && str[1] == ' ') {
+      count_edges += calc_count(str);
+    }
+  }
+  fclose(f);
+  data->count_vertex = count_vertex;
+  data->count_edges = count_edges;
 }
 
 int calc_count(char* str) {

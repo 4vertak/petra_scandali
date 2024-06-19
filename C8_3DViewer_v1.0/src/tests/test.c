@@ -2,18 +2,7 @@
 
 int main(void) {
   int number_failed = 0;
-  Suite *test[] = {test_create_remove_matrix(),
-                   test_eq_matrix(),
-                   test_sum_matrix(),
-                   test_sub_matrix(),
-                   test_mult_number(),
-                   test_mult_matrix(),
-                   test_transpose(),
-                   test_determinant(),
-                   test_calc_complements(),
-                   test_inverse_matrix(),
-
-                   NULL};
+  Suite *test[] = {test_loader(), NULL};
   SRunner *sr;
   int i = 0;
   while (test[i] != NULL) {

@@ -14,20 +14,20 @@ int loader(data_t* data, char* file_name) {
 void handle_file(data_t* data, FILE* f, char* file_name, char* str) {
   data->vertex = (double*)calloc(data->count_vertex * 3, sizeof(double));
   data->edges_points = (int*)calloc(data->count_edges * 2, sizeof(int));
-  int edges_numb = 0, numb = 0;
+  int edges_value = 0, value = 0;
   char c;
   f = fopen(file_name, "r");
   while (fgets(str, 100, f)) {
     if (str[0] == 'v' && str[1] == ' ') {
-      sscanf(str, "%c %lf %lf %lf", &c, &data->vertex[numb],
-             &data->vertex[numb + 1], &data->vertex[numb + 2]);
-      numb += 3;
+      sscanf(str, "%c %lf %lf %lf", &c, &data->vertex[value],
+             &data->vertex[value + 1], &data->vertex[value + 2]);
+      value += 3;
     }
     if (str[0] == 'f' && str[1] == ' ') {
       int value = 0, count_edges_in_str = 0;
       count_edges_in_str = calc_count(str);
-      int e_tmp = 0;
-      int tmp_val = 0;
+      int edges_temp = 0;
+      int temp_value = 0;
       for (size_t i = 2; i < strlen(str); i++) {
         if (str[i] == '/') {
           while (str[i] != ' ') {
@@ -35,33 +35,33 @@ void handle_file(data_t* data, FILE* f, char* file_name, char* str) {
           }
         }
         if (isdigit(str[i])) {
-          char arr[8] = {0};
+          char array[8] = {0};
           int j = 0;
           for (int k = i;;) {
             if ((str[i] >= 48) && (str[k] <= 57)) {
-              arr[j] = str[k];
+              array[j] = str[k];
               j++, k++;
             } else {
               break;
             }
           }
-          value = atoi(arr);
+          value = atoi(array);
           i += j - 1;
           value -= 1;
 
-          data->edges_points[edges_numb] = value;
-          if (e_tmp == 0) {
-            tmp_val = value;
-            e_tmp++;
-          } else if (edges_numb > 0 && count_edges_in_str != 0) {
-            edges_numb++;
-            data->edges_points[edges_numb] = value;
+          data->edges_points[edges_value] = value;
+          if (edges_temp == 0) {
+            temp_value = value;
+            edges_temp++;
+          } else if (edges_value > 0 && count_edges_in_str != 0) {
+            edges_value++;
+            data->edges_points[edges_value] = value;
           }
           count_edges_in_str--;
-          edges_numb++;
+          edges_value++;
           if (count_edges_in_str == 0) {
-            data->edges_points[edges_numb] = tmp_val;
-            edges_numb++;
+            data->edges_points[edges_value] = temp_value;
+            edges_value++;
           }
         }
       }

@@ -1,6 +1,8 @@
 #ifndef LOADER_H_
 #define LOADER_H_
+
 #define _GNU_SOURCE
+
 #include <float.h>
 #include <math.h>
 #include <stdbool.h>

@@ -1,7 +1,9 @@
 #include "./test.h"
 
 START_TEST(test_loader_01) {
-  char file_name[] = "test_object.obj";
+  char file_name[] =
+      "/mnt/c/S21/C2/petra_scandali/C8_3DViewer_v1.0/src/tests/test_object.obj";
+  printf("%s\n\n\n", file_name);
   data_t data = {0};
   double test_e[] = {0, 6, 6, 4, 4, 0, 0, 2, 2, 6, 6, 0, 0, 3, 3,
                      2, 2, 0, 0, 1, 1, 3, 3, 0, 2, 7, 7, 6, 6, 2,
@@ -12,6 +14,8 @@ START_TEST(test_loader_01) {
                      -0.5, 0.5,  0.5,  0.5,  -0.5, 0.5,  0.5,  0.5};
 
   int res = loader(&data, file_name);
+  printf("error_code: %d\n", res);
+  printf("%d\n\n\n", data.count_edges);
   ck_assert_int_eq(data.count_vertex, 8);
   ck_assert_int_eq(data.count_edges, 30);
 

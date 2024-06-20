@@ -58,7 +58,7 @@ style: clean
 	rm .clang-format
 
 leaks: test
-	valgrind --leak-check=yes  ./$(TEST)
+	valgrind --leak-check=full --show-leak-kinds=all  ./$(TEST)
 
 
 rebuild: clean all

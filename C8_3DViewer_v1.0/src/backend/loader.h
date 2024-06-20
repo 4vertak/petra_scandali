@@ -1,21 +1,34 @@
 #ifndef LOADER_H_
 #define LOADER_H_
-
-#include <ctype.h>
+#define _GNU_SOURCE
+#include <float.h>
 #include <math.h>
+#include <stdbool.h>
 #include <stdio.h>
 #include <stdlib.h>
 #include <string.h>
 
 typedef struct {
-  int count_vertex;
-  int count_edges;
+  unsigned count_vertex;
+  unsigned count_edges;
   double* vertex;
-  int* edges_points;
+  unsigned* edges_points;
 } data_t;
 
-int loader(data_t* data, char* file_name);
-void handle_file(data_t* data, FILE* f, char* file_name, char* str);
-void calc_count_vertex_edges(FILE* f, data_t* data, char* str);
-int calc_count(char* str);
+typedef struct {
+  double min_x;
+  double min_y;
+  double min_z;
+  double max_x;
+  double max_y;
+  double max_z;
+} min_max_t;
+
+int loader(data_t* data, const char* file_name);
+int handle_data(FILE* f, data_t* data);
+void calc_count_vertex_edges(FILE* f, data_t* data);
+void center_position(data_t* data, min_max_t* min_max);
+
+int allocate_memory_data(data_t* data);
+void free_memory_data(data_t* data);
 #endif

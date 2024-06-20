@@ -1,106 +1,130 @@
 #include "./loader.h"
 
-int loader(data_t* data, char* file_name) {
-  FILE* f;
-  f = fopen(file_name, "r");
-  if (f != NULL) {
-    char str[100];
-    calc_count_vertex_edges(f, data, str);
-    handle_file(data, f, file_name, str);
+int loader(data_t* data, const char* file_name) {
+  int error_code = 0;
+  if (!file_name || !data) return 1;
+
+  FILE* f = fopen(file_name, "r");
+  if (f == NULL) {
+    error_code = 1;
+    printf("Error 2: %d\n", error_code);
+  } else {
+    calc_count_vertex_edges(f, data);
+    error_code = handle_data(f, data);
+    fclose(f);
   }
-  return 0;
+  if (error_code != 0) free_memory_data(data);
+  return error_code;
 }
 
-void handle_file(data_t* data, FILE* f, char* file_name, char* str) {
-  data->vertex = (double*)calloc(data->count_vertex * 3, sizeof(double));
-  data->edges_points = (int*)calloc(data->count_edges * 2, sizeof(int));
-  int edges_value = 0, value = 0;
-  char c;
-  f = fopen(file_name, "r");
-  while (fgets(str, 100, f)) {
-    if (str[0] == 'v' && str[1] == ' ') {
-      sscanf(str, "%c %lf %lf %lf", &c, &data->vertex[value],
-             &data->vertex[value + 1], &data->vertex[value + 2]);
-      value += 3;
+void calc_count_vertex_edges(FILE* f, data_t* data) {
+  char* str = NULL;
+  size_t lenght = 0;
+  while (getline(&str, &lenght, f) != EOF) {
+    if (strncmp(str, "v ", 2) == 0) {
+      data->count_vertex++;
+    } else if (strncmp(str, "f ", 2) == 0) {
+      char* token = strtok(str + 2, " ");
+      while (token) {
+        if (atoi(token)) data->count_edges++;
+        token = strtok(NULL, " ");
+      }
     }
-    if (str[0] == 'f' && str[1] == ' ') {
-      int value = 0, count_edges_in_str = 0;
-      count_edges_in_str = calc_count(str);
-      int edges_temp = 0;
-      int temp_value = 0;
-      for (size_t i = 2; i < strlen(str); i++) {
-        if (str[i] == '/') {
-          while (str[i] != ' ') {
-            i++;
+  }
+  if (str) free(str);
+  fseek(f, 0, SEEK_SET);
+}
+
+int handle_data(FILE* f, data_t* data) {
+  int error_code = allocate_memory_data(data);
+  min_max_t min_max = {DBL_MAX, DBL_MAX, DBL_MAX, -DBL_MAX, -DBL_MAX, -DBL_MAX};
+  if (error_code == 0) {
+    char* str = NULL;
+    size_t lenght = 0, index_v = 0, index_f = 0, tmp_count_vertex = 0;
+    while (getline(&str, &lenght, f) != EOF && error_code == 0) {
+      if (strncmp(str, "v ", 2) == 0) {
+        double x = 0, y = 0, z = 0;
+        if (sscanf(str, "v %lf %lf %lf", &x, &y, &z) == 3) {
+          data->vertex[index_v] = x;
+          index_v += 1;
+          data->vertex[index_v] = y;
+          index_v += 1;
+          data->vertex[index_v] = z;
+          index_v += 1;
+          tmp_count_vertex += 1;
+          min_max.min_x = fmin(min_max.min_x, x);
+          min_max.min_y = fmin(min_max.min_y, y);
+          min_max.min_z = fmin(min_max.min_z, z);
+          min_max.max_x = fmax(min_max.max_x, x);
+          min_max.max_y = fmax(min_max.max_y, y);
+          min_max.max_z = fmax(min_max.max_z, z);
+        } else
+          error_code = 1;
+      } else if (strncmp(str, "f ", 2) == 0) {
+        char* token = strtok(str + 2, " ");
+        unsigned first_index = 0;
+        bool is_first_index = true;
+        while (token) {
+          long index = atoi(token);
+          if (index < 0)
+            index += tmp_count_vertex;
+          else
+            index -= 1;
+          if (is_first_index && atoi(token)) {
+            first_index = index;
+            data->edges_points[index_f] = first_index;
+            index_f += 1;
+            is_first_index = false;
+          } else if (atoi(token)) {
+            data->edges_points[index_f] = index;
+            index_f += 1;
+            data->edges_points[index_f] = index;
+            index_f += 1;
           }
+          token = strtok(NULL, " ");
         }
-        if (isdigit(str[i])) {
-          char array[8] = {0};
-          int j = 0;
-          for (int k = i;;) {
-            if ((str[i] >= 48) && (str[k] <= 57)) {
-              array[j] = str[k];
-              j++, k++;
-            } else {
-              break;
-            }
-          }
-          value = atoi(array);
-          i += j - 1;
-          value -= 1;
-
-          data->edges_points[edges_value] = value;
-          if (edges_temp == 0) {
-            temp_value = value;
-            edges_temp++;
-          } else if (edges_value > 0 && count_edges_in_str != 0) {
-            edges_value++;
-            data->edges_points[edges_value] = value;
-          }
-          count_edges_in_str--;
-          edges_value++;
-          if (count_edges_in_str == 0) {
-            data->edges_points[edges_value] = temp_value;
-            edges_value++;
-          }
-        }
+        data->edges_points[index_f] = first_index;
+        index_f += 1;
       }
     }
+    if (str) free(str);
   }
-  fclose(f);
+  center_position(data, &min_max);
+  return error_code;
 }
 
-void calc_count_vertex_edges(FILE* f, data_t* data, char* str) {
-  int count_vertex = 0, count_edges = 0;
-  while (fgets(str, 100, f)) {
-    if (str[0] == 'v' && str[1] == ' ') {
-      count_vertex++;
-    }
-    if (str[0] == 'f' && str[1] == ' ') {
-      count_edges += calc_count(str);
-    }
+void center_position(data_t* data, min_max_t* min_max) {
+  size_t num_vertices = data->count_vertex;
+  if (-((min_max->min_x + min_max->min_x) / 2) != 0.0) {
+    for (size_t i = 0; i < 3 * num_vertices; i += 3)
+      data->vertex[i] += -((min_max->min_x + min_max->min_x) / 2);
   }
-  fclose(f);
-  data->count_vertex = count_vertex;
-  data->count_edges = count_edges;
+  if (-((min_max->min_y + min_max->min_y) / 2) != 0.0) {
+    for (size_t i = 0; i < 3 * num_vertices; i += 3)
+      data->vertex[i + 1] += -((min_max->min_y + min_max->min_y) / 2);
+  }
+  if (-((min_max->min_z + min_max->min_z) / 2) != 0.0) {
+    for (size_t i = 0; i < 3 * num_vertices; i += 3)
+      data->vertex[i + 2] += -((min_max->min_z + min_max->min_z) / 2);
+  }
 }
 
-int calc_count(char* str) {
-  int in_digit = 0, count = 0;
-  for (size_t i = 2; i < strlen(str); i++) {
-    if (str[i] == '/') {
-      while (str[i] != ' ') {
-        i++;
-      }
-    }
-    if (isdigit(str[i])) {
-      if (!in_digit) {
-        count++;
-        in_digit = 1;
-      }
-    } else {
-      in_digit = 0;
-    }
+int allocate_memory_data(data_t* data) {
+  int error_code = 0;
+  data->vertex = calloc(data->count_vertex * 10, sizeof(double));
+  data->edges_points = calloc(data->count_edges * 10, sizeof(unsigned));
+  if (!data->vertex || !data->edges_points) {
+    error_code = 2;
+    free_memory_data(data);
   }
-  return count;
+  return error_code;
+}
+
+void free_memory_data(data_t* data) {
+  if (data->vertex) free(data->vertex);
+  if (data->edges_points) free(data->edges_points);
+  data->count_vertex = 0;
+  data->count_edges = 0;
+  data->vertex = NULL;
+  data->edges_points = NULL;
 }

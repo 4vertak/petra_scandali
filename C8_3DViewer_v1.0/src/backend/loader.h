@@ -28,7 +28,7 @@ typedef struct {
 
 int loader(data_t* data, const char* file_name);
 int handle_data(FILE* f, data_t* data);
-void calc_count_vertex_edges(FILE* f, data_t* data);
+void calc_count(FILE* f, data_t* data);
 void center_position(data_t* data, min_max_t* min_max);
 
 int allocate_memory_data(data_t* data);

@@ -9,7 +9,7 @@ int loader(data_t* data, const char* file_name) {
     error_code = 1;
     printf("Error 2: %d\n", error_code);
   } else {
-    calc_count_vertex_edges(f, data);
+    calc_count(f, data);
     error_code = handle_data(f, data);
     fclose(f);
   }
@@ -17,7 +17,7 @@ int loader(data_t* data, const char* file_name) {
   return error_code;
 }
 
-void calc_count_vertex_edges(FILE* f, data_t* data) {
+void calc_count(FILE* f, data_t* data) {
   char* str = NULL;
   size_t lenght = 0;
   while (getline(&str, &lenght, f) != EOF) {

@@ -4,6 +4,7 @@
 #include <check.h>
 
 #include "../backend/affine_transformations.h"
+#include "../backend/loader.h"
 
 // загрузчик:
 Suite *test_loader(void);

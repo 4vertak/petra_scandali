@@ -7,7 +7,6 @@ int loader(data_t* data, const char* file_name) {
   FILE* f = fopen(file_name, "r");
   if (f == NULL) {
     error_code = 1;
-    printf("Error 2: %d\n", error_code);
   } else {
     calc_count(f, data);
     error_code = handle_data(f, data);

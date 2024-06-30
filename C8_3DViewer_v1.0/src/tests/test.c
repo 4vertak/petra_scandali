@@ -2,7 +2,7 @@
 
 int main(void) {
   int number_failed = 0;
-  Suite *test[] = {test_loader(), NULL};
+  Suite *test[] = {test_loader(), affine_transformations(), NULL};
   SRunner *sr;
   int i = 0;
   while (test[i] != NULL) {

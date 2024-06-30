@@ -89,7 +89,7 @@ int handle_data(FILE* f, data_t* data) {
     }
     if (str) free(str);
   }
-  center_position(data, &min_max);
+  // center_position(data, &min_max);
   return error_code;
 }
 

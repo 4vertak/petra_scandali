@@ -1,7 +1,8 @@
 #include "./test.h"
 
 START_TEST(test_loader_01) {
-  char file_name[] = "./test_object.obj";
+  char file_name[] =
+      "/mnt/c/S21/C2/petra_scandali/C8_3DViewer_v1.0/src/tests/test_object.obj";
   printf("%s\n\n\n", file_name);
   data_t data = {0};
   double test_e[] = {0, 6, 6, 4, 4, 0, 0, 2, 2, 6, 6, 0, 0, 3, 3,

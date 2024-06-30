@@ -3,9 +3,10 @@
 
 #include <check.h>
 
-#include "../backend/loader.h"
+#include "../backend/affine_transformations.h"
 
 // загрузчик:
 Suite *test_loader(void);
+Suite *affine_transformations(void);
 
 #endif  // SRC_TESTS_TEST_H_

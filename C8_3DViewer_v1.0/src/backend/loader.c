@@ -89,23 +89,26 @@ int handle_data(FILE* f, data_t* data) {
     }
     if (str) free(str);
   }
-  // center_position(data, &min_max);
+  center_position(data, &min_max);
   return error_code;
 }
 
 void center_position(data_t* data, min_max_t* min_max) {
   size_t num_vertices = data->count_vertex;
-  if (-((min_max->min_x + min_max->min_x) / 2) != 0.0) {
-    for (size_t i = 0; i < 3 * num_vertices; i += 3)
-      data->vertex[i] += -((min_max->min_x + min_max->min_x) / 2);
+  if (-((min_max->max_x + min_max->min_x) / 2) != 0.0) {
+    for (size_t i = 0; i < 3 * num_vertices; i += 3) {
+      data->vertex[i] += -((min_max->max_x + min_max->min_x) / 2);
+      // printf("center positiion_x %f += - ((%f + %f) / 2)", data->vertex[i],
+      // min_max->min_x, min_max->min_x);
+    }
   }
-  if (-((min_max->min_y + min_max->min_y) / 2) != 0.0) {
+  if (-((min_max->max_y + min_max->min_y) / 2) != 0.0) {
     for (size_t i = 0; i < 3 * num_vertices; i += 3)
-      data->vertex[i + 1] += -((min_max->min_y + min_max->min_y) / 2);
+      data->vertex[i + 1] += -((min_max->max_y + min_max->min_y) / 2);
   }
-  if (-((min_max->min_z + min_max->min_z) / 2) != 0.0) {
+  if (-((min_max->max_z + min_max->min_z) / 2) != 0.0) {
     for (size_t i = 0; i < 3 * num_vertices; i += 3)
-      data->vertex[i + 2] += -((min_max->min_z + min_max->min_z) / 2);
+      data->vertex[i + 2] += -((min_max->max_z + min_max->min_z) / 2);
   }
 }
 

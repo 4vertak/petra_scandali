@@ -70,9 +70,9 @@ void scaling(data_t* data, double scale_value) {
   if (scale_value != 0.0) {
     size_t num_vertices = data->count_vertex;
     for (size_t i = 0; i < 3 * num_vertices; i++) {
-      printf("%f >> ", data->vertex[i]);
+      // printf("%f >> ", data->vertex[i]);
       data->vertex[i] *= scale_value;
-      printf("%f, ", data->vertex[i]);
+      // printf("%f, ", data->vertex[i]);
     }
   }
 }

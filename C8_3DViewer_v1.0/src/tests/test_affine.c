@@ -8,7 +8,7 @@ START_TEST(test_translation_01) {
                      -0.5, 9.5,  0.5,  0.5, 10.5, -0.5, -0.5, 10.5,
                      -0.5, 0.5,  10.5, 0.5, -0.5, 10.5, 0.5,  0.5};
   int res = loader(&data, file_name);
-  translation_x(&data, 10);
+  x_offset(&data, 10);
   for (int i = 0; i < data.count_vertex * 3; i++) {
     int test_res = test_v[i] - data.vertex[i];
     // printf("test_translation_02\n%f == %f\n", test_v[i], data.vertex[i]);
@@ -26,7 +26,7 @@ START_TEST(test_translation_02) {
                      -0.5, -0.5, 10.5, 0.5,  0.5,  9.5, -0.5, 0.5,
                      9.5,  0.5,  0.5,  10.5, -0.5, 0.5, 10.5, 0.5};
   int res = loader(&data, file_name);
-  translation_y(&data, 10);
+  y_offset(&data, 10);
   for (int i = 0; i < data.count_vertex * 3; i++) {
     int test_res = test_v[i] - data.vertex[i];
     // printf("test_translation_02\n%f == %f\n", test_v[i], data.vertex[i]);
@@ -44,7 +44,7 @@ START_TEST(test_translation_03) {
                      9.5,  -0.5, 0.5, 10.5, 0.5,  -0.5, 9.5,  0.5,
                      -0.5, 10.5, 0.5, 0.5,  9.5,  0.5,  0.5,  10.5};
   int res = loader(&data, file_name);
-  translation_z(&data, 10);
+  z_offset(&data, 10);
   for (int i = 0; i < data.count_vertex * 3; i++) {
     int test_res = test_v[i] - data.vertex[i];
     // printf("test_translation_03\n%f == %f\n", test_v[i], data.vertex[i]);

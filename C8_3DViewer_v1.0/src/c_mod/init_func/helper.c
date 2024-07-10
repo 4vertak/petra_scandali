@@ -1,21 +1,12 @@
-#include "./loader.h"
+#include "../loader.h"
 
-int loader(data_t* data, const char* file_name) {
-  int error_code = 0;
-  if (!file_name || !data) return 1;
-
-  FILE* f = fopen(file_name, "r");
-  if (f == NULL) {
-    error_code = 1;
-  } else {
-    calc_count(f, data);
-    error_code = handle_data(f, data);
-    fclose(f);
-  }
-  if (error_code != 0) free_memory_data(data);
-  return error_code;
-}
-
+/**
+ * @brief Функция для подсчета количества вершин и ребер в файле.
+ *
+ * @param f Указатель на файл.
+ * @param data Указатель на структуру данных, в которой будут храниться
+ * результаты подсчета.
+ */
 void calc_count(FILE* f, data_t* data) {
   char* str = NULL;
   size_t lenght = 0;
@@ -33,6 +24,16 @@ void calc_count(FILE* f, data_t* data) {
   if (str) free(str);
   fseek(f, 0, SEEK_SET);
 }
+
+/**
+ * @fn handle_data(FILE* f, data_t* data)
+ * @brief Главная функция для обработки данных из файла
+ *
+ * @param f Указатель на файл для чтения
+ * @param data Указатель структуру для хранения данных
+ *
+ * @return Код ошибки: 0 - успех, 1 - ошибка
+ */
 
 int handle_data(FILE* f, data_t* data) {
   int error_code = allocate_memory_data(data);
@@ -92,13 +93,18 @@ int handle_data(FILE* f, data_t* data) {
   return error_code;
 }
 
+/**
+ * @brief Функция центрирования позиции вершин.
+ *
+ * @param data Указатель на структуру данных, содержащую информацию о вершинах.
+ * @param min_max Указатель на структуру данных, содержащую информацию о
+ * минимальных максимальных значениях координат вершин.
+ */
 void center_position(data_t* data, min_max_t* min_max) {
   size_t num_vertices = data->count_vertex;
   if (-((min_max->max_x + min_max->min_x) / 2) != 0.0) {
     for (size_t i = 0; i < 3 * num_vertices; i += 3) {
       data->vertex[i] += -((min_max->max_x + min_max->min_x) / 2);
-      // printf("center positiion_x %f += - ((%f + %f) / 2)", data->vertex[i],
-      // min_max->min_x, min_max->min_x);
     }
   }
   if (-((min_max->max_y + min_max->min_y) / 2) != 0.0) {
@@ -111,6 +117,12 @@ void center_position(data_t* data, min_max_t* min_max) {
   }
 }
 
+/**
+ * @brief Функция allocate_memory_data выделяет память под массивы vertex и
+ * edges_points.
+ * @param data Указатель на структуру данных data_t.
+ * @return Код ошибки. 0 - успешное выполнение, 2 - выделения памяти.
+ */
 int allocate_memory_data(data_t* data) {
   int error_code = 0;
   data->vertex = calloc(data->count_vertex * 10, sizeof(double));
@@ -122,6 +134,11 @@ int allocate_memory_data(data_t* data) {
   return error_code;
 }
 
+/**
+ * @brief Функция освобождает память, выделенную для данных.
+ *
+ * @param data Указатель на структуру данных.
+ */
 void free_memory_data(data_t* data) {
   if (data->vertex) free(data->vertex);
   if (data->edges_points) free(data->edges_points);

@@ -3,8 +3,8 @@
 
 #include <check.h>
 
-#include "../backend/affine_transformations.h"
-#include "../backend/loader.h"
+#include "../c_mod/affine_func.h"
+#include "../c_mod/loader.h"
 
 // загрузчик:
 Suite *test_loader(void);

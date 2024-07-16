@@ -16,6 +16,7 @@ START_TEST(test_loader_01) {
   int res = loader(&data, file_name);
   // printf("error_code: %d\n", res);
   // printf("%d\n\n\n", data.count_edges);
+  ck_assert_int_eq(res, 0);
   ck_assert_int_eq(data.count_vertex, 8);
   ck_assert_int_eq(data.count_edges, 30);
 
@@ -60,6 +61,7 @@ START_TEST(test_loader_03) {
                      -0.5, 0.5,  0.5,  0.5,  -0.5, 0.5,  0.5,  0.5};
 
   int res = loader(&data, file_name);
+  ck_assert_int_eq(res, 0);
 
   for (int i = 0; i < data.count_edges * 2; i++) {
     // printf("%f == %d\n", test_e[i], data.edges_points[i]);

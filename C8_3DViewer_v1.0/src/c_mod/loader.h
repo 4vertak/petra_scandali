@@ -13,6 +13,10 @@
 
 #define INITIAL_SIZE 128
 
+#ifndef M_PI
+    #define M_PI 3.14159265358979323846
+#endif
+
 typedef struct {
   unsigned count_vertex;
   unsigned count_edges;

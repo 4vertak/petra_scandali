@@ -10,7 +10,7 @@
 void calc_count(FILE* f, data_t* data) {
   char* str = NULL;
   size_t lenght = 0;
-  while (getline(&str, &lenght, f) != EOF) {
+  while (s21_getline(&str, &lenght, f) != EOF) {
     if (strncmp(str, "v ", 2) == 0) {
       data->count_vertex++;
     } else if (strncmp(str, "f ", 2) == 0) {
@@ -41,7 +41,7 @@ int handle_data(FILE* f, data_t* data) {
   if (error_code == 0) {
     char* str = NULL;
     size_t lenght = 0, index_v = 0, index_f = 0, tmp_count_vertex = 0;
-    while (getline(&str, &lenght, f) != EOF && error_code == 0) {
+    while (s21_getline(&str, &lenght, f) != EOF && error_code == 0) {
       if (strncmp(str, "v ", 2) == 0) {
         double x = 0, y = 0, z = 0;
         if (sscanf(str, "v %lf %lf %lf", &x, &y, &z) == 3) {
@@ -116,6 +116,87 @@ void center_position(data_t* data, min_max_t* min_max) {
       data->vertex[i + 2] += -((min_max->max_z + min_max->min_z) / 2);
   }
 }
+/**
+ * @brief Функция чтения строки с динамическим выделением памяти (попытка реализации стандартной функции getline).
+ *
+ * @param lineptr адрес буфера,  содержащего текст.
+ * @param n Указатель на размер.
+ * @param stream Указатель на поток `FILE`.
+ */
+
+size_t s21_getline(char **lineptr, size_t *n, FILE *stream) {
+  
+/**
+* Проверка входных параметров:
+* Если `lineptr`, `n` или `stream` равны `NULL`, устанавливается `errno` в `EINVAL` и возвращается `-1`.
+*/
+ if (lineptr == NULL || n == NULL || stream == NULL) {
+        errno = EINVAL;
+        return -1;
+    }
+  
+/**
+* Инициализация буфера:
+* Если `*lineptr` равен `NULL`, выделяется начальный буфер размером `INITIAL_SIZE`. Если выделение памяти не удалось, устанавливается `errno` в `ENOMEM` и возвращается `-1`.
+*/
+    if (*lineptr == NULL) {
+        *n = INITIAL_SIZE;
+        *lineptr = malloc(*n);
+        if (*lineptr == NULL) {
+            errno = ENOMEM;
+            return -1;
+        }
+    }
+
+    char *buffer = *lineptr;
+    size_t size = *n;
+    size_t pos = 0;
+    int c;
+  
+/**
+* Чтение символов из потока:
+* Символы читаются из потока `stream` с помощью `fgetc` и добавляются в буфер.
+* Если буфер заполняется, его размер удваивается с помощью `realloc`. 
+* Если `realloc` не удается, устанавливается `errno` в `ENOMEM` и возвращается `-1`.
+*/
+    while ((c = fgetc(stream)) != EOF) {
+        if (pos + 1 >= size) {
+            size_t new_size = size * 2;
+            char *new_buffer = realloc(buffer, new_size);
+            if (new_buffer == NULL) {
+                errno = ENOMEM;
+                return -1;
+            }
+            buffer = new_buffer;
+            size = new_size;
+        }
+
+        buffer[pos++] = (char)c;
+
+        if (c == '\n') {
+            break;
+        }
+    }
+  
+/**
+* Завершение строки:
+* Если достигнут конец файла (`EOF`) и ничего не прочитано, возвращается `-1`.
+* Строка завершается нулевым символом (`'\0'`).
+*/
+    if (pos == 0 && c == EOF) {
+        return -1;
+    }
+/**
+* Апдейт указателей:
+* `*lineptr` и `*n` обновляются.
+*/
+    buffer[pos] = '\0';
+    *lineptr = buffer;
+    *n = size;
+  
+    return pos;
+}
+
 
 /**
  * @brief Функция allocate_memory_data выделяет память под массивы vertex и

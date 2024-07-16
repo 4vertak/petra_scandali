@@ -5,7 +5,7 @@ TEST_FLAGS=-lcheck -lpthread -pthread -lm -lrt -lsubunit -lgcov --coverage
 
 SRC = $(wildcard ./c_mod/*/*.c)  
 
-OBJ = $(patsubst c_mod/*/%.c, %.o, $(SRC))
+OBJ = $(patsubst c_mod/*/%.c, %.o, $(SRC))z
 
 TEST = tests/test
 TEST_SRC = $(wildcard $(TEST)*.c)
@@ -19,16 +19,13 @@ TEST_OBJ = $(patsubst $(TEST)%.c, $(TEST)%.o, $(TEST_SRC))
 
 # uninstall:
 
-
-
-
 clean:
 	@rm -f *.o *.a ./*/*.o ./*/*.a
-	@rm -rf *.gcda *.gcno *.info *.gcov *.html gcov_report ./report ./tests/test
+	@rm -rf *.gcda *.gcno ./*/*.gcda ./*/*.gcno
+	@rm -rf *.info *.gcov *.html gcov_report ./report ./tests/test
 	@rm -Rf report
 	@rm -Rf build/Desktop_Qt_6_7_2_MinGW_64_bit-Debug
 	@rm -fR ./frontend/3DViewer/build
-	
 
 # dvi:
 

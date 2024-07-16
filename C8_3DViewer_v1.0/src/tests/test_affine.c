@@ -8,6 +8,7 @@ START_TEST(test_translation_01) {
                      -0.5, 9.5,  0.5,  0.5, 10.5, -0.5, -0.5, 10.5,
                      -0.5, 0.5,  10.5, 0.5, -0.5, 10.5, 0.5,  0.5};
   int res = loader(&data, file_name);
+  ck_assert_int_eq(res, 0);
   x_offset(&data, 10);
   for (int i = 0; i < data.count_vertex * 3; i++) {
     int test_res = test_v[i] - data.vertex[i];
@@ -26,6 +27,7 @@ START_TEST(test_translation_02) {
                      -0.5, -0.5, 10.5, 0.5,  0.5,  9.5, -0.5, 0.5,
                      9.5,  0.5,  0.5,  10.5, -0.5, 0.5, 10.5, 0.5};
   int res = loader(&data, file_name);
+  ck_assert_int_eq(res, 0);
   y_offset(&data, 10);
   for (int i = 0; i < data.count_vertex * 3; i++) {
     int test_res = test_v[i] - data.vertex[i];
@@ -44,6 +46,7 @@ START_TEST(test_translation_03) {
                      9.5,  -0.5, 0.5, 10.5, 0.5,  -0.5, 9.5,  0.5,
                      -0.5, 10.5, 0.5, 0.5,  9.5,  0.5,  0.5,  10.5};
   int res = loader(&data, file_name);
+  ck_assert_int_eq(res, 0);
   z_offset(&data, 10);
   for (int i = 0; i < data.count_vertex * 3; i++) {
     int test_res = test_v[i] - data.vertex[i];
@@ -65,6 +68,7 @@ START_TEST(test_rotation_01) {
                      0.513518,  0.500000,  0.486106,  -0.486106};
 
   int res = loader(&data, file_name);
+  ck_assert_int_eq(res, 0);
   rotation_x(&data, M_PI / 2);
   for (int i = 0; i < data.count_vertex * 3; i++) {
     int test_res = test_v[i] - data.vertex[i];
@@ -88,6 +92,7 @@ START_TEST(test_rotation_02) {
                      0.513518,  0.486106,  0.500000,  -0.486106};
 
   int res = loader(&data, file_name);
+  ck_assert_int_eq(res, 0);
   rotation_y(&data, M_PI / 2);
   for (int i = 0; i < data.count_vertex * 3; i++) {
     int test_res = test_v[i] - data.vertex[i];
@@ -111,6 +116,7 @@ START_TEST(test_rotation_03) {
                      -0.500000, 0.486106,  -0.486106, 0.500000};
 
   int res = loader(&data, file_name);
+  ck_assert_int_eq(res, 0);
   rotation_z(&data, M_PI / 2);
   for (int i = 0; i < data.count_vertex * 3; i++) {
     int test_res = test_v[i] - data.vertex[i];
@@ -132,6 +138,7 @@ START_TEST(test_scaling_01) {
                      -1.5, -1.5, 1.5,  1.5,  1.5,  -1.5, -1.5, 1.5,
                      -1.5, 1.5,  1.5,  1.5,  -1.5, 1.5,  1.5,  1.5};
   int res = loader(&data, file_name);
+  ck_assert_int_eq(res, 0);
   // printf("загрузка\n");
   // for (int i = 0; i < data.count_vertex * 3; i++) {
   //   printf("%f, ", data.vertex[i]);

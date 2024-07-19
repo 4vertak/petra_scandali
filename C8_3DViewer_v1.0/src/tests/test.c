@@ -15,10 +15,8 @@ int main(void) {
     srunner_free(sr);
     i++;
     (number_failed != 0)
-        ? printf(GREEN "=========FAILED: %d =========\n",
-                 number_failed)
-        : printf(RED "=========FAILED: %d =========\n",
-                 number_failed);
+        ? printf(RED "=========FAILED: %d =========\n", number_failed)
+        : printf(GREEN "=========FAILED: %d =========\n", number_failed);
   }
 
   return (number_failed == 0) ? EXIT_SUCCESS : EXIT_FAILURE;

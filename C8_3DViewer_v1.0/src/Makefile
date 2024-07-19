@@ -24,8 +24,9 @@ clean:
 	@rm -rf *.gcda *.gcno ./*/*.gcda ./*/*.gcno
 	@rm -rf *.info *.gcov *.html gcov_report ./report ./tests/test
 	@rm -Rf report
-	@rm -Rf build/Desktop_Qt_6_7_2_MinGW_64_bit-Debug
+	@rm -rf ./qt_mod/build/
 	@rm -fR ./frontend/3DViewer/build
+	@rm -rf ./qt_mod/qt_mod.pro.user
 
 # dvi:
 

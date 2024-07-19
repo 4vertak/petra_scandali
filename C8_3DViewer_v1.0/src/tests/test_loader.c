@@ -79,7 +79,7 @@ START_TEST(test_loader_03) {
 END_TEST
 
 Suite *test_loader(void) {
-  Suite *s = suite_create(ORANGE "\n==========| LOADER |=========");
+  Suite *s = suite_create(ORANGE "\n==========| LOADER |=========\n");
   TCase *tc = tcase_create("tc_loader");
 
   suite_add_tcase(s, tc);

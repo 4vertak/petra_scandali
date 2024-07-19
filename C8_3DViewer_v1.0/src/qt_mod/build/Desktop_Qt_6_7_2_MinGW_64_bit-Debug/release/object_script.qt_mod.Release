@@ -1,0 +1,14 @@
+release/main.o
+release/mainwindow.o
+release/loader.o
+release/helper.o
+release/rotation_x.o
+release/rotation_y.o
+release/rotation_z.o
+release/scaling.o
+release/x_offset.o
+release/y_offset.o
+release/z_offset.o
+release/oglwidget.o
+release/moc_mainwindow.o
+release/moc_oglwidget.o

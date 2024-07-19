@@ -12,7 +12,7 @@ TEST_SRC = $(wildcard $(TEST)*.c)
 TEST_OBJ = $(patsubst $(TEST)%.c, $(TEST)%.o, $(TEST_SRC))
 
 # all, install, uninstall, clean, dvi, dist, tests, gcov_report.
-
+#	# @cat ./semigraphics/complete.txt
 # all:
 
 # install:
@@ -51,6 +51,7 @@ covered:
 	rm -rf ./*.o
 
 test: clean covered test.a
+	@cat ./semigraphics/pseudologo.txt
 	$(CC) $(FLAGS) $(TEST_FLAGS) -o $(TEST).o $(TEST).c -c
 	$(CC) $(TEST).o $(TEST).a c_mod.a -o $(TEST) $(FLAGS) $(TEST_FLAGS)
 	-./$(TEST)
@@ -68,6 +69,7 @@ gcov_report: test
 	~/.local/bin/gcovr -r . --html --html-nested --html-self-contained --txt-metric branch --exclude-unreachable-branches --exclude-lines="c_mod" -o ./report/gcov_report.html
 #	firefox report/gcov_report.html
 
+
 style: clean
 	cp ../materials/linters/.clang-format ../src/.clang-format
 	clang-format -style=Google -n $(SRC) $(TEST_SRC) ./*/*.h
@@ -75,6 +77,7 @@ style: clean
 
 leaks: test
 	valgrind --leak-check=full --show-leak-kinds=all  ./$(TEST)
+
 
 
 rebuild: clean all

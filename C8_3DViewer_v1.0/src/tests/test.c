@@ -15,9 +15,9 @@ int main(void) {
     srunner_free(sr);
     i++;
     (number_failed != 0)
-        ? printf("\033[31;1m=========FAILED: %d =========\033[0;0m\n",
+        ? printf(GREEN "=========FAILED: %d =========\n",
                  number_failed)
-        : printf("\033[32;1m=========FAILED: %d =========\033[0;0m\n",
+        : printf(RED "=========FAILED: %d =========\n",
                  number_failed);
   }
 

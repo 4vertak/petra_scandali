@@ -10,6 +10,8 @@
 #define ORANGE "\033[1;33m"
 #define GREEN "\033[0;32m"
 
+// #define DEBAG
+
 // загрузчик:
 Suite *test_loader(void);
 Suite *affine_transformations(void);

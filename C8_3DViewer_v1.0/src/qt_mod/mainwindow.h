@@ -35,6 +35,14 @@ private slots:
     void on_select_obj_clicked();
     void on_render_clicked();
 
+    void on_projection_type_currentIndexChanged(int value);
+
+    void on_vertex_type_currentIndexChanged(int value);
+    void on_vertex_size_valueChanged(int value);
+
+    void on_line_type_currentIndexChanged(int value);
+    void on_line_thickness_valueChanged(int value);
+
 private:
     Ui::MainWindow *ui;
     bool obj_loaded = false;

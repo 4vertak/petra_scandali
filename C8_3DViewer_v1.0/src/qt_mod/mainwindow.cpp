@@ -28,3 +28,29 @@ void MainWindow::on_render_clicked() {
     obj_loaded = true;
 }
 
+void MainWindow::on_projection_type_currentIndexChanged(int value)
+{
+    ui->openGLWidget->projection_type = value;
+    ui->openGLWidget->update();
+}
+
+void MainWindow::on_vertex_type_currentIndexChanged(int value) {
+    ui->openGLWidget->vertex_type = value;
+    ui->openGLWidget->update();
+}
+
+void MainWindow::on_vertex_size_valueChanged(int value) {
+    ui->openGLWidget->vertex_thickness = value;
+    ui->openGLWidget->update();
+}
+
+void MainWindow::on_line_type_currentIndexChanged(int value) {
+    ui->openGLWidget->edge_type = value;
+    ui->openGLWidget->update();
+}
+
+void MainWindow::on_line_thickness_valueChanged(int value) {
+    ui->openGLWidget->edge_thickness = value;
+    ui->openGLWidget->update();
+}
+

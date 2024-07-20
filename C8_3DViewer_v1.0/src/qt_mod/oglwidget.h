@@ -18,6 +18,7 @@ extern "C" {
 }
 
 class OGLWidget : public QOpenGLWidget {
+
   Q_OBJECT
 
  public:
@@ -28,10 +29,6 @@ class OGLWidget : public QOpenGLWidget {
   data_t data = {0, 0, NULL, NULL};
 
   int projection_type = 0;
-
-  void parse_obj();
-  void restore_default_vals();
-  double normalized_coeff;
 
   double v_red = 255.0f;
   double v_green = 255.0f;
@@ -45,9 +42,16 @@ class OGLWidget : public QOpenGLWidget {
   double bg_green = 0.0f;
   double bg_blue = 0.0f;
 
+  int vertex_type = 0;
+  int vertex_thickness = 3;
+
+  int edge_type = 0;
   int edge_thickness = 3;
 
-  double scale_val = 5;
+  double scale_value = 1;
+  double norm_coef;
+
+  void parse_obj();
 
   ~OGLWidget();
 
@@ -57,6 +61,8 @@ class OGLWidget : public QOpenGLWidget {
   void paintGL() override;
 
   void paint_edges();
+  void paint_points();
+
 };
 
 #endif  // OGLWIDGET_H

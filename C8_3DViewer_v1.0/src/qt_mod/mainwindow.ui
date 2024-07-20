@@ -11,7 +11,7 @@
    </rect>
   </property>
   <property name="sizePolicy">
-   <sizepolicy hsizetype="Fixed" vsizetype="Fixed">
+   <sizepolicy hsizetype="Minimum" vsizetype="Fixed">
     <horstretch>0</horstretch>
     <verstretch>0</verstretch>
    </sizepolicy>
@@ -84,9 +84,9 @@
        <property name="geometry">
         <rect>
          <x>10</x>
-         <y>50</y>
+         <y>40</y>
          <width>181</width>
-         <height>30</height>
+         <height>21</height>
         </rect>
        </property>
        <property name="text">
@@ -97,13 +97,214 @@
        <property name="geometry">
         <rect>
          <x>10</x>
-         <y>90</y>
+         <y>70</y>
          <width>181</width>
          <height>31</height>
         </rect>
        </property>
        <property name="text">
         <string>Start</string>
+       </property>
+      </widget>
+      <widget class="QSpinBox" name="line_thickness">
+       <property name="geometry">
+        <rect>
+         <x>90</x>
+         <y>260</y>
+         <width>101</width>
+         <height>22</height>
+        </rect>
+       </property>
+       <property name="minimum">
+        <number>1</number>
+       </property>
+       <property name="maximum">
+        <number>50</number>
+       </property>
+      </widget>
+      <widget class="QLabel" name="label_7">
+       <property name="geometry">
+        <rect>
+         <x>10</x>
+         <y>231</y>
+         <width>81</width>
+         <height>21</height>
+        </rect>
+       </property>
+       <property name="sizePolicy">
+        <sizepolicy hsizetype="Minimum" vsizetype="Fixed">
+         <horstretch>0</horstretch>
+         <verstretch>0</verstretch>
+        </sizepolicy>
+       </property>
+       <property name="text">
+        <string>&lt;html&gt;&lt;head/&gt;&lt;body&gt;&lt;p&gt;Тип линии:&lt;/p&gt;&lt;/body&gt;&lt;/html&gt;</string>
+       </property>
+      </widget>
+      <widget class="QComboBox" name="line_type">
+       <property name="geometry">
+        <rect>
+         <x>90</x>
+         <y>230</y>
+         <width>101</width>
+         <height>21</height>
+        </rect>
+       </property>
+       <item>
+        <property name="text">
+         <string>Сплошная</string>
+        </property>
+       </item>
+       <item>
+        <property name="text">
+         <string>Пунктирная</string>
+        </property>
+       </item>
+      </widget>
+      <widget class="QSpinBox" name="vertex_size">
+       <property name="geometry">
+        <rect>
+         <x>90</x>
+         <y>320</y>
+         <width>101</width>
+         <height>22</height>
+        </rect>
+       </property>
+       <property name="minimum">
+        <number>1</number>
+       </property>
+       <property name="maximum">
+        <number>50</number>
+       </property>
+      </widget>
+      <widget class="QLabel" name="label_2">
+       <property name="geometry">
+        <rect>
+         <x>3</x>
+         <y>290</y>
+         <width>81</width>
+         <height>21</height>
+        </rect>
+       </property>
+       <property name="sizePolicy">
+        <sizepolicy hsizetype="Minimum" vsizetype="Fixed">
+         <horstretch>0</horstretch>
+         <verstretch>0</verstretch>
+        </sizepolicy>
+       </property>
+       <property name="text">
+        <string>&lt;html&gt;&lt;head/&gt;&lt;body&gt;&lt;p&gt;Тип вершин:&lt;/p&gt;&lt;/body&gt;&lt;/html&gt;</string>
+       </property>
+       <property name="alignment">
+        <set>Qt::AlignCenter</set>
+       </property>
+      </widget>
+      <widget class="QComboBox" name="vertex_type">
+       <property name="geometry">
+        <rect>
+         <x>87</x>
+         <y>289</y>
+         <width>101</width>
+         <height>22</height>
+        </rect>
+       </property>
+       <item>
+        <property name="text">
+         <string>&lt;none&gt;</string>
+        </property>
+       </item>
+       <item>
+        <property name="text">
+         <string>круг</string>
+        </property>
+       </item>
+       <item>
+        <property name="text">
+         <string>квадрат</string>
+        </property>
+       </item>
+      </widget>
+      <widget class="QLabel" name="label_4">
+       <property name="geometry">
+        <rect>
+         <x>10</x>
+         <y>320</y>
+         <width>81</width>
+         <height>21</height>
+        </rect>
+       </property>
+       <property name="sizePolicy">
+        <sizepolicy hsizetype="Minimum" vsizetype="Fixed">
+         <horstretch>0</horstretch>
+         <verstretch>0</verstretch>
+        </sizepolicy>
+       </property>
+       <property name="text">
+        <string>Размер:</string>
+       </property>
+      </widget>
+      <widget class="QComboBox" name="projection_type">
+       <property name="geometry">
+        <rect>
+         <x>90</x>
+         <y>350</y>
+         <width>101</width>
+         <height>22</height>
+        </rect>
+       </property>
+       <property name="sizePolicy">
+        <sizepolicy hsizetype="Minimum" vsizetype="Fixed">
+         <horstretch>0</horstretch>
+         <verstretch>0</verstretch>
+        </sizepolicy>
+       </property>
+       <item>
+        <property name="text">
+         <string>Параллельная</string>
+        </property>
+       </item>
+       <item>
+        <property name="text">
+         <string>Центральная</string>
+        </property>
+       </item>
+      </widget>
+      <widget class="QLabel" name="label_8">
+       <property name="geometry">
+        <rect>
+         <x>10</x>
+         <y>260</y>
+         <width>81</width>
+         <height>21</height>
+        </rect>
+       </property>
+       <property name="sizePolicy">
+        <sizepolicy hsizetype="Minimum" vsizetype="Fixed">
+         <horstretch>0</horstretch>
+         <verstretch>0</verstretch>
+        </sizepolicy>
+       </property>
+       <property name="text">
+        <string>&lt;html&gt;&lt;head/&gt;&lt;body&gt;&lt;p&gt;Размер:&lt;/p&gt;&lt;/body&gt;&lt;/html&gt;</string>
+       </property>
+      </widget>
+      <widget class="QLabel" name="label_5">
+       <property name="geometry">
+        <rect>
+         <x>10</x>
+         <y>350</y>
+         <width>81</width>
+         <height>21</height>
+        </rect>
+       </property>
+       <property name="sizePolicy">
+        <sizepolicy hsizetype="Minimum" vsizetype="Fixed">
+         <horstretch>0</horstretch>
+         <verstretch>0</verstretch>
+        </sizepolicy>
+       </property>
+       <property name="text">
+        <string>Проекция</string>
        </property>
       </widget>
      </widget>

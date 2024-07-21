@@ -6,6 +6,7 @@ void OGLWidget::parse_obj() {
   free_memory_data(&this->data);
   if (this->filename[0] != '\0') {
     loader(&this->data, this->filename);
+      normalized_coef();
     update();
   }
 }
@@ -74,5 +75,48 @@ void OGLWidget::paint_points()
     glDrawArrays(GL_POINTS, 0, data.count_vertex);
     if (this->vertex_type == 1) {
         glDisable(GL_POINT_SMOOTH);
+    }
+}
+
+void OGLWidget::mousePressEvent(QMouseEvent *event)
+{
+  current_position = event->globalPosition().toPoint();
+}
+
+void OGLWidget::mouseMoveEvent(QMouseEvent *event)
+{
+    new_position = QPoint(event->globalPosition().toPoint() - current_position);
+
+    if (event->buttons() & Qt::LeftButton) {
+        x_offset(&this->data, new_position.x() * this->norm_coef / 5000.0);
+        y_offset(&this->data, -new_position.y() * this->norm_coef / 5000.0);
+        update();
+    } else if (event->buttons() & Qt::RightButton) {
+        rotation_x(&this->data, -new_position.y() * 0.005);
+        rotation_y(&this->data, new_position.x() * 0.005);
+        update();
+    }
+}
+
+void OGLWidget::wheelEvent(QWheelEvent *event)
+{
+    QPoint degrees_val = event->angleDelta() / 120;
+    double step = norm_coef / 10;
+    double tmp_scale_value = scale_value;
+
+    if ((int)(scale_value + degrees_val.y() * step) > 0) {
+        scale_value += degrees_val.y() * step;
+        scaling(&this->data, scale_value / tmp_scale_value);
+        update();
+    }
+}
+
+void OGLWidget::normalized_coef()
+{
+    norm_coef = -1;
+    for (size_t i = 0; i < data.count_vertex * 3; i++) {
+        if (fabs(data.vertex[i]) > norm_coef) {
+            norm_coef = fabs(data.vertex[i]);
+        }
     }
 }

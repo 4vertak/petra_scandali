@@ -3,11 +3,8 @@
 
 #pragma once
 #include <QFileDialog>
-#include <QKeyEvent>
 #include <QMouseEvent>
 #include <QOpenGLWidget>
-#include <QSurfaceFormat>
-#include <QTimer>
 #include <QWheelEvent>
 
 #include "mainwindow.h"
@@ -62,6 +59,16 @@ class OGLWidget : public QOpenGLWidget {
 
   void paint_edges();
   void paint_points();
+
+  void mousePressEvent(QMouseEvent *event) override;
+  void mouseMoveEvent(QMouseEvent *event) override;
+  void wheelEvent(QWheelEvent *event) override;
+
+  private:
+  void normalized_coef();
+
+  QPoint current_position;
+  QPoint new_position;
 
 };
 

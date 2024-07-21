@@ -11,7 +11,7 @@
    </rect>
   </property>
   <property name="sizePolicy">
-   <sizepolicy hsizetype="Minimum" vsizetype="Fixed">
+   <sizepolicy hsizetype="Fixed" vsizetype="Fixed">
     <horstretch>0</horstretch>
     <verstretch>0</verstretch>
    </sizepolicy>
@@ -57,16 +57,19 @@
       </property>
       <property name="minimumSize">
        <size>
-        <width>200</width>
+        <width>290</width>
         <height>0</height>
        </size>
+      </property>
+      <property name="autoFillBackground">
+       <bool>false</bool>
       </property>
       <widget class="QLineEdit" name="file_path">
        <property name="geometry">
         <rect>
          <x>10</x>
-         <y>10</y>
-         <width>181</width>
+         <y>20</y>
+         <width>261</width>
          <height>21</height>
         </rect>
        </property>
@@ -84,9 +87,9 @@
        <property name="geometry">
         <rect>
          <x>10</x>
-         <y>40</y>
-         <width>181</width>
-         <height>21</height>
+         <y>50</y>
+         <width>261</width>
+         <height>31</height>
         </rect>
        </property>
        <property name="text">
@@ -97,8 +100,8 @@
        <property name="geometry">
         <rect>
          <x>10</x>
-         <y>70</y>
-         <width>181</width>
+         <y>90</y>
+         <width>261</width>
          <height>31</height>
         </rect>
        </property>
@@ -106,206 +109,389 @@
         <string>Start</string>
        </property>
       </widget>
-      <widget class="QSpinBox" name="line_thickness">
-       <property name="geometry">
-        <rect>
-         <x>90</x>
-         <y>260</y>
-         <width>101</width>
-         <height>22</height>
-        </rect>
-       </property>
-       <property name="minimum">
-        <number>1</number>
-       </property>
-       <property name="maximum">
-        <number>50</number>
-       </property>
-      </widget>
-      <widget class="QLabel" name="label_7">
+      <widget class="QWidget" name="verticalLayoutWidget_2">
        <property name="geometry">
         <rect>
          <x>10</x>
-         <y>231</y>
-         <width>81</width>
-         <height>21</height>
+         <y>150</y>
+         <width>261</width>
+         <height>141</height>
         </rect>
        </property>
-       <property name="sizePolicy">
-        <sizepolicy hsizetype="Minimum" vsizetype="Fixed">
-         <horstretch>0</horstretch>
-         <verstretch>0</verstretch>
-        </sizepolicy>
-       </property>
-       <property name="text">
-        <string>&lt;html&gt;&lt;head/&gt;&lt;body&gt;&lt;p&gt;Тип линии:&lt;/p&gt;&lt;/body&gt;&lt;/html&gt;</string>
-       </property>
+       <layout class="QVBoxLayout" name="verticalLayout_5">
+        <item>
+         <layout class="QHBoxLayout" name="horizontalLayout_17">
+          <item alignment="Qt::AlignHCenter">
+           <widget class="QLabel" name="label">
+            <property name="sizePolicy">
+             <sizepolicy hsizetype="Expanding" vsizetype="Preferred">
+              <horstretch>0</horstretch>
+              <verstretch>0</verstretch>
+             </sizepolicy>
+            </property>
+            <property name="text">
+             <string>Projection type</string>
+            </property>
+           </widget>
+          </item>
+          <item>
+           <spacer name="horizontalSpacer">
+            <property name="orientation">
+             <enum>Qt::Horizontal</enum>
+            </property>
+            <property name="sizeHint" stdset="0">
+             <size>
+              <width>40</width>
+              <height>20</height>
+             </size>
+            </property>
+           </spacer>
+          </item>
+          <item>
+           <widget class="QComboBox" name="projection_type">
+            <item>
+             <property name="text">
+              <string>parallel</string>
+             </property>
+            </item>
+            <item>
+             <property name="text">
+              <string>perspective </string>
+             </property>
+            </item>
+           </widget>
+          </item>
+         </layout>
+        </item>
+        <item>
+         <layout class="QGridLayout" name="gridLayout_2">
+          <item row="0" column="2">
+           <widget class="QComboBox" name="vertex_type">
+            <item>
+             <property name="text">
+              <string>&lt;none&gt;</string>
+             </property>
+            </item>
+            <item>
+             <property name="text">
+              <string>circle</string>
+             </property>
+            </item>
+            <item>
+             <property name="text">
+              <string>square</string>
+             </property>
+            </item>
+           </widget>
+          </item>
+          <item row="0" column="4">
+           <widget class="QLabel" name="label_3">
+            <property name="sizePolicy">
+             <sizepolicy hsizetype="Expanding" vsizetype="Preferred">
+              <horstretch>0</horstretch>
+              <verstretch>0</verstretch>
+             </sizepolicy>
+            </property>
+            <property name="text">
+             <string>&lt;html&gt;&lt;head/&gt;&lt;body&gt;&lt;p align=&quot;right&quot;&gt;Size vertex&lt;/p&gt;&lt;/body&gt;&lt;/html&gt;</string>
+            </property>
+            <property name="alignment">
+             <set>Qt::AlignCenter</set>
+            </property>
+           </widget>
+          </item>
+          <item row="0" column="0">
+           <widget class="QLabel" name="label_2">
+            <property name="sizePolicy">
+             <sizepolicy hsizetype="Expanding" vsizetype="Preferred">
+              <horstretch>0</horstretch>
+              <verstretch>0</verstretch>
+             </sizepolicy>
+            </property>
+            <property name="text">
+             <string>&lt;html&gt;&lt;head/&gt;&lt;body&gt;&lt;p align=&quot;right&quot;&gt;Vertex type&lt;/p&gt;&lt;/body&gt;&lt;/html&gt;</string>
+            </property>
+            <property name="alignment">
+             <set>Qt::AlignCenter</set>
+            </property>
+           </widget>
+          </item>
+          <item row="0" column="1">
+           <spacer name="horizontalSpacer_2">
+            <property name="orientation">
+             <enum>Qt::Horizontal</enum>
+            </property>
+            <property name="sizeHint" stdset="0">
+             <size>
+              <width>40</width>
+              <height>20</height>
+             </size>
+            </property>
+           </spacer>
+          </item>
+          <item row="0" column="5">
+           <widget class="QSpinBox" name="vertex_size">
+            <property name="minimum">
+             <number>1</number>
+            </property>
+            <property name="maximum">
+             <number>50</number>
+            </property>
+           </widget>
+          </item>
+          <item row="0" column="3">
+           <spacer name="horizontalSpacer_3">
+            <property name="orientation">
+             <enum>Qt::Horizontal</enum>
+            </property>
+            <property name="sizeHint" stdset="0">
+             <size>
+              <width>40</width>
+              <height>20</height>
+             </size>
+            </property>
+           </spacer>
+          </item>
+         </layout>
+        </item>
+        <item>
+         <layout class="QGridLayout" name="gridLayout">
+          <item row="0" column="4">
+           <widget class="QLabel" name="label_8">
+            <property name="text">
+             <string>&lt;html&gt;&lt;head/&gt;&lt;body&gt;&lt;p align=&quot;right&quot;&gt;Size line&lt;/p&gt;&lt;/body&gt;&lt;/html&gt;</string>
+            </property>
+           </widget>
+          </item>
+          <item row="0" column="2">
+           <widget class="QComboBox" name="line_type">
+            <item>
+             <property name="text">
+              <string>solid</string>
+             </property>
+            </item>
+            <item>
+             <property name="text">
+              <string>dotted</string>
+             </property>
+            </item>
+           </widget>
+          </item>
+          <item row="0" column="5">
+           <widget class="QSpinBox" name="line_thickness">
+            <property name="minimum">
+             <number>1</number>
+            </property>
+            <property name="maximum">
+             <number>50</number>
+            </property>
+           </widget>
+          </item>
+          <item row="0" column="1">
+           <spacer name="horizontalSpacer_4">
+            <property name="orientation">
+             <enum>Qt::Horizontal</enum>
+            </property>
+            <property name="sizeHint" stdset="0">
+             <size>
+              <width>40</width>
+              <height>20</height>
+             </size>
+            </property>
+           </spacer>
+          </item>
+          <item row="0" column="0">
+           <widget class="QLabel" name="label_7">
+            <property name="text">
+             <string>&lt;html&gt;&lt;head/&gt;&lt;body&gt;&lt;p align=&quot;right&quot;&gt;Edge type&lt;/p&gt;&lt;/body&gt;&lt;/html&gt;</string>
+            </property>
+           </widget>
+          </item>
+          <item row="0" column="3">
+           <spacer name="horizontalSpacer_5">
+            <property name="orientation">
+             <enum>Qt::Horizontal</enum>
+            </property>
+            <property name="sizeHint" stdset="0">
+             <size>
+              <width>40</width>
+              <height>20</height>
+             </size>
+            </property>
+           </spacer>
+          </item>
+         </layout>
+        </item>
+       </layout>
       </widget>
-      <widget class="QComboBox" name="line_type">
+      <widget class="QSplitter" name="splitter_2">
        <property name="geometry">
         <rect>
-         <x>90</x>
-         <y>230</y>
-         <width>101</width>
-         <height>21</height>
-        </rect>
-       </property>
-       <item>
-        <property name="text">
-         <string>Сплошная</string>
-        </property>
-       </item>
-       <item>
-        <property name="text">
-         <string>Пунктирная</string>
-        </property>
-       </item>
-      </widget>
-      <widget class="QSpinBox" name="vertex_size">
-       <property name="geometry">
-        <rect>
-         <x>90</x>
+         <x>19</x>
          <y>320</y>
-         <width>101</width>
+         <width>251</width>
          <height>22</height>
         </rect>
        </property>
-       <property name="minimum">
-        <number>1</number>
+       <property name="orientation">
+        <enum>Qt::Horizontal</enum>
        </property>
-       <property name="maximum">
-        <number>50</number>
-       </property>
-      </widget>
-      <widget class="QLabel" name="label_2">
-       <property name="geometry">
-        <rect>
-         <x>3</x>
-         <y>290</y>
-         <width>81</width>
-         <height>21</height>
-        </rect>
-       </property>
-       <property name="sizePolicy">
-        <sizepolicy hsizetype="Minimum" vsizetype="Fixed">
-         <horstretch>0</horstretch>
-         <verstretch>0</verstretch>
-        </sizepolicy>
-       </property>
-       <property name="text">
-        <string>&lt;html&gt;&lt;head/&gt;&lt;body&gt;&lt;p&gt;Тип вершин:&lt;/p&gt;&lt;/body&gt;&lt;/html&gt;</string>
-       </property>
-       <property name="alignment">
-        <set>Qt::AlignCenter</set>
-       </property>
-      </widget>
-      <widget class="QComboBox" name="vertex_type">
-       <property name="geometry">
-        <rect>
-         <x>87</x>
-         <y>289</y>
-         <width>101</width>
-         <height>22</height>
-        </rect>
-       </property>
-       <item>
+       <widget class="QLabel" name="label_10">
         <property name="text">
-         <string>&lt;none&gt;</string>
+         <string>set  offset:    </string>
         </property>
-       </item>
-       <item>
-        <property name="text">
-         <string>круг</string>
+       </widget>
+       <widget class="QSplitter" name="splitter">
+        <property name="orientation">
+         <enum>Qt::Horizontal</enum>
         </property>
-       </item>
-       <item>
-        <property name="text">
-         <string>квадрат</string>
-        </property>
-       </item>
+        <widget class="QLabel" name="label_24">
+         <property name="text">
+          <string>x</string>
+         </property>
+        </widget>
+        <widget class="QSpinBox" name="x_move_spinbox">
+         <property name="minimum">
+          <number>1</number>
+         </property>
+         <property name="maximum">
+          <number>100</number>
+         </property>
+         <property name="value">
+          <number>50</number>
+         </property>
+        </widget>
+        <widget class="QLabel" name="label_23">
+         <property name="text">
+          <string>y</string>
+         </property>
+        </widget>
+        <widget class="QSpinBox" name="y_move_spinbox">
+         <property name="minimum">
+          <number>1</number>
+         </property>
+         <property name="maximum">
+          <number>100</number>
+         </property>
+         <property name="value">
+          <number>50</number>
+         </property>
+        </widget>
+        <widget class="QLabel" name="label_22">
+         <property name="text">
+          <string>z</string>
+         </property>
+        </widget>
+        <widget class="QSpinBox" name="z_move_spinbox">
+         <property name="minimum">
+          <number>1</number>
+         </property>
+         <property name="maximum">
+          <number>100</number>
+         </property>
+         <property name="value">
+          <number>50</number>
+         </property>
+        </widget>
+       </widget>
       </widget>
-      <widget class="QLabel" name="label_4">
+      <widget class="QSplitter" name="splitter_3">
        <property name="geometry">
         <rect>
-         <x>10</x>
-         <y>320</y>
-         <width>81</width>
-         <height>21</height>
-        </rect>
-       </property>
-       <property name="sizePolicy">
-        <sizepolicy hsizetype="Minimum" vsizetype="Fixed">
-         <horstretch>0</horstretch>
-         <verstretch>0</verstretch>
-        </sizepolicy>
-       </property>
-       <property name="text">
-        <string>Размер:</string>
-       </property>
-      </widget>
-      <widget class="QComboBox" name="projection_type">
-       <property name="geometry">
-        <rect>
-         <x>90</x>
+         <x>20</x>
          <y>350</y>
-         <width>101</width>
+         <width>251</width>
          <height>22</height>
         </rect>
        </property>
-       <property name="sizePolicy">
-        <sizepolicy hsizetype="Minimum" vsizetype="Fixed">
-         <horstretch>0</horstretch>
-         <verstretch>0</verstretch>
-        </sizepolicy>
+       <property name="orientation">
+        <enum>Qt::Horizontal</enum>
        </property>
-       <item>
+       <widget class="QLabel" name="label_14">
         <property name="text">
-         <string>Параллельная</string>
+         <string>set rotation: </string>
         </property>
-       </item>
-       <item>
+       </widget>
+       <widget class="QLabel" name="label_20">
         <property name="text">
-         <string>Центральная</string>
+         <string>x</string>
         </property>
-       </item>
+       </widget>
+       <widget class="QSpinBox" name="x_turn_spinbox">
+        <property name="minimum">
+         <number>1</number>
+        </property>
+        <property name="maximum">
+         <number>100</number>
+        </property>
+        <property name="value">
+         <number>50</number>
+        </property>
+       </widget>
+       <widget class="QLabel" name="label_21">
+        <property name="text">
+         <string>y</string>
+        </property>
+       </widget>
+       <widget class="QSpinBox" name="y_turn_spinbox">
+        <property name="minimum">
+         <number>1</number>
+        </property>
+        <property name="maximum">
+         <number>100</number>
+        </property>
+        <property name="value">
+         <number>50</number>
+        </property>
+       </widget>
+       <widget class="QLabel" name="label_19">
+        <property name="text">
+         <string>z</string>
+        </property>
+       </widget>
+       <widget class="QSpinBox" name="z_turn_spinbox">
+        <property name="minimum">
+         <number>1</number>
+        </property>
+        <property name="maximum">
+         <number>100</number>
+        </property>
+        <property name="value">
+         <number>50</number>
+        </property>
+       </widget>
       </widget>
-      <widget class="QLabel" name="label_8">
+      <widget class="QWidget" name="layoutWidget">
        <property name="geometry">
         <rect>
-         <x>10</x>
-         <y>260</y>
-         <width>81</width>
-         <height>21</height>
+         <x>20</x>
+         <y>380</y>
+         <width>251</width>
+         <height>24</height>
         </rect>
        </property>
-       <property name="sizePolicy">
-        <sizepolicy hsizetype="Minimum" vsizetype="Fixed">
-         <horstretch>0</horstretch>
-         <verstretch>0</verstretch>
-        </sizepolicy>
-       </property>
-       <property name="text">
-        <string>&lt;html&gt;&lt;head/&gt;&lt;body&gt;&lt;p&gt;Размер:&lt;/p&gt;&lt;/body&gt;&lt;/html&gt;</string>
-       </property>
-      </widget>
-      <widget class="QLabel" name="label_5">
-       <property name="geometry">
-        <rect>
-         <x>10</x>
-         <y>350</y>
-         <width>81</width>
-         <height>21</height>
-        </rect>
-       </property>
-       <property name="sizePolicy">
-        <sizepolicy hsizetype="Minimum" vsizetype="Fixed">
-         <horstretch>0</horstretch>
-         <verstretch>0</verstretch>
-        </sizepolicy>
-       </property>
-       <property name="text">
-        <string>Проекция</string>
-       </property>
+       <layout class="QHBoxLayout" name="horizontalLayout">
+        <item>
+         <widget class="QLabel" name="label_18">
+          <property name="text">
+           <string>scale</string>
+          </property>
+         </widget>
+        </item>
+        <item>
+         <widget class="QSpinBox" name="scale_spinbox">
+          <property name="minimum">
+           <number>1</number>
+          </property>
+          <property name="maximum">
+           <number>100</number>
+          </property>
+          <property name="value">
+           <number>50</number>
+          </property>
+         </widget>
+        </item>
+       </layout>
       </widget>
      </widget>
     </item>

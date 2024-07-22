@@ -34,12 +34,16 @@ void OGLWidget::paintGL() {
   glLoadIdentity();
 
   if (this->projection_type == 0) {
-      glOrtho(-2, 2, -2, 2, 1, 15);
-      glTranslated(0, 0, -3);
+      glOrtho(-1 * norm_coef, 1 * norm_coef, -1 * norm_coef,
+              1 * norm_coef, -1 * norm_coef,
+              1000 * norm_coef);
+      glTranslatef(0, -norm_coef / 2, 0);
 
   } else {
-      glFrustum(-2, 2, -2, 2, 1, 15);
-      glTranslated(0, 0, -2);
+      glFrustum(-1 * norm_coef, 1 * norm_coef,
+                -1 * norm_coef, 1 * norm_coef, norm_coef,
+                1000 * norm_coef);
+      glTranslatef(0, 0, -2 * norm_coef);
   }
 
   glEnableClientState(GL_VERTEX_ARRAY);
@@ -88,12 +92,12 @@ void OGLWidget::mouseMoveEvent(QMouseEvent *event)
     new_position = QPoint(event->globalPosition().toPoint() - current_position);
 
     if (event->buttons() & Qt::LeftButton) {
-        x_offset(&this->data, new_position.x() * this->norm_coef / 500.0);
-        y_offset(&this->data, -new_position.y() * this->norm_coef / 500.0);
+        x_offset(&this->data, new_position.x() * this->norm_coef / 5000.0);
+        y_offset(&this->data, -new_position.y() * this->norm_coef / 5000.0);
         update();
     } else if (event->buttons() & Qt::RightButton) {
-        rotation_x(&this->data, -new_position.y() * 0.005);
-        rotation_y(&this->data, new_position.x() * 0.005);
+        rotation_x(&this->data, new_position.y() * 0.01);
+        rotation_y(&this->data, -new_position.x() * 0.01);
         update();
     }
 }
@@ -101,11 +105,11 @@ void OGLWidget::mouseMoveEvent(QMouseEvent *event)
 void OGLWidget::wheelEvent(QWheelEvent *event)
 {
     QPoint degrees_val = event->angleDelta() / 120;
-    double step = norm_coef / 10;
+    double increment = norm_coef / 10;
     double tmp_scale_value = scale_value;
 
-    if ((int)(scale_value + degrees_val.y() * step) > 0) {
-        scale_value += degrees_val.y() * step;
+    if ((int)(scale_value + degrees_val.y() * increment) > 0) {
+        scale_value += degrees_val.y() * increment;
         scaling(&this->data, scale_value / tmp_scale_value);
         update();
     }

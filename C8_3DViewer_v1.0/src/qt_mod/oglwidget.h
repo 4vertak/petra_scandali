@@ -1,13 +1,11 @@
 #ifndef OGLWIDGET_H
 #define OGLWIDGET_H
 
-#pragma once
 #include <QFileDialog>
 #include <QMouseEvent>
 #include <QOpenGLWidget>
 #include <QWheelEvent>
 
-#include "mainwindow.h"
 
 extern "C" {
 #include "../c_mod/affine_func.h"

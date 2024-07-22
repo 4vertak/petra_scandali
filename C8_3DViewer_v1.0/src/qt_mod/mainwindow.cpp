@@ -5,11 +5,111 @@
 MainWindow::MainWindow(QWidget *parent)
     : QMainWindow(parent), ui(new Ui::MainWindow) {
   ui->setupUi(this);
+
+    settings = new QSettings(0, 0, this);
+    timer = new QTimer(0);
+    connect(timer, SIGNAL(timeout()), this, SLOT(make_gif()));
+
+    load_settings();
+    connect(ui->v_red_spinbox, SIGNAL(valueChanged(int)), this,
+            SLOT(repaint_vertexes()));
+    connect(ui->v_green_spinbox, SIGNAL(valueChanged(int)), this,
+            SLOT(repaint_vertexes()));
+    connect(ui->v_blue_spinbox, SIGNAL(valueChanged(int)), this,
+            SLOT(repaint_vertexes()));
+
+    connect(ui->e_red_spinbox, SIGNAL(valueChanged(int)), this,
+            SLOT(repaint_edges()));
+    connect(ui->e_green_spinbox, SIGNAL(valueChanged(int)), this,
+            SLOT(repaint_edges()));
+    connect(ui->e_blue_spinbox, SIGNAL(valueChanged(int)), this,
+            SLOT(repaint_edges()));
+
+    connect(ui->bg_red_spinbox, SIGNAL(valueChanged(int)), this,
+            SLOT(repaint_background()));
+    connect(ui->bg_green_spinbox, SIGNAL(valueChanged(int)), this,
+            SLOT(repaint_background()));
+    connect(ui->bg_blue_spinbox, SIGNAL(valueChanged(int)), this,
+            SLOT(repaint_background()));
 }
 
 MainWindow::~MainWindow() {
+    save_settings();
   free_memory_data(&ui->openGLWidget->data);
   delete ui;
+}
+
+void MainWindow::save_settings() {
+    settings->setValue("settings_saved", 1);
+
+    settings->setValue("projection_type", ui->openGLWidget->projection_type);
+
+    settings->setValue("vertex_type", ui->openGLWidget->vertex_type);
+    settings->setValue("vertex_thickness", ui->openGLWidget->vertex_thickness);
+
+    settings->setValue("edge_type", ui->openGLWidget->edge_type);
+    settings->setValue("edge_thickness", ui->openGLWidget->edge_thickness);
+
+    settings->setValue("v_red", ui->openGLWidget->v_red);
+    settings->setValue("v_green", ui->openGLWidget->v_green);
+    settings->setValue("v_blue", ui->openGLWidget->v_blue);
+    settings->setValue("e_red", ui->openGLWidget->e_red);
+    settings->setValue("e_green", ui->openGLWidget->e_green);
+    settings->setValue("e_blue", ui->openGLWidget->e_blue);
+    settings->setValue("bg_red", ui->openGLWidget->bg_red);
+    settings->setValue("bg_green", ui->openGLWidget->bg_green);
+    settings->setValue("bg_blue", ui->openGLWidget->bg_blue);
+}
+
+void MainWindow::load_settings() {
+    if (settings->value("settings_saved").toInt()) {
+        ui->openGLWidget->projection_type =
+            settings->value("projection_type").toInt();
+
+        ui->openGLWidget->vertex_type = settings->value("vertex_type").toInt();
+        ui->openGLWidget->vertex_thickness =
+            settings->value("vertex_thickness").toInt();
+
+        ui->openGLWidget->edge_type = settings->value("edge_type").toInt();
+        ui->openGLWidget->edge_thickness =
+            settings->value("edge_thickness").toInt();
+
+        ui->openGLWidget->v_red = settings->value("v_red").toDouble();
+        ui->openGLWidget->v_green = settings->value("v_green").toDouble();
+        ui->openGLWidget->v_blue = settings->value("v_blue").toDouble();
+        ui->openGLWidget->e_red = settings->value("e_red").toDouble();
+        ui->openGLWidget->e_green = settings->value("e_green").toDouble();
+        ui->openGLWidget->e_blue = settings->value("e_blue").toDouble();
+        ui->openGLWidget->bg_red = settings->value("bg_red").toDouble();
+        ui->openGLWidget->bg_green = settings->value("bg_green").toDouble();
+        ui->openGLWidget->bg_blue = settings->value("bg_blue").toDouble();
+
+        set_settings_in_window();
+
+        repaint_vertexes();
+        repaint_edges();
+        repaint_background();
+    }
+}
+
+void MainWindow::set_settings_in_window() {
+    ui->projection_type->setCurrentIndex(ui->openGLWidget->projection_type);
+
+    ui->vertex_type->setCurrentIndex(ui->openGLWidget->vertex_type);
+    ui->vertex_size->setValue(ui->openGLWidget->vertex_thickness);
+
+    ui->line_type->setCurrentIndex(ui->openGLWidget->edge_type);
+    ui->line_thickness->setValue(ui->openGLWidget->edge_thickness);
+
+    ui->v_red_spinbox->setValue((int)(ui->openGLWidget->v_red * 255));
+    ui->v_green_spinbox->setValue((int)(ui->openGLWidget->v_green * 255));
+    ui->v_blue_spinbox->setValue((int)(ui->openGLWidget->v_blue * 255));
+    ui->e_red_spinbox->setValue((int)(ui->openGLWidget->e_red * 255));
+    ui->e_green_spinbox->setValue((int)(ui->openGLWidget->e_green * 255));
+    ui->e_blue_spinbox->setValue((int)(ui->openGLWidget->e_blue * 255));
+    ui->bg_red_spinbox->setValue((int)(ui->openGLWidget->bg_red * 255));
+    ui->bg_green_spinbox->setValue((int)(ui->openGLWidget->bg_green * 255));
+    ui->bg_blue_spinbox->setValue((int)(ui->openGLWidget->bg_blue * 255));
 }
 
 void MainWindow::on_select_obj_clicked() {
@@ -161,66 +261,119 @@ void MainWindow::on_scale_spinbox_valueChanged(int arg1) {
   }
 }
 
-
-void MainWindow::on_v_red_spinbox_valueChanged(int arg1)
-{
-    ui->openGLWidget->v_red=arg1/255.0f;
-     ui->openGLWidget->update();
-}
-
-
-void MainWindow::on_v_green_spinbox_valueChanged(int arg1)
-{
-    ui->openGLWidget->v_green=arg1/255.0f;
-     ui->openGLWidget->update();
-}
-
-
-void MainWindow::on_v_blue_spinbox_valueChanged(int arg1)
-{
-    ui->openGLWidget->v_blue=arg1/255.0f;
-     ui->openGLWidget->update();
-}
-
-
-void MainWindow::on_bg_red_spinbox_valueChanged(int arg1)
-{
-    ui->openGLWidget->bg_red=arg1/255.0f;
+void MainWindow::repaint_vertexes() {
+    QString red = QString::number(ui->v_red_spinbox->value());
+    QString green = QString::number(ui->v_green_spinbox->value());
+    QString blue = QString::number(ui->v_blue_spinbox->value());
+    ui->v_color_prev->setStyleSheet(
+        "QLabel{"
+        "background-color:rgb(" +
+        red + "," + green + "," + blue +
+        ");"
+        "}");
+    ui->openGLWidget->v_red = ui->v_red_spinbox->value() / 255.0f;
+    ui->openGLWidget->v_green = ui->v_green_spinbox->value() / 255.0f;
+    ui->openGLWidget->v_blue = ui->v_blue_spinbox->value() / 255.0f;
     ui->openGLWidget->update();
 }
 
-
-void MainWindow::on_bg_green_spinbox_valueChanged(int arg1)
-{
-    ui->openGLWidget->bg_green=arg1/255.0f;
+void MainWindow::repaint_edges() {
+    QString red = QString::number(ui->e_red_spinbox->value());
+    QString green = QString::number(ui->e_green_spinbox->value());
+    QString blue = QString::number(ui->e_blue_spinbox->value());
+    ui->e_color_prev->setStyleSheet(
+        "QLabel{"
+        "background-color:rgb(" +
+        red + "," + green + "," + blue +
+        ");"
+        "}");
+    ui->openGLWidget->e_red = ui->e_red_spinbox->value() / 255.0f;
+    ui->openGLWidget->e_green = ui->e_green_spinbox->value() / 255.0f;
+    ui->openGLWidget->e_blue = ui->e_blue_spinbox->value() / 255.0f;
     ui->openGLWidget->update();
 }
 
-
-void MainWindow::on_bg_blue_spinbox_valueChanged(int arg1)
-{
-    ui->openGLWidget->bg_blue=arg1/255.0f;
+void MainWindow::repaint_background() {
+    QString red = QString::number(ui->bg_red_spinbox->value());
+    QString green = QString::number(ui->bg_green_spinbox->value());
+    QString blue = QString::number(ui->bg_blue_spinbox->value());
+    ui->bg_color_prev->setStyleSheet(
+        "QLabel{"
+        "background-color:rgb(" +
+        red + "," + green + "," + blue +
+        ");"
+        "}");
+    ui->openGLWidget->bg_red = ui->bg_red_spinbox->value() / 255.0f;
+    ui->openGLWidget->bg_green = ui->bg_green_spinbox->value() / 255.0f;
+    ui->openGLWidget->bg_blue = ui->bg_blue_spinbox->value() / 255.0f;
     ui->openGLWidget->update();
 }
 
+void MainWindow::on_screenshot_btn_clicked() {
+    if (obj_loaded) {
+        QFileDialog dialogConnectImage(this);
+        QDateTime curr_date = QDateTime::currentDateTime();
+        QString time_date_formatted = curr_date.toString("yyyy-MM-dd hh-mm-ss");
+        QString name_template = "Screenshot " + time_date_formatted + ".jpeg";
+        QString image_name = dialogConnectImage.getSaveFileName(
+            this, tr("Save screenshot"), name_template,
+            tr("Images (*.jpeg *.bmp)"));
 
-void MainWindow::on_e_red_spinbox_valueChanged(int arg1)
-{
-    ui->openGLWidget->e_red=arg1/255.0f;
-    ui->openGLWidget->update();
+        if (image_name.length() >= 1) {
+            QImage img = ui->openGLWidget->grabFramebuffer();
+            img.save(image_name);
+            QMessageBox messageBoxImage;
+            messageBoxImage.information(0, "", "Screenshot was created successfully");
+        }
+    } else {
+        QMessageBox warning = QMessageBox();
+        warning.setWindowTitle("Error");
+        warning.setText("Select .obj file to take a screenshot.");
+        warning.setIcon(QMessageBox::Warning);
+        warning.exec();
+    }
 }
 
-
-void MainWindow::on_e_green_spinbox_valueChanged(int arg1)
-{
-    ui->openGLWidget->e_green=arg1/255.0f;
-    ui->openGLWidget->update();
+void MainWindow::on_gif_btn_clicked() {
+    if (obj_loaded) {
+        QFileDialog dialogConnectImage(this);
+        QDateTime curr_date = QDateTime::currentDateTime();
+        QString time_date_formatted = curr_date.toString("yyyy-MM-DD hh:mm:ss");
+        QString name_template = "Screencast " + time_date_formatted + ".gif";
+        gif_name = dialogConnectImage.getSaveFileName(
+            this, tr("Save gif"), name_template, tr("gif (*.gif)"));
+        if (gif_name.length() >= 1) {
+            ui->gif_btn->setDisabled(true);
+            gif_frame = new QGifImage;
+            gif_frame->setDefaultDelay(10);
+            timer->setInterval(100);
+            timer->start();
+        }
+    } else {
+        QMessageBox warning = QMessageBox();
+        warning.setWindowTitle("Error");
+        warning.setText("Select .obj file to take a screencast.");
+        warning.setIcon(QMessageBox::Warning);
+        warning.exec();
+    }
 }
 
-
-void MainWindow::on_e_blue_spinbox_valueChanged(int arg1)
-{
-    ui->openGLWidget->e_blue=arg1/255.0f;
-    ui->openGLWidget->update();
+void MainWindow::make_gif() {
+    frames_counter++;
+    QImage image = ui->openGLWidget->grabFramebuffer();
+    QSize image_size(640, 480);
+    QImage scaled_image = image.scaled(image_size);
+    gif_frame->addFrame(scaled_image);
+    if (frames_counter >= 50) {
+        timer->stop();
+        gif_frame->save(gif_name);
+        frames_counter = 0;
+        QMessageBox messageBoxImage;
+        messageBoxImage.information(
+            0, "", "Screencast was created successfully as .gif file");
+        delete gif_frame;
+        ui->gif_btn->setText("");
+        ui->gif_btn->setEnabled(true);
+    }
 }
 

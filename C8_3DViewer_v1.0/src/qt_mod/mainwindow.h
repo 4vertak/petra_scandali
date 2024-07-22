@@ -1,10 +1,17 @@
 #ifndef MAINWINDOW_H
 #define MAINWINDOW_H
 
+#include <QDateTime>
+#include <QTimer>
 #include <QMainWindow>
 #include <QMessageBox>
+#include <QMouseEvent>
+#include <QSettings>
+#include <QSurfaceFormat>
+#include <QWheelEvent>
 
 #include "oglwidget.h"
+#include "qgifimage.h"
 
 extern "C" {
 #include "../c_mod/loader.h"
@@ -47,26 +54,24 @@ private slots:
 
     void on_scale_spinbox_valueChanged(int arg1);
 
-    void on_v_red_spinbox_valueChanged(int arg1);
-
-    void on_v_green_spinbox_valueChanged(int arg1);
-
-    void on_v_blue_spinbox_valueChanged(int arg1);
-
-    void on_bg_red_spinbox_valueChanged(int arg1);
-
-    void on_bg_green_spinbox_valueChanged(int arg1);
-
-    void on_bg_blue_spinbox_valueChanged(int arg1);
-
-    void on_e_red_spinbox_valueChanged(int arg1);
-
-    void on_e_green_spinbox_valueChanged(int arg1);
-
-    void on_e_blue_spinbox_valueChanged(int arg1);
+    void repaint_vertexes();
+    void repaint_edges();
+    void repaint_background();
+    void make_gif();
+    void on_screenshot_btn_clicked();
+    void on_gif_btn_clicked();
 
 private:
     Ui::MainWindow *ui;
+
+    QPoint curr_pos;
+    QPoint new_pos;
+    QString gif_name;
+    QGifImage *gif_frame;
+    QTimer *timer;
+    QSettings *settings;
+
+    int frames_counter = 0;
 
     bool obj_loaded = false;
 
@@ -78,6 +83,10 @@ private:
     int y_rotation_current_value = 50;
     int z_rotation_current_value = 50;
 
-    int scale_current_value = 50;
+    int scale_current_value = 5;
+
+    void save_settings();
+    void load_settings();
+    void set_settings_in_window();
 };
 #endif // MAINWINDOW_H

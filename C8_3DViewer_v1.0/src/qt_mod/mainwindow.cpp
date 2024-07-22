@@ -26,6 +26,10 @@ void MainWindow::on_render_clicked() {
   ui->openGLWidget->filename = (char *)std_filename.c_str();
   ui->openGLWidget->parse_obj();
   obj_loaded = true;
+
+  ui->filename_info->setText(QFileInfo(ui->file_path->text()).fileName());
+  ui->count_vertex_info->setText(QString::number(ui->openGLWidget->data.count_vertex));
+  ui->count_edge_info->setText(QString::number(ui->openGLWidget->data.count_edges));
 }
 
 void MainWindow::on_projection_type_currentIndexChanged(int arg1) {

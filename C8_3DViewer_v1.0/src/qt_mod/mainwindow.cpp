@@ -161,3 +161,66 @@ void MainWindow::on_scale_spinbox_valueChanged(int arg1) {
   }
 }
 
+
+void MainWindow::on_v_red_spinbox_valueChanged(int arg1)
+{
+    ui->openGLWidget->v_red=arg1/255.0f;
+     ui->openGLWidget->update();
+}
+
+
+void MainWindow::on_v_green_spinbox_valueChanged(int arg1)
+{
+    ui->openGLWidget->v_green=arg1/255.0f;
+     ui->openGLWidget->update();
+}
+
+
+void MainWindow::on_v_blue_spinbox_valueChanged(int arg1)
+{
+    ui->openGLWidget->v_blue=arg1/255.0f;
+     ui->openGLWidget->update();
+}
+
+
+void MainWindow::on_bg_red_spinbox_valueChanged(int arg1)
+{
+    ui->openGLWidget->bg_red=arg1/255.0f;
+    ui->openGLWidget->update();
+}
+
+
+void MainWindow::on_bg_green_spinbox_valueChanged(int arg1)
+{
+    ui->openGLWidget->bg_green=arg1/255.0f;
+    ui->openGLWidget->update();
+}
+
+
+void MainWindow::on_bg_blue_spinbox_valueChanged(int arg1)
+{
+    ui->openGLWidget->bg_blue=arg1/255.0f;
+    ui->openGLWidget->update();
+}
+
+
+void MainWindow::on_e_red_spinbox_valueChanged(int arg1)
+{
+    ui->openGLWidget->e_red=arg1/255.0f;
+    ui->openGLWidget->update();
+}
+
+
+void MainWindow::on_e_green_spinbox_valueChanged(int arg1)
+{
+    ui->openGLWidget->e_green=arg1/255.0f;
+    ui->openGLWidget->update();
+}
+
+
+void MainWindow::on_e_blue_spinbox_valueChanged(int arg1)
+{
+    ui->openGLWidget->e_blue=arg1/255.0f;
+    ui->openGLWidget->update();
+}
+

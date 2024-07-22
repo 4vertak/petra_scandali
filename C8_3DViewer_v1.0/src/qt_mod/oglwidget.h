@@ -27,17 +27,17 @@ class OGLWidget : public QOpenGLWidget {
 
   int projection_type = 0;
 
-  double v_red = 255.0f;
-  double v_green = 255.0f;
-  double v_blue = 255.0f;
+  double v_red;
+  double v_green;
+  double v_blue;
 
-  double e_red = 255.0f;
-  double e_green = 255.0f;
-  double e_blue = 255.0f;
+  double e_red;
+  double e_green;
+  double e_blue;
 
-  double bg_red = 0.0f;
-  double bg_green = 0.0f;
-  double bg_blue = 0.0f;
+  double bg_red;
+  double bg_green;
+  double bg_blue;
 
   int vertex_type = 0;
   int vertex_thickness = 3;

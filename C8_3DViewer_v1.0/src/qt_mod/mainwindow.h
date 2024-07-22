@@ -47,6 +47,24 @@ private slots:
 
     void on_scale_spinbox_valueChanged(int arg1);
 
+    void on_v_red_spinbox_valueChanged(int arg1);
+
+    void on_v_green_spinbox_valueChanged(int arg1);
+
+    void on_v_blue_spinbox_valueChanged(int arg1);
+
+    void on_bg_red_spinbox_valueChanged(int arg1);
+
+    void on_bg_green_spinbox_valueChanged(int arg1);
+
+    void on_bg_blue_spinbox_valueChanged(int arg1);
+
+    void on_e_red_spinbox_valueChanged(int arg1);
+
+    void on_e_green_spinbox_valueChanged(int arg1);
+
+    void on_e_blue_spinbox_valueChanged(int arg1);
+
 private:
     Ui::MainWindow *ui;
 

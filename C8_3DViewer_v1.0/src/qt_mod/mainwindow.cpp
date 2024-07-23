@@ -241,25 +241,25 @@ void MainWindow::on_z_turn_spinbox_valueChanged(int arg1) {
   }
 }
 
-void MainWindow::on_scale_spinbox_valueChanged(int arg1) {
-  if (arg1 > 0 && arg1 < 100) {
-    int direction = 0;
-    double increment = ui->openGLWidget->norm_coef / 10;
-    double scale_temp = scale_current_value;
-    if (scale_current_value > arg1) {
-      direction = -1;
-    } else if (scale_current_value < arg1) {
-      direction = 1;
-    }
-    scale_current_value = arg1;
+// void MainWindow::on_scale_spinbox_valueChanged(int arg1) {
+//   if (arg1 > 0 && arg1 < 100) {
+//     int direction = 0;
+//     double increment = ui->openGLWidget->norm_coef / 10;
+//     double scale_temp = scale_current_value;
+//     if (scale_current_value > arg1) {
+//       direction = -1;
+//     } else if (scale_current_value < arg1) {
+//       direction = 1;
+//     }
+//     scale_current_value = arg1;
 
-    if ((int)(scale_current_value + direction * increment) > 0) {
-      scale_current_value += direction * increment;
-      scaling(&ui->openGLWidget->data, scale_current_value / scale_temp);
-      ui->openGLWidget->update();
-    }
-  }
-}
+//     if ((int)(scale_current_value + direction * increment) > 0) {
+//       scale_current_value += direction * increment;
+//       scaling(&ui->openGLWidget->data, scale_current_value / scale_temp);
+//       ui->openGLWidget->update();
+//     }
+//   }
+// }
 
 void MainWindow::repaint_vertexes() {
     QString red = QString::number(ui->v_red_spinbox->value());

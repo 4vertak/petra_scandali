@@ -38,12 +38,12 @@ class OGLWidget : public QOpenGLWidget {
   double bg_blue;
 
   int vertex_type = 0;
-  int vertex_thickness = 3;
+  int vertex_thickness = 1;
 
   int edge_type = 0;
-  int edge_thickness = 3;
+  int edge_thickness = 1;
 
-  double scale_value = 1;
+  double scale_value = 50;
   double norm_coef;
 
   void parse_obj();

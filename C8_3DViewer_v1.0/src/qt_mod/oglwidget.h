@@ -43,7 +43,11 @@ class OGLWidget : public QOpenGLWidget {
   int edge_type = 0;
   int edge_thickness = 1;
 
+<<<<<<< HEAD
   double scale_value = 100;
+=======
+  double scale_value = 50;
+>>>>>>> 94e8f8335cb46d137e20473717dde9a7b200755a
   double norm_coef;
 
   void parse_obj();

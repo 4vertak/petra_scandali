@@ -96,7 +96,7 @@ void OGLWidget::mouseMoveEvent(QMouseEvent *event)
         y_offset(&this->data, -new_position.y() * this->norm_coef / 5000.0);
         update();
     } else if (event->buttons() & Qt::RightButton) {
-        rotation_x(&this->data, new_position.y() * 0.01);
+        rotation_x(&this->data, -new_position.y() * 0.01);
         rotation_y(&this->data, -new_position.x() * 0.01);
         update();
     }

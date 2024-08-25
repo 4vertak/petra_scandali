@@ -52,7 +52,7 @@ private slots:
     void on_y_turn_spinbox_valueChanged(int arg1);
     void on_z_turn_spinbox_valueChanged(int arg1);
 
-    void on_scale_spinbox_valueChanged(int arg1);
+    // void on_scale_spinbox_valueChanged(int arg1);
 
     void repaint_vertexes();
     void repaint_edges();

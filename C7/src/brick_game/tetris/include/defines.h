@@ -1,0 +1,14 @@
+#ifndef SRC_BRICKGAME_TETRIS_DEFINES_H_
+#define SRC_BRICKGAME_TETRIS_DEFINES_H_
+
+#define ROWS 20
+
+#define TRUE 1
+#define FALSE 0
+
+#define DEGREES 30000
+
+#define COUNT_SHAPES 7
+#define MAX_HISTORY 3
+
+#endif  // SRC_BRICKGAME_TETRIS_DEFINES_H_

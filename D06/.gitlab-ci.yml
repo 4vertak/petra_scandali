@@ -1,0 +1,53 @@
+stages:
+  - build
+  - linter
+  - test
+  - deploy
+
+job_build:
+  stage: build
+  script:
+    - rm -rf artifacts
+    - mkdir artifacts
+    - (cd ./src/C3_SimpleBashUtils/cat/ && make s21_cat)
+    - (cd ./src/C3_SimpleBashUtils/grep/ && make s21_grep)
+    - cp src/C3_SimpleBashUtils/cat/s21_cat src/C3_SimpleBashUtils/grep/s21_grep artifacts/
+  artifacts:
+    paths:
+      - artifacts
+    expire_in: 30 days
+  only:
+    - develop
+  after_script:
+    - bash notice.sh
+
+job_linter:
+  stage: linter
+  script:
+    - (cd src/C3_SimpleBashUtils/cat && make style)
+    - (cd src/C3_SimpleBashUtils/grep && make style)
+  only:
+    - develop
+  after_script:
+    - bash notice.sh
+
+job_test:
+  stage: test
+  script:
+    - (cd src/C3_SimpleBashUtils/cat && make leaks)
+    - (cd src/C3_SimpleBashUtils/cat && make test)
+    - (cd src/C3_SimpleBashUtils/grep && make leaks)
+    - (cd src/C3_SimpleBashUtils/grep && make test)
+  only:
+    - develop
+  after_script:
+    - bash notice.sh
+
+job_deploy:
+  stage: deploy
+  script:
+    - bash copy.sh
+  only:
+    - develop
+  after_script:
+    - bash notice.sh

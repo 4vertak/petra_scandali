@@ -1,0 +1,4 @@
+Hello everybody out there using minix -
+Hello
+LINUS
+linus

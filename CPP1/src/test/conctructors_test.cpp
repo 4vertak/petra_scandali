@@ -8,13 +8,14 @@ TEST(s21_constructors_tests, constructor_0) {
 
 TEST(s21_constructors_tests, constructor_1) {
   S21Matrix array(3, 3);
-  for (int i = 0; i < 3; i++)
-    for (int j = 0; j < 3; j++) array(i, j) = 1.0;
-  for (int i = 0; i != 0; i++) {
-    for (int j = 0; j != 0; j++) {
+  for (int i = 0; i < 3; i++) {
+    for (int j = 0; j < 3; j++) {
       EXPECT_EQ(array(i, j), 0.0);
     }
   }
+  for (int i = 0; i < 3; i++)
+    for (int j = 0; j < 3; j++) array(i, j) = 1.0;
+
   EXPECT_EQ(array.get_cols(), 3);
   EXPECT_EQ(array.get_rows(), 3);
 }
@@ -52,7 +53,7 @@ TEST(tests_constructors, constructor_3) {
 }
 // test incorect row&col matrix
 TEST(tests_constructors, constructor_4) {
-  EXPECT_THROW(S21Matrix array(-3, -3), std::invalid_argument);
+  EXPECT_THROW(S21Matrix array(-3, -3), std::out_of_range);
 }
 
 // copy empty matrix

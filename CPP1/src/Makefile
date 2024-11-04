@@ -1,6 +1,6 @@
 SHELL := /bin/bash
 
-PROJECT_NAME = s21_matrix
+PROJECT_NAME = s21_matrix_oop
 
 CC = g++
 
@@ -20,9 +20,11 @@ GCOV_FLAGS = --coverage -lgtest -g
 
 CHECK_FLAGS = -lgtest -pthread -lrt -lm -lsubunit
 
+CPP_CHECK = cppcheck --enable=all --std=c++17 --suppress=missingIncludeSystem --suppress=unusedFunction
+
 GCOVR = gcovr
 
-GCOVRFLAGS = --html --html-details --exclude-throw-branches -o $(REPORT_DIR)/coverage.html
+GCOVRFLAGS = --html --html-details --exclude-throw-branches -o $(REPORT_DIR)/report.html
 
 HEADERS = $(shell find $(LIB_DIR) -type f -name "*.h") \
            $(shell find $(TEST_DIR) -type f -name "*.h")
@@ -31,24 +33,24 @@ LIBRARY = $(PROJECT_NAME).a
 
 TARGET = test
 
-LIB_CC = $(shell find $(LIB_DIR) -type f -name "*.cc")
+LIB_CPP = $(shell find $(LIB_DIR) -type f -name "*.cpp")
 
 LIB_H = $(shell find $(LIB_DIR) -type f -name "*.h")
 
-LIB_O = $(notdir $(LIB_CC:%.cc=%.o))
+LIB_O = $(notdir $(LIB_CPP:%.cpp=%.o))
 
-TEST_CC = $(shell find $(TEST_DIR) -type f -name "*.cc")
+TEST_CPP = $(shell find $(TEST_DIR) -type f -name "*.cpp")
 
-TEST_O = $(notdir $(TEST_CC:%.cc=%.o))
+TEST_O = $(notdir $(TEST_CPP:%.cpp=%.o))
 
-ALL_FILES = $(LIB_CC) $(TEST_CC)
+ALL_FILES = $(LIB_CPP) $(TEST_CPP)
 
-vpath %.cc $(shell find $(LIB_DIR) -type d) $(shell find $(TEST_DIR) -type d)
+vpath %.cpp $(shell find $(LIB_DIR) -type d) $(shell find $(TEST_DIR) -type d)
 vpath %.o $(OBJ_DIR)
 
-.PHONY: all clean re test gcov_report dvi style leaks install-deps
+.PHONY: all clean rebuild test gcov_report dvi style leaks install-deps
 
-all: clean $(LIBRARY)
+all: clean style cpp_check dvi $(LIBRARY) gcov_report leaks
 
 clean:
 	@rm -rf *.o *.g* *.info *.a *.out $(REPORT_DIR)/*.a *.dSYM *.html *.css
@@ -57,7 +59,7 @@ clean:
 	@rm -rf $(DVI_DIR)
 	@printf "\033[1;33mClean-up completed.\n\033[0m"
 
-re: clean all
+rebuild: clean all
 
 $(OBJ_DIR):
 	@mkdir -p $(OBJ_DIR)
@@ -69,24 +71,30 @@ $(LIBRARY): $(OBJ_DIR) $(LIB_O) $(HEADERS)
 	@ar rcs $@ $(LIB_O)
 	@ranlib $@
 
-$(OBJ_DIR)/%.o: %.cc
+$(OBJ_DIR)/%.o: %.cpp
 	@$(CC) $(CCFLAGS) -c -o $@ __CODE_BLOCK_0__lt;
 
 test: $(LIBRARY)
-	@$(CC) $(CCFLAGS) $(GCOV_FLAGS) $(TEST_CC) $(LIBRARY) $(CHECK_FLAGS) -o $(addprefix $(OBJ_DIR)/,$(TARGET))
+	@$(CC) $(CCFLAGS) $(TEST_CPP) $(LIBRARY) $(CHECK_FLAGS) -o $(addprefix $(OBJ_DIR)/,$(TARGET))
 	@./$(addprefix $(OBJ_DIR)/,$(TARGET))
+	@rm -rf *.gcda *.gcno
 	@printf "\033[1;33mTesting completed.\n\033[0m"
 
+cpp_check:
+	$(CPP_CHECK) $(LIB_CPP)
+
 gcov_report: $(LIBRARY) test $(REPORT_DIR)
-	@$(CC) $(CCFLAGS) $(TEST_CC) $(LIB_CC) $(LIBRARY) $(CHECK_FLAGS) $(GCOV_FLAGS) -o $(addprefix $(OBJ_DIR)/, $(TARGET))
+	@$(CC) $(CCFLAGS) $(TEST_CPP) $(LIB_CPP) $(LIBRARY) $(CHECK_FLAGS) $(GCOV_FLAGS) -o $(addprefix $(OBJ_DIR)/, $(TARGET))
 	@./$(addprefix $(OBJ_DIR)/,$(TARGET))
 	@$(GCOVR) $(GCOVRFLAGS)
-	@printf "\033[1;33mGCOV report created: $(REPORT_DIR)/coverage.html \n\033[0m"
-	@rm -rf *.gcda *.gcno *.a *.o *.out
+	@printf "\033[1;33mGCOV report created: $(REPORT_DIR)/report.html \n\033[0m"
+	@rm -rf *.gcda *.gcno *.a *.o
+#	xdg-open $(REPORT_DIR)/report.html
 
 dvi:
 	@rm -rf $(DVI_DIR)
 	doxygen Doxyfile
+#	xdg-open $(DVI_DIR)/html/index.html
 
 style:
 	@cp ../materials/linters/.clang-format .clang-format
@@ -100,7 +108,8 @@ style:
 
 leaks: clean $(TARGET)
 	valgrind --tool=memcheck --leak-check=full -s $(addprefix $(OBJ_DIR)/,$(TARGET))
+	@rm -rf *.gcda *.gcno *.a *.o
 
 install-deps:
 	sudo apt update
-	sudo apt install -y clang-format check doxygen libgtest-dev libgmock-dev
+	sudo apt install -y clang-format check doxygen libgtest-dev

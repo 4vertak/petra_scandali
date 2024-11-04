@@ -91,8 +91,8 @@ TEST(tests_overloads, Addition_test_2) {
   S21Matrix array_1(2, 2);
   S21Matrix array_2(3, 3);
 
-  ASSERT_THROW(
-      { S21Matrix result = array_1 + array_2; }, std::invalid_argument);
+  ASSERT_THROW({ S21Matrix result = array_1 + array_2; },
+               std::invalid_argument);
 }
 
 TEST(tests_overloads, Addition_test_3) {
@@ -174,8 +174,8 @@ TEST(tests_overloads, Subtraction_test_2) {
   S21Matrix array_1(2, 2);
   S21Matrix array_2(3, 3);
 
-  ASSERT_THROW(
-      { S21Matrix result = array_1 - array_2; }, std::invalid_argument);
+  ASSERT_THROW({ S21Matrix result = array_1 - array_2; },
+               std::invalid_argument);
 }
 
 TEST(tests_overloads, Subtraction_test_3) {
@@ -325,8 +325,8 @@ TEST(tests_overloads, MulMatrix_test_3) {
 TEST(tests_overloads, MulMatrix_test__4) {
   S21Matrix array_1(2, 3);
   S21Matrix array_2(2, 2);
-  ASSERT_THROW(
-      { S21Matrix result = array_1 * array_2; }, std::invalid_argument);
+  ASSERT_THROW({ S21Matrix result = array_1 * array_2; },
+               std::invalid_argument);
 }
 
 TEST(tests_overloads, EqualMatrix_test_1) {
@@ -522,7 +522,7 @@ TEST(tests_overloads, OverBracket_test_1) {
 
 TEST(tests_overloads, tests_overloads_throw) {
   S21Matrix array(2, 2);
-  EXPECT_THROW(array(0, 3), std::invalid_argument);
+  EXPECT_THROW(array(0, 3), std::out_of_range);
 }
 
 TEST(tests_overloads, OverBracket_test_2) {

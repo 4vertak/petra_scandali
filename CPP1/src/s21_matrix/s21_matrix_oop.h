@@ -25,26 +25,13 @@ class S21Matrix {
   ~S21Matrix() noexcept;                   // destructor
 
   /**
-   * @brief Перегрузка операторов, частично соответствующие операциям выше
+   * @brief accessors и mutators
    */
 
-  S21Matrix &operator=(const S21Matrix &other);  // assignment operator overload
-  S21Matrix &operator=(S21Matrix &&other) noexcept;
-
-  double &operator()(int row, int col) &;  // index operator overload
-  double &operator()(int row, int col) && = delete;
-  const double &operator()(int row, int col) const &;
-  const double &operator()(int row, int col) const && = delete;
-  bool operator==(const S21Matrix &other) const;
-  S21Matrix operator+(const S21Matrix &other) const;
-  S21Matrix &operator+=(const S21Matrix &other);
-  S21Matrix operator-(const S21Matrix &other) const;
-  S21Matrix &operator-=(const S21Matrix &other);
-  S21Matrix operator*(double number) const noexcept;
-  friend S21Matrix operator*(double number, const S21Matrix &matrix) noexcept;
-  S21Matrix &operator*=(double number);
-  S21Matrix operator*(const S21Matrix &other) const;
-  S21Matrix &operator*=(const S21Matrix &other);
+  int get_cols() const noexcept;
+  int get_rows() const noexcept;
+  void set_rows(int new_rows);
+  void set_cols(int new_cols);
 
   /**
    * @brief Операции над матрицами
@@ -53,7 +40,7 @@ class S21Matrix {
   bool EqMatrix(const S21Matrix &other) const;
   void SumMatrix(const S21Matrix &other);
   void SubMatrix(const S21Matrix &other);
-  void MulNumber(const double number) noexcept;
+  void MulNumber(const double number);
   void MulMatrix(const S21Matrix &other);
   S21Matrix Transpose() const;
   S21Matrix CalcComplements() const;
@@ -61,13 +48,51 @@ class S21Matrix {
   S21Matrix InverseMatrix() const;
 
   /**
-   * @brief accessors и mutators
+   * @brief Перегрузка операторов, частично соответствующие операциям выше
    */
 
-  int get_cols() const noexcept;
-  int get_rows() const noexcept;
-  void set_rows(int new_rows);
-  void set_cols(int new_cols);
+  S21Matrix &operator=(const S21Matrix &other);  // assignment operator overload
+  S21Matrix &operator=(S21Matrix &&other) noexcept;
+
+  /**
+   * @brief В данной реализации перегрузки оператор вызова `()` ограничиваем
+  изменения элементов матрицы в зависимости от категории значения (lvalue или
+  rvalue), что позволяет безопасно использовать константные значения.
+  *Кратко:
+   * lvalue - это значения имеющие адрес в памяти, т.е. им можно присваивать
+  значения
+   * rvalue - это временные значения, которые не имеют адреса в памяти или
+  изначально не предназначены для изменения (например, результаты выражения)
+  * более подробно: https://en.cppreference.com/w/cpp/language/value_category
+   */
+
+  double &operator()(int row, int col)
+      &;  // Позволяет изменять элемент по заданным индексам `row` и `col`, если
+          // объект находится в "lvalue" состоянии (можно менять).
+  double &operator()(int row, int col) && =
+      delete;  // Запрет на изменение элемента, если объект находится в "rvalue"
+               // состоянии (временный объект).
+  const double &operator()(int row, int col)
+      const &;  // Позволяет получить   доступ к элементу как в "lvalue" режиме
+                // без возможности изменения (возврат по константной ссылке).
+  const double &operator()(int row, int col) const && =
+      delete;  // Запрет на  доступ к элементу из временного объекта при помощи
+               // константного доступа.
+  bool operator==(const S21Matrix &other) const;
+  S21Matrix operator+(const S21Matrix &other) const;
+  S21Matrix &operator+=(const S21Matrix &other);
+  S21Matrix operator-(const S21Matrix &other) const;
+  S21Matrix &operator-=(const S21Matrix &other);
+  S21Matrix operator*(double number) const;
+
+  /**
+   * @brief релизовал как friend function чтобы  фбло легче
+   * реализовать и повторно использовать перегрузку оператор *  )))
+   */
+  friend S21Matrix operator*(double number, const S21Matrix &matrix) noexcept;
+  S21Matrix &operator*=(double number);
+  S21Matrix operator*(const S21Matrix &other) const;
+  S21Matrix &operator*=(const S21Matrix &other);
 };
 
 #endif  // SRC_S21_MATRIX_OOP_H_

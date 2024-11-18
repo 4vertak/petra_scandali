@@ -20,7 +20,7 @@ GCOV_FLAGS = --coverage -lgtest -g
 
 CHECK_FLAGS = -lgtest -pthread -lrt -lm -lsubunit
 
-CPP_CHECK = cppcheck --enable=all --std=c++17 --suppress=missingIncludeSystem --suppress=unusedFunction
+CPP_CHECK = cppcheck --enable=all --std=c++17 --suppress=missingIncludeSystem .
 
 GCOVR = gcovr
 
@@ -75,13 +75,15 @@ $(OBJ_DIR)/%.o: %.cpp
 	@$(CC) $(CCFLAGS) -c -o $@ __CODE_BLOCK_0__lt;
 
 test: $(LIBRARY)
+	@printf "\033[1;33mCompiling tests...\n\033[0m"
 	@$(CC) $(CCFLAGS) $(TEST_CPP) $(LIBRARY) $(CHECK_FLAGS) -o $(addprefix $(OBJ_DIR)/,$(TARGET))
 	@./$(addprefix $(OBJ_DIR)/,$(TARGET))
 	@rm -rf *.gcda *.gcno
-	@printf "\033[1;33mTesting completed.\n\033[0m"
 
 cpp_check:
-	$(CPP_CHECK) $(LIB_CPP)
+	@printf "\033[1;33mRunning cppcheck...\n\033[0m"
+	@$(CPP_CHECK) $(LIB_CPP)
+	@printf "\033[1;33mcppcheck completed.\n\033[0m"
 
 gcov_report: $(LIBRARY) test $(REPORT_DIR)
 	@$(CC) $(CCFLAGS) $(TEST_CPP) $(LIB_CPP) $(LIBRARY) $(CHECK_FLAGS) $(GCOV_FLAGS) -o $(addprefix $(OBJ_DIR)/, $(TARGET))
@@ -101,9 +103,9 @@ style:
 	@printf "\033[1;33mRunning clang-format with Google style on all files...\n\033[0m"
 	@clang-format -style=Google -n $(ALL_FILES)
 	@printf "\033[1;33mChecking formatting without making changes completed.\n\033[0m"
-	@printf "\033[1;33mApplying clang-format with Google style to all files...\n\033[0m"
-	@clang-format -style=Google -i $(ALL_FILES)
-	@printf "\033[1;33mCode formatting with clang-format completed.\n\033[0m"
+#	@printf "\033[1;33mApplying clang-format with Google style to all files...\n\033[0m"
+#	@clang-format -style=Google -i $(ALL_FILES)
+#	@printf "\033[1;33mCode formatting with clang-format completed.\n\033[0m"
 	@rm -f .clang-format
 
 leaks: clean $(TARGET)
@@ -112,4 +114,4 @@ leaks: clean $(TARGET)
 
 install-deps:
 	sudo apt update
-	sudo apt install -y clang-format check doxygen libgtest-dev
+	sudo apt install -y clang-format cppcheck doxygen libgtest-dev

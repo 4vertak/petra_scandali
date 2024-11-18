@@ -88,8 +88,8 @@ void S21Matrix::set_rows(int rows) {
   if (rows != _rows) {
     S21Matrix tmp{rows, _cols};
     int min = std::min(_rows, rows);
-    for (int i = 0; i < min; ++i) {
-      for (int j = 0; j < _cols; ++j) {
+    for (int i = 0; i < min; i++) {
+      for (int j = 0; j < _cols; j++) {
         tmp(i, j) = (*this)(i, j);
       }
     }
@@ -98,7 +98,7 @@ void S21Matrix::set_rows(int rows) {
 }
 
 /**
- * @brief Mutators set_rows
+ * @brief Mutators set_cols
  * принимаeт новые значения и устанавливаeт его в соответствующее приватное поле
  * (`_cols`). Также проверяет входные параметры на корректность перед
  * изменением.
@@ -112,8 +112,8 @@ void S21Matrix::set_cols(int cols) {
   if (cols != _cols) {
     S21Matrix tmp{_rows, cols};
     int min = std::min(_cols, cols);
-    for (int i = 0; i < _rows; ++i) {
-      for (int j = 0; j < min; ++j) {
+    for (int i = 0; i < _rows; i++) {
+      for (int j = 0; j < min; j++) {
         tmp(i, j) = (*this)(i, j);
       }
     }
@@ -136,8 +136,8 @@ bool S21Matrix::EqMatrix(const S21Matrix &other) const {
     return false;
   }
 
-  for (int i = 0; i < _rows; ++i) {
-    for (int j = 0; j < _cols; ++j) {
+  for (int i = 0; i < _rows; i++) {
+    for (int j = 0; j < _cols; j++) {
       if (std::abs(other(i, j) - (*this)(i, j)) > 1e-7) {
         return false;
       }
@@ -155,8 +155,8 @@ void S21Matrix::SumMatrix(const S21Matrix &other) {
   if (_rows != other.get_rows() || _cols != other.get_cols()) {
     throw std::invalid_argument("Incorrect matrix size");
   }
-  for (int i = 0; i < _rows; ++i) {
-    for (int j = 0; j < _cols; ++j) {
+  for (int i = 0; i < _rows; i++) {
+    for (int j = 0; j < _cols; j++) {
       (*this)(i, j) += other(i, j);
     }
   }
@@ -171,8 +171,8 @@ void S21Matrix::SubMatrix(const S21Matrix &other) {
   if (_rows != other.get_rows() || _cols != other.get_cols()) {
     throw std::invalid_argument("Incorrect matrix size");
   }
-  for (int i = 0; i < _rows; ++i) {
-    for (int j = 0; j < _cols; ++j) {
+  for (int i = 0; i < _rows; i++) {
+    for (int j = 0; j < _cols; j++) {
       (*this)(i, j) -= other(i, j);
     }
   }
@@ -183,9 +183,9 @@ void S21Matrix::SubMatrix(const S21Matrix &other) {
  * Умножает текущую матрицу на число.
  * @param number
  */
-void S21Matrix::MulNumber(const double number) noexcept {
-  for (int i = 0; i < _rows; ++i) {
-    for (int j = 0; j < _cols; ++j) {
+void S21Matrix::MulNumber(const double number) {
+  for (int i = 0; i < _rows; i++) {
+    for (int j = 0; j < _cols; j++) {
       (*this)(i, j) *= number;
     }
   }
@@ -202,8 +202,8 @@ void S21Matrix::MulMatrix(const S21Matrix &other) {
     throw std::invalid_argument("Incorrect matrix size");
   }
   S21Matrix result{_rows, other.get_cols()};
-  for (int i = 0; i < result.get_rows(); ++i) {
-    for (int j = 0; j < result.get_cols(); ++j) {
+  for (int i = 0; i < result.get_rows(); i++) {
+    for (int j = 0; j < result.get_cols(); j++) {
       for (int k = 0; k < _cols; ++k) {
         result(i, j) += (*this)(i, k) * other(k, j);
       }
@@ -219,8 +219,8 @@ void S21Matrix::MulMatrix(const S21Matrix &other) {
  */
 S21Matrix S21Matrix::Transpose() const {
   S21Matrix result{_cols, _rows};
-  for (int i = 0; i < _rows; ++i) {
-    for (int j = 0; j < _cols; ++j) {
+  for (int i = 0; i < _rows; i++) {
+    for (int j = 0; j < _cols; j++) {
       result(j, i) = (*this)(i, j);
     }
   }
@@ -238,8 +238,8 @@ S21Matrix S21Matrix::CalcComplements() const {
     throw std::invalid_argument("Incorrect matrix size");
   }
   S21Matrix result{_rows, _cols};
-  for (int i = 0; i < result.get_rows(); ++i) {
-    for (int j = 0; j < result.get_cols(); ++j) {
+  for (int i = 0; i < result.get_rows(); i++) {
+    for (int j = 0; j < result.get_cols(); j++) {
       S21Matrix minor_matrix = get_minor(i, j);
 
       result(i, j) = minor_matrix.Determinant();
@@ -265,10 +265,10 @@ double S21Matrix::Determinant() const {
   double result = 1.0;
   S21Matrix tmp(*this);
   int size = _rows;
-  for (int i = 0; i < size; ++i) {
+  for (int i = 0; i < size; i++) {
     // Поиск строки с максимальным элементом в текущем столбце
     int max_row_index = i;
-    for (int j = i + 1; j < size; ++j) {
+    for (int j = i + 1; j < size; j++) {
       if (std::abs(tmp(j, i)) > std::abs(tmp(max_row_index, i))) {
         max_row_index = j;
       }
@@ -287,7 +287,7 @@ double S21Matrix::Determinant() const {
     // Умножаем на диагональный элемент
     result *= tmp(i, i);
     // Приведение матрицы к треугольному виду
-    for (int j = i + 1; j < size; ++j) {
+    for (int j = i + 1; j < size; j++) {
       double koef = tmp(j, i) / tmp(i, i);
       for (int k = i; k < size; ++k) {
         tmp(j, k) -= tmp(i, k) * koef;
@@ -328,14 +328,13 @@ S21Matrix S21Matrix::InverseMatrix() const {
  */
 S21Matrix &S21Matrix::operator=(const S21Matrix &other) {
   if (this != &other) {
-    delete[] this->matrix_;
-    this->_rows = 0;
-    this->_cols = 0;
-    this->matrix_ = nullptr;
+    this->set_rows(other._rows);
+    this->set_cols(other._cols);
 
-    this->_rows = other._rows;
-    this->_cols = other._cols;
-    this->matrix_ = new double[_rows * _cols];
+    if (this->matrix_ == nullptr) {
+      this->matrix_ = new double[this->_rows * this->_cols];
+    }
+
     std::copy(other.matrix_, other.matrix_ + (this->_rows * this->_cols),
               this->matrix_);
   }
@@ -365,6 +364,7 @@ S21Matrix &S21Matrix::operator=(S21Matrix &&other) noexcept {
  * @brief  Перегрузка оператора () возвращающая ссылку на элемент
  * Индексация по элементам матрицы (строка, колонка). Индекс за пределами
  * матрицы.
+ *
  * @param row
  * @param col
  * @return double&
@@ -450,7 +450,7 @@ S21Matrix &S21Matrix::operator-=(const S21Matrix &other) {
  * @param number
  * @return S21Matrix
  */
-S21Matrix S21Matrix::operator*(double number) const noexcept {
+S21Matrix S21Matrix::operator*(double number) const {
   S21Matrix tmp{*this};
   tmp.MulNumber(number);
   return tmp;
@@ -514,9 +514,9 @@ S21Matrix S21Matrix::get_minor(const int row, const int col) const {
   check_index(row, col);
 
   S21Matrix result{_rows - 1, _cols - 1};
-  for (int i = 0; i < _rows; ++i) {
+  for (int i = 0; i < _rows; i++) {
     if (i == row) continue;  // Пропускаем строку, которую нужно исключить
-    for (int j = 0; j < _cols; ++j) {
+    for (int j = 0; j < _cols; j++) {
       if (j == col) continue;  // Пропускаем столбец, который нужно исключить
       // Высчитываем итоговые индексы, с учётом пропущенного
       result(i - (i > row ? 1 : 0), j - (j > col ? 1 : 0)) = (*this)(i, j);
@@ -526,7 +526,7 @@ S21Matrix S21Matrix::get_minor(const int row, const int col) const {
 }
 
 /**
- * @brief Вспомогательный приватный метод для проверки корректности индексов
+ * @brief Вспомогательный метод для проверки корректности индексов
  * матрицы
  * @param row
  * @param col

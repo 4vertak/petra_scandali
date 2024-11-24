@@ -5,29 +5,22 @@
 /*-----------Дефолтный конструктор для иницализации пустой
  * матрицы----------------*/
 
-Maze_t *create_empty_maze() {
-  Maze_t *maze = malloc(sizeof(Maze_t));
-  maze->rows = 0;
-  maze->cols = 0;
-  maze->counter = 1;
-  maze->sideLine = NULL;
-  maze->v_walls = NULL;
-  maze->h_walls = NULL;
+// typedef struct {
+//   int rows;
+//   int cols;
+//   int **v_walls;
+//   int **h_walls;
+//   int *sideLine;
+//   int counter;
+// } Maze_t;
 
-  return maze;
+Maze_t *currentMaze() {
+  static Maze_t maze = {0, 0, NULL, NULL, NULL, 1};
+  return &maze;
 }
 
-Maze_t *create_maze(int rows, int cols) {
-  if (rows < 0 || cols < 0 || rows > 50 || cols > 50) {
-    printf("Размер матрицы должен быть в диапазоне 1-50\n");
-    return NULL;
-  }
-
-  Maze_t *maze = malloc(sizeof(Maze_t));
-  if (!maze) {
-    printf("Не удалось выделить память\n");
-    return NULL;
-  }
+void create_maze(int rows, int cols) {
+  Maze_t *maze = currentMaze();
 
   maze->rows = rows;
   maze->cols = cols;
@@ -37,12 +30,6 @@ Maze_t *create_maze(int rows, int cols) {
   maze->v_walls = allocate_2d_array(rows, cols);
   maze->h_walls = allocate_2d_array(rows, cols);
 
-  if (!maze->sideLine || !maze->v_walls || !maze->h_walls) {
-    printf("Не удалось выделить память\n");
-    free_maze(maze);
-    return NULL;
-  }
-
   // Инициализация стен
   for (int i = 0; i < rows; i++) {
     for (int j = 0; j < cols; j++) {
@@ -50,8 +37,6 @@ Maze_t *create_maze(int rows, int cols) {
       maze->h_walls[i][j] = 0;
     }
   }
-
-  return maze;
 }
 
 int resize_maze(Maze_t *maze, int new_rows, int new_cols) {

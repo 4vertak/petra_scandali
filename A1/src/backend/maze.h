@@ -9,6 +9,12 @@
 
 #define MAX_SIZE 50
 #define kEmpty 0
+
+#define ESCAPE 27
+#define ENTER_KEY 10
+#define SAVE_LOADING_KEY 115
+#define SPACE_KEY 32
+
 // #define PRINT_DEBAG
 
 typedef struct {
@@ -31,13 +37,25 @@ typedef struct {
   int counter;
 } Maze_t;
 
+typedef enum {
+  START,
+  GENERATE_MAZE,
+  SAVE_MAZE_IN_FILE,
+  LOAD_MAZE_FROM_FILE,
+  FIND_PATHAWAY,
+  FREE_STATE,
+  EXIT_STATE
+} State_t;
+
+typedef enum { Start, SaveLoad, Action, Terminate, NOSIG } UserAction_t;
+
 /*-----------------------Навигатор---------------------------*/
 
 // Функция выделения памяти для карты
 void allocateMap(Pathway_t *way);
 
 // Функция инициализации структуры Pathway_t
-void initializePathway_t(Pathway_t *way, Maze_t *maze);
+void initializePathway(Pathway_t *way, Maze_t *maze);
 
 // Функция освобождения памяти карты
 void destroyMap(Pathway_t *way);
@@ -61,10 +79,9 @@ void free_maze(Maze_t *maze);
 int **allocate_2d_array(int rows, int cols);
 
 /*----------Создание объекта Maze_t------------------*/
+Maze_t *currentMaze();
 
-Maze_t *create_empty_maze();
-
-Maze_t *create_maze(int rows, int cols);
+void create_maze(int rows, int cols);
 
 int resize_maze(Maze_t *maze, int new_rows, int new_cols);
 
@@ -112,13 +129,17 @@ void addingEndLine(Maze_t *maze);
 /* Метод генерации лабиринта */
 void generateMaze_t(Maze_t *maze);
 
-/*---------------Принт Дебаг---------------------*/
+/*-----------------FSM Logic----------------------------*/
+State_t *currentState(void);
 
-void print_test(Maze_t *maze);
+void userInput(UserAction_t action, State_t *state);
 
-void print_maze_t(const Maze_t *maze);
+void updateCurrentState(State_t *state, Position *path, int pathLength);
 
-void print_maze_t_path(const Maze_t *maze, const Position *path,
-                       int pathLength);
+void onGenerateMaze();
+
+void onLoadingMaze();
+
+void onFindPathway(Position *path, int pathLength);
 
 #endif  // SRC_BACKEND_MAZE_H

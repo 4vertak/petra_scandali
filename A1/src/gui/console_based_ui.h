@@ -6,14 +6,8 @@
 
 #include "../backend/maze.h"
 
-#define ROWS_FIELD 20
-#define COLS_FIELD 10
-
-#define GET_USER_INPUT getch()
-
-#define ESCAPE 27
-#define ENTER_KEY 10
-#define SAVE_LOADING_KEY 115
+#define ROWS_FIELD 100
+#define COLS_FIELD 100
 
 #define COLOR_ORANGE 214
 #define COLOR_VIOLET 129
@@ -48,44 +42,19 @@
     init_pair(11, COLOR_YELLOW, COLOR_BLACK); \
   }
 
-typedef enum {
-  START,
-  GENERATE_MAZE,
-  SAVE_MAZE_IN_FILE,
-  LOAD_MAZE_FROM_FILE,
-  FIND_PATHAWAY,
-  EXIT_STATE
-} State_t;
-
-typedef enum { Start, SaveLoad, Action, Terminate, NOSIG } UserAction_t;
-
-/*-----------------FSM Logic----------------------------*/
-
-UserAction_t getSignal(int user_input);
-void gameLoop();
-bool handleUserInput(UserAction_t *action, bool *hold);
-
-void userInput(UserAction_t action, State_t state);
-
-void updateCurrentState(State_t *state, Maze_t *maze, Pathway_t *way,
-                        Position start, Position end, Position *path,
-                        int pathLength);
-
-void onGenerateMaze(Maze_t *maze);
-
-void onLoadingMaze(Maze_t *maze);
-
-void onFindPathway(Maze_t *maze, Pathway_t *way, Position start, Position end,
-                   Position *path, int pathLength);
-
 /*-----------------CBUI----------------------------*/
-void printGame(State_t state, Maze_t *maze, Position *path, int pathLength);
 
+void console_based_gui();
+void printGame(State_t *state, Position *path, int pathLength);
+void printStartBanner(int height_cli, int width_cli);
+void printGenerateMazeBanner(int height_cli, int width_cli);
+void printLoadMaze(int height_cli, int width_cli);
+void printPathBanner(int height_cli, int width_cli, Position *path,
+                     int pathLength);
 /*---------------Принт Дебаг---------------------*/
 
-void print_maze_t(const Maze_t *maze);
+void print_maze_t();
 
-void print_maze_t_path(const Maze_t *maze, const Position *path,
-                       int pathLength);
+void print_maze_t_path(const Position *path, int pathLength);
 
 #endif  // SRC_GUI_CONSOLE_BASED_UI_H

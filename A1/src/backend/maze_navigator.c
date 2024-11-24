@@ -14,7 +14,7 @@ void allocateMap(Pathway_t *way) {
 }
 
 // Функция инициализации структуры Pathway_t
-void initializePathway_t(Pathway_t *way, Maze_t *maze) {
+void initializePathway(Pathway_t *way, Maze_t *maze) {
   way->rows = maze->rows;
   way->cols = maze->cols;
   allocateMap(way);  // Выделяем память для карты

@@ -5,14 +5,13 @@
 #include <stdlib.h>
 #include <time.h>
 
-#include "./backend/maze.h"
+#include "./backend/backend.h"
 #include "./gui/console_based_ui.h"
 #include "./tests/test.h"
 
 #define GET_USER_INPUT getch()
 
-UserAction_t getSignal(int user_input);
-void gameLoop();
-bool handleUserInput(UserAction_t *action, bool *hold);
+void game_loop();
+void handleUserInput(UserAction_t *action);
 
 #endif  // SRC_MAIN_H

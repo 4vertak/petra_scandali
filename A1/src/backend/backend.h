@@ -9,12 +9,8 @@
 
 #define MAX_SIZE 50
 #define kEmpty 0
-
 #define ESCAPE 27
-#define ENTER_KEY 10
 #define SAVE_LOADING_KEY 115
-#define SPACE_KEY 32
-
 // #define PRINT_DEBAG
 
 typedef struct {
@@ -40,22 +36,39 @@ typedef struct {
 typedef enum {
   START,
   GENERATE_MAZE,
-  SAVE_MAZE_IN_FILE,
+  //   SAVE_MAZE_IN_FILE,
   LOAD_MAZE_FROM_FILE,
   FIND_PATHAWAY,
-  FREE_STATE,
-  EXIT_STATE
+  WAITING,
+  EXIT
 } State_t;
 
-typedef enum { Start, SaveLoad, Action, Terminate, NOSIG } UserAction_t;
+typedef enum {
+  Start,
+  Generate,
+  Load,
+  Pathfinding,
+  Terminate,
+  NOSIG
+} UserAction_t;
+
+typedef enum { VALID, INVALID_START, INVALID_END } point_valid;
 
 /*-----------------------Навигатор---------------------------*/
+
+Pathway_t *currentWay(void);
+
+Position *currentPath(void);
+
+bool isValidPosition(Position *path);
+
+point_valid areStartEndValid(Position *start, Position *end);
 
 // Функция выделения памяти для карты
 void allocateMap(Pathway_t *way);
 
 // Функция инициализации структуры Pathway_t
-void initializePathway(Pathway_t *way, Maze_t *maze);
+void initializePathway_t(Pathway_t *way, Maze_t *maze);
 
 // Функция освобождения памяти карты
 void destroyMap(Pathway_t *way);
@@ -74,20 +87,24 @@ void findWay(Pathway_t *way, Position begin, Position end, Position **path,
 
 void free_walls(int **walls, int rows);
 
-void free_maze(Maze_t *maze);
+void free_maze_t(Maze_t *maze);
 
 int **allocate_2d_array(int rows, int cols);
 
 /*----------Создание объекта Maze_t------------------*/
 Maze_t *currentMaze();
 
-void create_maze(int rows, int cols);
+Maze_t *create_maze_t(int rows, int cols);
 
-int resize_maze(Maze_t *maze, int new_rows, int new_cols);
+void resize_maze_t(Maze_t *maze, int new_rows, int new_cols);
+
+bool *currentStateSize(void);
 
 /*---------Загрузка файла лабиринт------------*/
 
-bool load_maze(const char *filename, Maze_t *maze);
+bool *currentStateLoad(void);
+
+bool load_maze_t(const char *filename, Maze_t *maze);
 
 /*--------Генерации лабиринта-----------*/
 
@@ -132,14 +149,17 @@ void generateMaze_t(Maze_t *maze);
 /*-----------------FSM Logic----------------------------*/
 State_t *currentState(void);
 
+UserAction_t getSignal(int user_input);
+void gameLoop();
+
 void userInput(UserAction_t action, State_t *state);
 
-void updateCurrentState(State_t *state, Position *path, int pathLength);
+void updateCurrentState(State_t *state);
 
-void onGenerateMaze();
+// void onGenerateMaze();
 
-void onLoadingMaze();
+// void onLoadingMaze();
 
-void onFindPathway(Position *path, int pathLength);
+// void onFindPathway(Position *path, int pathLength);
 
 #endif  // SRC_BACKEND_MAZE_H

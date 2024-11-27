@@ -1,58 +1,49 @@
 #include "./main.h"
 
-bool handleUserInput(UserAction_t *action, bool *hold) {
+void handleUserInput(UserAction_t *action) {
   int signal = GET_USER_INPUT;
   if (signal != ERR) {
-    *hold = true;
     *action = getSignal(signal);
-  } else {
-    *hold = false;
   }
-  return *hold;
 }
 
-void gameLoop() {
-  Maze_t *maze = currentMaze();
-  Position *path = NULL;
+void game_loop() {
+  bool break_flag = false;
+
+  Position start = {0, 0};
+  Position end = {0, 0};
   int pathLength = 0;
+  init_pair(1, COLOR_RED, COLOR_BLACK);
 
+  Maze_t *maze = currentMaze();
   State_t *state = currentState();
-
-  bool break_flag = TRUE;
-
-  bool hold = FALSE;
+  Cli_t *size = currentCliSize();
 
   UserAction_t action = NOSIG;
 
-  srand(time(NULL));
-  while (break_flag) {
-    if (*state == EXIT_STATE) break_flag = FALSE;
+  while (!break_flag) {
+    init_cli_param(size);
+
+    if (*state == EXIT) break_flag = true;
 
     userInput(action, state);
 
     if (*state == START || *state == GENERATE_MAZE ||
-        *state == LOAD_MAZE_FROM_FILE || *state == SAVE_MAZE_IN_FILE ||
-        *state == FIND_PATHAWAY || FREE_STATE) {
-      handleUserInput(&action, &hold);
+        *state == LOAD_MAZE_FROM_FILE || *state == FIND_PATHAWAY ||
+        *state == WAITING) {
+      handleUserInput(&action);
     }
-
-    updateCurrentState(state, path, pathLength);
-    printGame(state, path, pathLength);
+    printGame(state, pathLength, size, &start, &end);
+    updateCurrentState(state);
   }
 
-  free(path);
-  free_maze(maze);
-  endwin();
-}
-
-void console_based_gui() {
-  setlocale(LC_ALL, "");
-  WIN_INIT(10);
-  srand(time(NULL));
-  gameLoop();
+  free_maze_t(maze);
 }
 
 int main() {
-  console_based_gui();
+  srand(time(NULL));
+  WIN_INIT(10);
+  game_loop();
+  endwin();
   return 0;
 }

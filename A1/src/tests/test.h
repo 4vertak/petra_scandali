@@ -1,7 +1,7 @@
 #ifndef SRC_TESTS_TEST_H
 #define SRC_TESTS_TEST_H
 
-#include "../backend/maze.h"
+#include "../backend/backend.h"
 
 /*---------------Принт Дебаг---------------------*/
 

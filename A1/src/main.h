@@ -7,7 +7,6 @@
 
 #include "./backend/backend.h"
 #include "./gui/console_based_ui.h"
-#include "./tests/test.h"
 
 #define GET_USER_INPUT getch()
 

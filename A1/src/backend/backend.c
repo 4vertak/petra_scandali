@@ -24,28 +24,29 @@ UserAction_t getSignal(int user_input) {
 void userInput(UserAction_t action, State_t *state) {
   switch (action) {
     case Generate:
-      if (*state == START) {
+      if (*state == START || *state == WAITING ||
+          *state == LOAD_MAZE_FROM_FILE || *state == FIND_PATHAWAY) {
         *state = GENERATE_MAZE;
       }
       break;
     case Load:
       if (*state == START || *state == WAITING ||
-          *state == LOAD_MAZE_FROM_FILE || *state == FIND_PATHAWAY) {
+          *state == LOAD_MAZE_FROM_FILE || *state == FIND_PATHAWAY ||
+          *state == GENERATE_MAZE) {
         *state = LOAD_MAZE_FROM_FILE;
       }
       break;
     case Pathfinding:
       if (*state == WAITING || *state == LOAD_MAZE_FROM_FILE ||
-          *state == FIND_PATHAWAY || *state == GENERATE_MAZE) {
+          *state == GENERATE_MAZE) {
         *state = FIND_PATHAWAY;
       }
       break;
     case Terminate:
       if (*state == START) {
         *state = EXIT;
-      }
-      if (*state == WAITING || *state == LOAD_MAZE_FROM_FILE ||
-          *state == FIND_PATHAWAY || *state == GENERATE_MAZE) {
+      } else if (*state == WAITING || *state == LOAD_MAZE_FROM_FILE ||
+                 *state == FIND_PATHAWAY || *state == GENERATE_MAZE) {
         *state = START;
       }
       break;
@@ -116,7 +117,7 @@ void free_maze_t(Maze_t *maze) {
     if (maze->sideLine) free(maze->sideLine);
     free_walls(maze->v_walls, maze->rows);
     free_walls(maze->h_walls, maze->rows);
-    // free(maze);
+    free(maze);
   }
 }
 
@@ -178,44 +179,48 @@ Maze_t *create_maze_t(int rows, int cols) {
   return maze;
 }
 
-void resize_maze_t(Maze_t *maze, int new_rows, int new_cols) {
-  //   if (!maze || new_rows <= 0 || new_cols <= 0 || new_rows > 50 ||
-  //       new_cols > 50) {
-  //     printf("Размер матрицы должен быть в диапазоне 1-50\n");
-  //     return -1;
-  //   }
+// продумать выозвращаемые занчения typdefenum isValid?
 
-  int *new_sideLine = malloc(new_cols * sizeof(int));
-  int **new_v_walls = allocate_2d_array(new_rows, new_cols);
-  int **new_h_walls = allocate_2d_array(new_rows, new_cols);
-
-  if (!new_sideLine || !new_v_walls || !new_h_walls) {
-    // printf("Не удалось выделить память\n");
-    free(new_sideLine);
-    free_walls(new_v_walls, new_rows);
-    free_walls(new_h_walls, new_rows);
+int resize_maze_t(Maze_t *maze, int new_rows, int new_cols) {
+  int return_value = 0;
+  if (!maze || new_rows <= 0 || new_cols <= 0 || new_rows > 50 ||
+      new_cols > 50) {
+    printf("Размер матрицы должен быть в диапазоне 1-50\n");
   } else {
-    // Освобождение старых стен
-    free(maze->sideLine);
-    free_walls(maze->v_walls, maze->rows);
-    free_walls(maze->h_walls, maze->rows);
+    int *new_sideLine = malloc(new_cols * sizeof(int));
+    int **new_v_walls = allocate_2d_array(new_rows, new_cols);
+    int **new_h_walls = allocate_2d_array(new_rows, new_cols);
 
-    // Обновление указателей и размеров
-    maze->sideLine = new_sideLine;
-    maze->v_walls = new_v_walls;
-    maze->h_walls = new_h_walls;
-    maze->rows = new_rows;
-    maze->cols = new_cols;
-    maze->counter = 1;
+    if (!new_sideLine || !new_v_walls || !new_h_walls) {
+      // printf("Не удалось выделить память\n");
+      free(new_sideLine);
+      free_walls(new_v_walls, new_rows);
+      free_walls(new_h_walls, new_rows);
+    } else {
+      // Освобождение старых стен
+      free(maze->sideLine);
+      free_walls(maze->v_walls, maze->rows);
+      free_walls(maze->h_walls, maze->rows);
 
-    // Инициализация стен
-    for (int i = 0; i < new_rows; i++) {
-      for (int j = 0; j < new_cols; j++) {
-        maze->v_walls[i][j] = 0;
-        maze->h_walls[i][j] = 0;
+      // Обновление указателей и размеров
+      maze->sideLine = new_sideLine;
+      maze->v_walls = new_v_walls;
+      maze->h_walls = new_h_walls;
+      maze->rows = new_rows;
+      maze->cols = new_cols;
+      maze->counter = 1;
+
+      // Инициализация стен
+      for (int i = 0; i < new_rows; i++) {
+        for (int j = 0; j < new_cols; j++) {
+          maze->v_walls[i][j] = 0;
+          maze->h_walls[i][j] = 0;
+        }
       }
+      return_value = 1;
     }
   }
+  return return_value;
 }
 
 /*---------Загрузка файла лабиринт------------*/

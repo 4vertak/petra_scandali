@@ -42,11 +42,11 @@ GUI_O = $(notdir $(GUI_C:%.c=%.o))
 
 LOGIC_OBJ_PATH = $(addprefix $(OBJ_DIR)/, $(LOGIC_O))
 GUI_OBJ_PATH = $(addprefix $(OBJ_DIR)/, $(GUI_O))
-SQL_OBJ_PATH = $(addprefix $(OBJ_DIR)/, $(SQL_O))
+
 
 TEST_DIRS = $(shell find $(TEST_DIR) -type d)
-TEST_C = $(shell find $(TEST_DIR) -type f -name "*.c")
-TEST_H = $(shell find $(TEST_DIR) -type f -name "*.h")
+TEST_C = $(shell find $(TEST_DIR) -type f -name "*_test.c")
+TEST_H = $(shell find $(TEST_DIR) -type f -name "*_test.h")
 TEST_O = $(notdir $(TEST_C:%.c=%.o))
 TEST_OBJ_PATH = $(OBJ_DIR)/*_test.o
 EXCLUDE = $(filter-out $(wildcard $(LOGIC_DIR)/debug/*),$(LOGIC_C))
@@ -90,7 +90,7 @@ gcov_report: clean $(OBJ_DIR) $(REPORT_DIR) $(TEST_O)
 	genhtml -o $(REPORT_DIR) $(REPORT_DIR)/gcov_report.info
 #	gcovr -r . --html --html-details  -o $(REPORT_DIR)/gcov_report.html
 	@printf "\033[1;33mGCOV report created: $(REPORT_DIR)/gcov_report.html \n\033[0m"
-#	xdg-open $(REPORT_DIR)/index.html
+	# xdg-open $(REPORT_DIR)/index.html
 
 dvi:
 	@rm -rf $(DVI_DIR)

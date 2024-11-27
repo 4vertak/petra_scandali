@@ -1,5 +1,5 @@
-#ifndef SRC_BACKEND_MAZE_H
-#define SRC_BACKEND_MAZE_H
+#ifndef SRC_BACKEND_BACKEND_H
+#define SRC_BACKEND_BACKEND_H
 
 #include <limits.h>
 #include <stdbool.h>
@@ -96,7 +96,7 @@ Maze_t *currentMaze();
 
 Maze_t *create_maze_t(int rows, int cols);
 
-void resize_maze_t(Maze_t *maze, int new_rows, int new_cols);
+int resize_maze_t(Maze_t *maze, int new_rows, int new_cols);
 
 bool *currentStateSize(void);
 
@@ -162,4 +162,4 @@ void updateCurrentState(State_t *state);
 
 // void onFindPathway(Position *path, int pathLength);
 
-#endif  // SRC_BACKEND_MAZE_H
+#endif  // SRC_BACKEND_BACKEND_H

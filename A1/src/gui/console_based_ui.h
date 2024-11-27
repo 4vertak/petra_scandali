@@ -24,7 +24,7 @@
     keypad(stdscr, TRUE); \
     start_color();        \
   }
-/*
+
 #define INIT_COLOR_PAIR                       \
   {                                           \
     init_pair(1, COLOR_RED, COLOR_RED);       \
@@ -42,7 +42,7 @@
     init_pair(9, COLOR_GREY, COLOR_BLACK);    \
     init_pair(10, COLOR_ORANGE, COLOR_BLACK); \
     init_pair(11, COLOR_YELLOW, COLOR_BLACK); \
-  } */
+  }
 
 typedef struct {
   int term_height;
@@ -85,8 +85,7 @@ void print_pathway(Cli_t *size, Position *start, Position *end,
 void print_wrong_dimension_error();
 void print_generate_maze(Cli_t *size, Position *start, Position *end);
 // void console_based_gui();
-void printGame(State_t *state, int pathLength, Cli_t *size, Position *start,
-               Position *end);
+void printGame(State_t *state, int pathLength, Position *start, Position *end);
 void printStartBanner(int height_cli, int width_cli);
 // void printGenerateMazeBanner(int height_cli, int width_cli);
 // void printLoadMaze(int height_cli, int width_cli);

@@ -1,13 +1,12 @@
 
 #include "./console_based_ui.h"
 
-void printGame(State_t *state, int pathLength, Cli_t *size, Position *start,
-               Position *end) {
-  // int height_cli, width_cli;
-  // getmaxyx(stdscr, height_cli, width_cli);
+void printGame(State_t *state, int pathLength, Position *start, Position *end) {
+  Cli_t *size = currentCliSize();
+  init_cli_param(size);
 
   // start_color();
-  // INIT_COLOR_PAIR;
+  INIT_COLOR_PAIR;
 
   if (*state == START) {
     printStartBanner(size->term_height, size->term_width);
@@ -36,38 +35,57 @@ void printStartBanner(int height_cli, int width_cli) {
   WINDOW *start = newwin(win_height, win_width, start_y, start_x);
   werase(start);
 
-  int array[4][25] = {
-      {0, 0, 7, 0, 0, 0, 7, 0, 0, 3, 0, 0, 6, 6, 0, 0, 0, 2, 0, 0, 0},
-      {0, 0, 7, 7, 0, 7, 7, 0, 3, 0, 3, 0, 0, 6, 0, 0, 0, 2, 2, 0, 0},
-      {0, 0, 7, 0, 7, 0, 7, 0, 3, 3, 3, 0, 0, 6, 6, 0, 0, 2, 0, 0, 0},
-      {0, 0, 7, 0, 0, 0, 7, 0, 3, 0, 3, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0}};
+  int array[7][49] = {
+      {47, 92, 92, 0,  0,  0,  0,  0,  0,  0,  47, 92, 92, 0,  0,  0,  0,
+       0,  0,  47, 92, 0,  0,  0,  0,  0,  0,  0,  47, 92, 92, 92, 92, 92,
+       92, 92, 0,  47, 92, 92, 47, 92, 92, 92, 92, 92, 92, 92, 92},
+      {47, 92, 0,  47, 92, 92, 0,  0,  0,  47, 92, 92, 92, 0, 0, 0, 0,
+       0,  47, 92, 0,  92, 92, 0,  0,  0,  0,  0,  0,  0,  0, 0, 0, 0,
+       0,  47, 92, 92, 0,  0,  47, 92, 92, 0,  0,  0,  0,  0, 0},
+      {47, 92, 92, 0, 47, 92, 92, 0,  47, 0, 47, 92, 92, 0, 0, 0, 0,
+       47, 92, 0,  0, 47, 92, 92, 0,  0,  0, 0,  0,  0,  0, 0, 0, 0,
+       47, 92, 92, 0, 0,  0,  47, 92, 92, 0, 0,  0,  0,  0, 0},
+      {47, 92, 92, 0, 0, 47, 92, 92, 0,  0,  47, 92, 92, 0, 0, 0,  47,
+       92, 92, 0,  0, 0, 47, 92, 92, 0,  0,  0,  0,  0,  0, 0, 47, 92,
+       92, 0,  0,  0, 0, 0,  47, 92, 92, 92, 92, 92, 92, 0, 0},
+      {47, 92, 92, 0,  0,  0, 47, 92, 0,  0, 47, 92, 92, 0, 0,  47, 92,
+       92, 92, 92, 92, 92, 0, 47, 92, 92, 0, 0,  0,  0,  0, 47, 92, 92,
+       0,  0,  0,  0,  0,  0, 47, 92, 92, 0, 0,  0,  0,  0, 0},
+      {47, 92, 92, 0, 0, 0, 0,  0,  0,  0,  47, 92, 92, 0,  47, 92, 92,
+       0,  0,  0,  0, 0, 0, 0,  47, 92, 92, 0,  0,  47, 92, 92, 0,  0,
+       0,  0,  0,  0, 0, 0, 47, 92, 92, 0,  0,  0,  0,  0,  0},
+      {47, 92, 92, 0,  0,  0,  0,  0,  0,  0,  47, 92, 92, 47, 92, 92, 0,
+       0,  0,  0,  0,  0,  0,  0,  0,  47, 92, 92, 47, 92, 92, 92, 92, 92,
+       92, 92, 92, 92, 92, 92, 47, 92, 92, 92, 92, 92, 92, 92, 92}
 
-  for (int i = 0; i < 4; i++) {
-    for (int j = 0; j < 25; j++) {
-      int n = array[i][j];
-      if (array[i][j] != 0) {
-        wattron(start, COLOR_PAIR(n));
-        mvwaddch(start, i + 1, j * 2 + 1, ' ');
-        mvwaddch(start, i + 1, j * 2 + 2, ' ');
-        wattroff(start, COLOR_PAIR(n));
-      } else {
-        wattron(start, COLOR_PAIR(8));
-        mvwaddch(start, i + 1, j * 2 + 1, ' ');
-        mvwaddch(start, i + 1, j * 2 + 2, ' ');
-        wattroff(start, COLOR_PAIR(8));
+  };
+
+  for (int i = 0; i < 7; i++) {
+    for (int j = 0; j < 49; j++) {
+      if (array[i][j] == 92) {
+        wattron(start, COLOR_PAIR(4));
+        mvwaddch(start, i, j, ' ');
+        wattroff(start, COLOR_PAIR(4));
+      }
+      if (array[i][j] == 47) {
+        wattron(start, COLOR_PAIR(1));
+        mvwaddch(start, i, j, ' ');
+
+        wattroff(start, COLOR_PAIR(1));
       }
     }
   }
-  wattron(start, COLOR_PAIR(10));
+
+  wattron(start, COLOR_PAIR(8));
   mvwprintw(start, 8, 15, "Press [ENTER] to generate");
-  wattroff(start, COLOR_PAIR(10));
+  wattroff(start, COLOR_PAIR(8));
 
   mvwprintw(start, 10, 11, "Press [s] to load from file");
   mvwprintw(start, 12, 16, "Press [SPACE] to view pathway");
 
-  wattron(start, COLOR_PAIR(10));
+  wattron(start, COLOR_PAIR(8));
   mvwprintw(start, 14, 16, "Press [ESC] to exit");
-  wattroff(start, COLOR_PAIR(10));
+  wattroff(start, COLOR_PAIR(8));
   wrefresh(start);
   delwin(start);
 }

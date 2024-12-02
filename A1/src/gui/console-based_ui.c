@@ -167,8 +167,8 @@ void printStartBanner(int height_cli, int width_cli) {
 
 void init_cli_param(Cli_t *size) {
   getmaxyx(stdscr, size->term_height, size->term_width);
-  size->maze_win_height = 50 * 2;
-  size->maze_win_width = 50 * 3;
+  size->maze_win_height = size->term_height - 2;
+  size->maze_win_width = size->term_width * 2 / 3;
   size->menu_start_x = size->term_width * 2 / 3 + 2;
   size->input_start_y = size->menu_start_y + 10;
   size->input_start_x = size->menu_start_x;

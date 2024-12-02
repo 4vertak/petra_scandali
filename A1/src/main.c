@@ -18,7 +18,7 @@ void game_loop() {
   State_t *state = currentState();
 
   UserAction_t action = NOSIG;
-
+  srand(time(NULL));
   while (!break_flag) {
     if (*state == EXIT) break_flag = true;
 
@@ -26,11 +26,12 @@ void game_loop() {
 
     if (*state == START || *state == GENERATE_MAZE ||
         *state == LOAD_MAZE_FROM_FILE || *state == FIND_PATHAWAY ||
-        *state == WAITING) {
+        *state == MAZE_PRINTING) {
       handleUserInput(&action);
     }
-    printGame(state, pathLength, &start, &end);
+
     updateCurrentState(state);
+    printGame(state, pathLength, &start, &end);
   }
 
   if (maze) {
@@ -38,12 +39,12 @@ void game_loop() {
     free_walls(maze->v_walls, maze->rows);
     free_walls(maze->h_walls, maze->rows);
   }
+  endwin();
 }
 
 int main() {
-  srand(time(NULL));
   WIN_INIT(10);
+  srand(time(NULL));
   game_loop();
-  endwin();
   return 0;
 }

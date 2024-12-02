@@ -39,7 +39,7 @@ typedef enum {
   //   SAVE_MAZE_IN_FILE,
   LOAD_MAZE_FROM_FILE,
   FIND_PATHAWAY,
-  WAITING,
+  MAZE_PRINTING,
   EXIT
 } State_t;
 
@@ -59,6 +59,8 @@ typedef enum { VALID, INVALID_START, INVALID_END } point_valid;
 Pathway_t *currentWay(void);
 
 Position *currentPath(void);
+
+point_valid *currentStateValidPosition(void);
 
 bool isValidPosition(Position *path);
 

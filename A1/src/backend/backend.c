@@ -10,11 +10,14 @@ UserAction_t getSignal(int user_input) {
   UserAction_t action = NOSIG;
   if (user_input == 'g') {
     action = Generate;
-  } else if (user_input == 's') {
+  }
+  if (user_input == 's') {
     action = Load;
-  } else if (user_input == 'p') {
+  }
+  if (user_input == 'p') {
     action = Pathfinding;
-  } else if (user_input == ESCAPE) {
+  }
+  if (user_input == ESCAPE) {
     action = Terminate;
   }
 
@@ -24,29 +27,24 @@ UserAction_t getSignal(int user_input) {
 void userInput(UserAction_t action, State_t *state) {
   switch (action) {
     case Generate:
-      if (*state == START || *state == WAITING ||
-          *state == LOAD_MAZE_FROM_FILE || *state == FIND_PATHAWAY) {
+      if (*state == START || *state == MAZE_PRINTING) {
         *state = GENERATE_MAZE;
       }
       break;
     case Load:
-      if (*state == START || *state == WAITING ||
-          *state == LOAD_MAZE_FROM_FILE || *state == FIND_PATHAWAY ||
-          *state == GENERATE_MAZE) {
+      if (*state == START || *state == MAZE_PRINTING) {
         *state = LOAD_MAZE_FROM_FILE;
       }
       break;
     case Pathfinding:
-      if (*state == WAITING || *state == LOAD_MAZE_FROM_FILE ||
-          *state == GENERATE_MAZE) {
+      if (*state == MAZE_PRINTING) {
         *state = FIND_PATHAWAY;
       }
       break;
     case Terminate:
       if (*state == START) {
         *state = EXIT;
-      } else if (*state == WAITING || *state == LOAD_MAZE_FROM_FILE ||
-                 *state == FIND_PATHAWAY || *state == GENERATE_MAZE) {
+      } else if (*state == MAZE_PRINTING) {
         *state = START;
       }
       break;
@@ -56,6 +54,7 @@ void userInput(UserAction_t action, State_t *state) {
 }
 
 // void onGenerateMaze(Cli_t *size, Position *start, Position *end) {
+
 //   print_generate_maze(size, start, end);
 // }
 
@@ -69,18 +68,18 @@ void userInput(UserAction_t action, State_t *state) {
 // }
 
 void updateCurrentState(State_t *state) {
+  bool *stateSize = currentStateSize();
+  bool *stateLoad = currentStateLoad();
+  point_valid *validation_result = currentStateValidPosition();
   switch (*state) {
     case GENERATE_MAZE:
-      // onGenerateMaze(size, start, end);
-      *state = WAITING;
+      if (*stateSize) *state = MAZE_PRINTING;
       break;
     case LOAD_MAZE_FROM_FILE:
-      // onLoadingMaze(size, start, end);
-      *state = WAITING;
+      if (*stateLoad) *state = MAZE_PRINTING;
       break;
     case FIND_PATHAWAY:
-      // onFindPathway(size, start, end, pathLength);
-      *state = WAITING;
+      if (*validation_result) *state = MAZE_PRINTING;
       break;
     default:
       break;
@@ -493,25 +492,30 @@ Position *currentPath(void) {
 
 bool isValidPosition(Position *path) {
   Maze_t *maze = currentMaze();
-  bool ret = true;
+  bool return_value = true;
   if (path->x < 0 || path->x >= maze->rows || path->y < 0 ||
       path->y >= maze->cols) {
-    ret = false;
+    return_value = false;
   }
-  return ret;
+  return return_value;
+}
+
+point_valid *currentStateValidPosition(void) {
+  static point_valid valid = INVALID_END;
+  return &valid;
 }
 
 point_valid areStartEndValid(Position *start, Position *end) {
-  point_valid ret = VALID;
+  point_valid return_value = VALID;
   if (!isValidPosition(start)) {
     // printf("Start point is invalid.\n");
-    ret = INVALID_START;
+    return_value = INVALID_START;
   } else if (!isValidPosition(end)) {
     // printf("End point is invalid.\n");
-    ret = INVALID_END;
+    return_value = INVALID_END;
   }
 
-  return ret;
+  return return_value;
 }
 
 // Функция выделения памяти для карты

@@ -22,7 +22,7 @@
     noecho();             \
     curs_set(0);          \
     keypad(stdscr, TRUE); \
-    start_color();        \
+    timeout(time);        \
   }
 
 #define INIT_COLOR_PAIR                       \
@@ -69,12 +69,13 @@ Cli_t *currentCliSize(void);
 
 void init_cli_param(Cli_t *size);
 
-void print_menu(int start_y, int start_x, Position *s, Position *e);
+void print_menu(int start_y, int start_x, Position *start, Position *end);
 void get_filename(int start_y, int start_x, char *filename);
 void get_start_end_points(int start_y, int start_x, Position *start,
                           Position *end, int menu_x);
-bool get_dimension(int start_y, int start_x);
-void print_banner_maze(int start_y, int start_x, int max_height, int max_width);
+void get_dimension(Cli_t *size);
+void print_banner_maze(int start_y, int start_x, int max_height, int max_width,
+                       Position *start, Position *end, int pathLength);
 void print_path(int start_y, int start_x, int max_height, int max_width,
                 Position *path, int pathLength);
 void print_load_error();
@@ -83,7 +84,7 @@ void print_load_maze(Cli_t *size, Position *start, Position *end);
 void print_pathway(Cli_t *size, Position *start, Position *end,
                    int *pathLength);
 void print_wrong_dimension_error();
-void print_generate_maze(Cli_t *size, Position *start, Position *end);
+// void print_generate_maze(Cli_t *size, Position *start, Position *end);
 // void console_based_gui();
 void printGame(State_t *state, int pathLength, Position *start, Position *end);
 void printStartBanner(int height_cli, int width_cli);

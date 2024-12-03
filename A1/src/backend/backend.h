@@ -10,7 +10,6 @@
 #define MAX_SIZE 50
 #define kEmpty 0
 #define ESCAPE 27
-#define SAVE_LOADING_KEY 115
 // #define PRINT_DEBAG
 
 typedef struct {
@@ -36,7 +35,7 @@ typedef struct {
 typedef enum {
   START,
   GENERATE_MAZE,
-  //   SAVE_MAZE_IN_FILE,
+  SAVE_MAZE_IN_FILE,
   LOAD_MAZE_FROM_FILE,
   FIND_PATHAWAY,
   MAZE_PRINTING,
@@ -47,66 +46,69 @@ typedef enum {
   Start,
   Generate,
   Load,
+  Save,
   Pathfinding,
   Terminate,
   NOSIG
 } UserAction_t;
 
-typedef enum { VALID, INVALID_START, INVALID_END } point_valid;
-
 /*-----------------------Навигатор---------------------------*/
 
-Pathway_t *currentWay(void);
+Pathway_t *ways(void);
 
-Position *currentPath(void);
+Position *wayOut(void);
 
-bool *currentStateFind(void);
+bool *pathfindingState(void);
 
-bool isValidPosition(Position *path);
-
-point_valid areStartEndValid(Position *start, Position *end);
+bool checkPosition(Position *path);
 
 // Функция выделения памяти для карты
-void allocateMap(Pathway_t *way);
+void allocationOfPathMapMemory(Pathway_t *ways);
 
 // Функция инициализации структуры Pathway_t
-void initializePathway_t(Pathway_t *way, Maze_t *maze);
+void initializePathway_t(Pathway_t *ways, Maze_t *maze);
 
 // Функция освобождения памяти карты
-void destroyMap(Pathway_t *way);
+void freeingPathMapMemory(Pathway_t *ways);
 
 // Функция для изменения ячейки
 int changeTheCell(int value, int cell);
 
 // Функция для нахождения возможных шагов
-int takePossibleSteps(Pathway_t *way, int step, Maze_t *maze);
+int takePossibleSteps(Pathway_t *ways, int step, Maze_t *maze);
 
 // Функция для нахождения пути
-void findWay(Pathway_t *way, Position begin, Position end, Position **path,
+void findWay(Pathway_t *ways, Position begin, Position end, Position **path,
              int *pathLength, Maze_t *maze);
 
 /*-----------Выделение и освобождеие памяти---------------*/
 
-void free_walls(int **walls, int rows);
+void freeWalls(int **walls, int rows);
 
-void free_maze_t(Maze_t *maze);
+void freeMaze(Maze_t *maze);
 
-int **allocate_2d_array(int rows, int cols);
+int **allocateArray(int rows, int cols);
 
 /*----------Создание объекта Maze_t------------------*/
 Maze_t *currentMaze();
 
-Maze_t *create_maze_t(int rows, int cols);
+Maze_t *createMaze(int rows, int cols);
 
-int resize_maze_t(Maze_t *maze, int new_rows, int new_cols);
+int resizeMaze(Maze_t *maze, int new_rows, int new_cols);
 
-bool *currentStateSize(void);
+bool *mazeSizeInputState(void);
 
 /*---------Загрузка файла лабиринт------------*/
 
-bool *currentStateLoad(void);
+bool *mazeLoadingState(void);
 
-bool load_maze_t(const char *filename, Maze_t *maze);
+bool loadMaze(const char *filename, Maze_t *maze);
+
+/*-----------------Сохранение лабиринта в файл--------------------------*/
+
+bool *mazeSaveState(void);
+
+bool saveMaze(const char *filename, Maze_t *maze);
 
 /*--------Генерации лабиринта-----------*/
 

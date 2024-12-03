@@ -1,19 +1,21 @@
 #include "./backend.h"
 
+/*--------------логика ИГА -----------------------*/
 State_t *currentState(void) {
   static State_t state = START;
   return &state;
 }
-/*--------------логика ИГА -----------------------*/
 
 UserAction_t getSignal(int user_input) {
   UserAction_t action = NOSIG;
   if (user_input == 'g') {
     action = Generate;
-  } else if (user_input == 's') {
+  } else if (user_input == 'l') {
     action = Load;
   } else if (user_input == 'f') {
     action = Pathfinding;
+  } else if (user_input == 's') {
+    action = Save;
   } else if (user_input == ESCAPE) {
     action = Terminate;
   }
@@ -25,22 +27,24 @@ void userInput(UserAction_t action, State_t *state) {
   switch (action) {
     case Generate:
       if (*state == START || *state == MAZE_PRINTING ||
-          *state == GENERATE_MAZE || *state == LOAD_MAZE_FROM_FILE ||
           *state == FIND_PATHAWAY) {
         *state = GENERATE_MAZE;
       }
       break;
     case Load:
       if (*state == START || *state == MAZE_PRINTING ||
-          *state == GENERATE_MAZE || *state == LOAD_MAZE_FROM_FILE ||
           *state == FIND_PATHAWAY) {
         *state = LOAD_MAZE_FROM_FILE;
       }
       break;
     case Pathfinding:
-      if (*state == MAZE_PRINTING || *state == GENERATE_MAZE ||
-          *state == LOAD_MAZE_FROM_FILE || *state == FIND_PATHAWAY) {
+      if (*state == MAZE_PRINTING || *state == FIND_PATHAWAY) {
         *state = FIND_PATHAWAY;
+      }
+      break;
+    case Save:
+      if (*state == MAZE_PRINTING || *state == FIND_PATHAWAY) {
+        *state = SAVE_MAZE_IN_FILE;
       }
       break;
     case Terminate:
@@ -52,24 +56,11 @@ void userInput(UserAction_t action, State_t *state) {
   }
 }
 
-// void onGenerateMaze(Cli_t *size, Position *start, Position *end) {
-
-//   print_generate_maze(size, start, end);
-// }
-
-// void onLoadingMaze(Cli_t *size, Position *start, Position *end) {
-//   print_load_maze(size, start, end);
-// }
-
-// void onFindPathway(Cli_t *size, Position *start, Position *end,
-//                    int pathLength) {
-//   print_pathway(size, start, end, &pathLength);
-// }
-
 void updateCurrentState(State_t *state) {
-  bool *stateSize = currentStateSize();
-  bool *stateLoad = currentStateLoad();
-  bool *stateFind = currentStateFind();
+  bool *stateSize = mazeSizeInputState();
+  bool *stateLoad = mazeLoadingState();
+  bool *stateSave = mazeSaveState();
+  bool *stateFind = pathfindingState();
   switch (*state) {
     case GENERATE_MAZE:
       if (*stateSize) {
@@ -78,9 +69,10 @@ void updateCurrentState(State_t *state) {
       }
       break;
     case LOAD_MAZE_FROM_FILE:
-      if (*stateLoad) {
-        *state = MAZE_PRINTING;
-      }
+      if (*stateLoad) *state = MAZE_PRINTING;
+      break;
+    case SAVE_MAZE_IN_FILE:
+      if (*stateSave) *state = MAZE_PRINTING;
       break;
     case FIND_PATHAWAY:
       if (*stateFind) *state = MAZE_PRINTING;
@@ -90,23 +82,9 @@ void updateCurrentState(State_t *state) {
   }
 }
 
-/*----------Создание объекта Maze_t------------------*/
-
-/*-----------Дефолтный конструктор для иницализации пустой
- * матрицы----------------*/
-
-// typedef struct {
-//   int rows;
-//   int cols;
-//   int **v_walls;
-//   int **h_walls;
-//   int *sideLine;
-//   int counter;
-// } Maze_t;
-
 /*-----------Выделение и освобождеие памяти---------------*/
 
-void free_walls(int **walls, int rows) {
+void freeWalls(int **walls, int rows) {
   if (walls) {
     for (int i = 0; i < rows; i++) {
       free(walls[i]);
@@ -115,22 +93,22 @@ void free_walls(int **walls, int rows) {
   }
 }
 
-void free_maze_t(Maze_t *maze) {
+void freeMaze(Maze_t *maze) {
   if (maze) {
     if (maze->sideLine) free(maze->sideLine);
-    free_walls(maze->v_walls, maze->rows);
-    free_walls(maze->h_walls, maze->rows);
+    freeWalls(maze->v_walls, maze->rows);
+    freeWalls(maze->h_walls, maze->rows);
     free(maze);
   }
 }
 
-int **allocate_2d_array(int rows, int cols) {
+int **allocateArray(int rows, int cols) {
   int **array = malloc(rows * sizeof(int *));
   if (array) {
     for (int i = 0; i < rows; i++) {
       array[i] = malloc(cols * sizeof(int));
       if (!array[i]) {
-        free_walls(array, i);
+        freeWalls(array, i);
         return NULL;
       }
     }
@@ -145,7 +123,7 @@ Maze_t *currentMaze(void) {
   return &maze;
 }
 
-Maze_t *create_maze_t(int rows, int cols) {
+Maze_t *createMaze(int rows, int cols) {
   if (rows <= 0 || cols <= 0 || rows > 50 || cols > 50) {
     printf("Размер матрицы должен быть в диапазоне 1-50\n");
     return NULL;
@@ -162,12 +140,12 @@ Maze_t *create_maze_t(int rows, int cols) {
   maze->counter = 1;
 
   maze->sideLine = malloc(cols * sizeof(int));
-  maze->v_walls = allocate_2d_array(rows, cols);
-  maze->h_walls = allocate_2d_array(rows, cols);
+  maze->v_walls = allocateArray(rows, cols);
+  maze->h_walls = allocateArray(rows, cols);
 
   if (!maze->sideLine || !maze->v_walls || !maze->h_walls) {
     printf("Не удалось выделить память\n");
-    free_maze_t(maze);
+    freeMaze(maze);
     return NULL;
   }
 
@@ -184,26 +162,26 @@ Maze_t *create_maze_t(int rows, int cols) {
 
 // продумать выозвращаемые занчения typdefenum isValid?
 
-int resize_maze_t(Maze_t *maze, int new_rows, int new_cols) {
+int resizeMaze(Maze_t *maze, int new_rows, int new_cols) {
   int return_value = 0;
   if (!maze || new_rows <= 0 || new_cols <= 0 || new_rows > 50 ||
       new_cols > 50) {
     printf("Размер матрицы должен быть в диапазоне 1-50\n");
   } else {
     int *new_sideLine = malloc(new_cols * sizeof(int));
-    int **new_v_walls = allocate_2d_array(new_rows, new_cols);
-    int **new_h_walls = allocate_2d_array(new_rows, new_cols);
+    int **new_v_walls = allocateArray(new_rows, new_cols);
+    int **new_h_walls = allocateArray(new_rows, new_cols);
 
     if (!new_sideLine || !new_v_walls || !new_h_walls) {
       // printf("Не удалось выделить память\n");
       free(new_sideLine);
-      free_walls(new_v_walls, new_rows);
-      free_walls(new_h_walls, new_rows);
+      freeWalls(new_v_walls, new_rows);
+      freeWalls(new_h_walls, new_rows);
     } else {
       // Освобождение старых стен
       free(maze->sideLine);
-      free_walls(maze->v_walls, maze->rows);
-      free_walls(maze->h_walls, maze->rows);
+      freeWalls(maze->v_walls, maze->rows);
+      freeWalls(maze->h_walls, maze->rows);
 
       // Обновление указателей и размеров
       maze->sideLine = new_sideLine;
@@ -228,7 +206,7 @@ int resize_maze_t(Maze_t *maze, int new_rows, int new_cols) {
 
 /*---------Загрузка файла лабиринт------------*/
 
-bool load_maze_t(const char *filename, Maze_t *maze) {
+bool loadMaze(const char *filename, Maze_t *maze) {
   bool isLoad = false;
   FILE *file = fopen(filename, "r");
   if (file != NULL) {
@@ -236,7 +214,7 @@ bool load_maze_t(const char *filename, Maze_t *maze) {
     int new_col;
     fscanf(file, "%d %d", &new_row, &new_col);
     if (new_row != maze->rows || new_col != maze->cols) {
-      resize_maze_t(maze, new_row, new_col);
+      resizeMaze(maze, new_row, new_col);
     }
     for (int i = 0; i < maze->rows; ++i) {
       for (int j = 0; j < maze->cols; ++j) {
@@ -254,10 +232,41 @@ bool load_maze_t(const char *filename, Maze_t *maze) {
   return isLoad;
 }
 
+/*---------Сохранение лабиринта в файл------------*/
+
+bool saveMaze(const char *filename, Maze_t *maze) {
+  bool isSave = false;
+  FILE *file = fopen(filename, "w");
+  if (file == NULL) {
+    // perror("Не удалось открыть файл");
+    return isSave;
+  }
+
+  fprintf(file, "%d %d\n", maze->rows, maze->cols);
+
+  for (int i = 0; i < maze->rows; i++) {
+    for (int j = 0; j < maze->cols; j++) {
+      fprintf(file, "%d ", maze->v_walls[i][j]);
+    }
+    fprintf(file, "\n");
+  }
+  fprintf(file, "\n");
+  for (int i = 0; i < maze->rows; i++) {
+    for (int j = 0; j < maze->cols; j++) {
+      fprintf(file, "%d ", maze->h_walls[i][j]);
+    }
+    fprintf(file, "\n");
+  }
+
+  fclose(file);
+  isSave = true;
+  return isSave;
+}
+
 /*------------текущее состояния размера
  * лабирнта----------------------------------*/
 
-bool *currentStateSize(void) {
+bool *mazeSizeInputState(void) {
   static bool state = false;
   return &state;
 }
@@ -265,12 +274,17 @@ bool *currentStateSize(void) {
 /*------------текущее состояния загрузки
  * лабирнта----------------------------------*/
 
-bool *currentStateLoad(void) {
+bool *mazeLoadingState(void) {
   static bool state = false;
   return &state;
 }
 
-bool *currentStateFind(void) {
+bool *mazeSaveState(void) {
+  static bool state = false;
+  return &state;
+}
+
+bool *pathfindingState(void) {
   static bool state = false;
   return &state;
 }
@@ -412,85 +426,25 @@ void addingEndLine(Maze_t *maze) {
 
 /* Метод генерации лабиринта */
 void generateMaze_t(Maze_t *maze) {
-  /* Шаг 1 */
   fillEmptyValue(maze);
-
-#ifdef PRINT_DEBAG
-  printf("Step 1: fillEmptyValue\n");
-  for (int i = 0; i < maze->cols; i++) {
-    printf("%d ", maze->sideLine[i]);
-  }
-
-  printf("\n");
-#endif
-
   for (int j = 0; j < maze->rows - 1; j++) {
-    /* Шаг 2 */
     assignUniqueSet(maze);
-
-#ifdef PRINT_DEBAG
-    printf("Step 2: assignUniqueSet\n");
-    for (int i = 0; i < maze->cols; i++) {
-      printf("%d ", maze->sideLine[i]);
-    }
-    printf("\n");
-#endif
-
-    /* Шаг 3 */
     addingVerticalWalls(maze, j);
-
-#ifdef PRINT_DEBAG
-    printf("Step 3: addingVerticalWalls\n");
-    for (int i = 0; i < maze->cols; i++) {
-      printf("%d ", maze->v_walls[j][i]);
-    }
-    printf("\n");
-#endif
-
-    /* Шаг 4 */
     addingHorizontalWalls(maze, j);
-
-#ifdef PRINT_DEBAG
-    printf("Step 4.1: addingHorizontalWalls\n");
-    for (int i = 0; i < maze->cols; i++) {
-      printf("%d ", maze->h_walls[j][i]);
-    }
-    printf("\n");
-#endif
-
     checkedHorizontalWalls(maze, j);
-
-#ifdef PRINT_DEBAG
-    printf("Step 4.2: checkedHorizontalWalls\n");
-    for (int i = 0; i < maze->cols; i++) {
-      printf("%d ", maze->h_walls[j][i]);
-    }
-    printf("\n");
-#endif
-    /* Шаг 5.1*/
     preparatingNewLine(maze, j);
-
-#ifdef PRINT_DEBAG
-    printf("Step 5: preparatingNewLine\n");
-    for (int i = 0; i < maze->cols; i++) {
-      printf("%d ", maze->sideLine[i]);
-    }
-    printf("\n");
-#endif
   }
-
-  /* Шаг 5.2 */
   addingEndLine(maze);
 }
 
 /*-----------------------Навигатор---------------------------*/
 
-Pathway_t *currentWay(void) {
+Pathway_t *ways(void) {
   static Pathway_t way = {NULL, 0, 0};
   return &way;
 }
 
-Position *currentPath(void) {
+Position *wayOut(void) {
   static Position path = {0, 0};
   return &path;
 }
@@ -499,7 +453,7 @@ Position *currentPath(void) {
 
 /*-----------------Валидация позиции старта и финиша------------------*/
 
-bool isValidPosition(Position *path) {
+bool checkPosition(Position *path) {
   Maze_t *maze = currentMaze();
   bool return_value = true;
   if (path->x < 0 || path->x >= maze->rows || path->y < 0 ||
@@ -509,43 +463,32 @@ bool isValidPosition(Position *path) {
   return return_value;
 }
 
-point_valid areStartEndValid(Position *start, Position *end) {
-  point_valid return_value = VALID;
-  if (!isValidPosition(start)) {
-    return_value = INVALID_START;
-  } else if (!isValidPosition(end)) {
-    return_value = INVALID_END;
-  }
-
-  return return_value;
-}
-
 // Функция выделения памяти для карты
-void allocateMap(Pathway_t *way) {
-  way->map = (int **)malloc(way->rows * sizeof(int *));
-  for (int i = 0; i < way->rows; i++) {
-    way->map[i] = (int *)malloc(way->cols * sizeof(int));
-    for (int j = 0; j < way->cols; j++) {
-      way->map[i][j] = -1;
+void allocationOfPathMapMemory(Pathway_t *ways) {
+  ways->map = (int **)malloc(ways->rows * sizeof(int *));
+  for (int i = 0; i < ways->rows; i++) {
+    ways->map[i] = (int *)malloc(ways->cols * sizeof(int));
+    for (int j = 0; j < ways->cols; j++) {
+      ways->map[i][j] = -1;
     }
   }
 }
 
 // Функция инициализации структуры Pathway_t
-void initializePathway_t(Pathway_t *way, Maze_t *maze) {
-  way->rows = maze->rows;
-  way->cols = maze->cols;
-  allocateMap(way);  // Выделяем память для карты
+void initializePathway_t(Pathway_t *ways, Maze_t *maze) {
+  ways->rows = maze->rows;
+  ways->cols = maze->cols;
+  allocationOfPathMapMemory(ways);  // Выделяем память для карты
 }
 
 // Функция освобождения памяти карты
-void destroyMap(Pathway_t *way) {
-  if (way->map) {
-    for (int i = 0; i < way->rows; i++) {
-      free(way->map[i]);
+void freeingPathMapMemory(Pathway_t *ways) {
+  if (ways->map) {
+    for (int i = 0; i < ways->rows; i++) {
+      free(ways->map[i]);
     }
-    free(way->map);
-    way->map = NULL;
+    free(ways->map);
+    ways->map = NULL;
   }
 }
 
@@ -562,27 +505,27 @@ int changeTheCell(int value, int cell) {
 }
 
 // Функция для нахождения возможных шагов
-int takePossibleSteps(Pathway_t *way, int step, Maze_t *maze) {
+int takePossibleSteps(Pathway_t *ways, int step, Maze_t *maze) {
   int result = 0;
-  for (int i = 0; i < way->rows; i++) {
-    for (int j = 0; j < way->cols; j++) {
-      if (way->map[i][j] == step) {
+  for (int i = 0; i < ways->rows; i++) {
+    for (int j = 0; j < ways->cols; j++) {
+      if (ways->map[i][j] == step) {
         result++;
         // Проверка на перемещение вниз
-        if (i < way->rows - 1 && !maze->h_walls[i][j]) {
-          way->map[i + 1][j] = changeTheCell(step + 1, way->map[i + 1][j]);
+        if (i < ways->rows - 1 && !maze->h_walls[i][j]) {
+          ways->map[i + 1][j] = changeTheCell(step + 1, ways->map[i + 1][j]);
         }
         // Проверка на перемещение вверх
         if (i > 0 && !maze->h_walls[i - 1][j]) {
-          way->map[i - 1][j] = changeTheCell(step + 1, way->map[i - 1][j]);
+          ways->map[i - 1][j] = changeTheCell(step + 1, ways->map[i - 1][j]);
         }
         // Проверка на перемещение вправо
-        if (j < way->cols - 1 && !maze->v_walls[i][j]) {
-          way->map[i][j + 1] = changeTheCell(step + 1, way->map[i][j + 1]);
+        if (j < ways->cols - 1 && !maze->v_walls[i][j]) {
+          ways->map[i][j + 1] = changeTheCell(step + 1, ways->map[i][j + 1]);
         }
         // Проверка на перемещение влево
         if (j > 0 && !maze->v_walls[i][j - 1]) {
-          way->map[i][j - 1] = changeTheCell(step + 1, way->map[i][j - 1]);
+          ways->map[i][j - 1] = changeTheCell(step + 1, ways->map[i][j - 1]);
         }
       }
     }
@@ -591,32 +534,23 @@ int takePossibleSteps(Pathway_t *way, int step, Maze_t *maze) {
 }
 
 // Функция для нахождения пути
-void findWay(Pathway_t *way, Position begin, Position end, Position **path,
+void findWay(Pathway_t *ways, Position begin, Position end, Position **path,
              int *pathLength, Maze_t *maze) {
   *pathLength = 0;  // Инициализация длины пути
   int y = end.y;
   int x = end.x;
-
-  //   // Проверьте, что начальная и конечная позиции находятся в пределах
-  //   массива if (begin.y < 0 || begin.y >= way->rows || begin.x < 0 ||
-  //       begin.x >= way->cols || end.y < 0 || end.y >= way->rows || end.x < 0
-  //       || end.x >= way->cols) {
-  //     printf("Ошибка: Начальная или конечная позиция вне границ карты.\n");
-  //     return;
-  //   }
-
   int count = 1;
   int step = 0;
 
-  way->map[begin.y][begin.x] = 0;  // Установка начальной позиции
+  ways->map[begin.y][begin.x] = 0;  // Установка начальной позиции
 
   // Процесс нахождения шагов, пока есть шаги и местоположение не достигнуто
-  while (count > 0 && way->map[y][x] == -1) {
-    count = takePossibleSteps(way, step++, maze);
+  while (count > 0 && ways->map[y][x] == -1) {
+    count = takePossibleSteps(ways, step++, maze);
   }
 
-  if (way->map[y][x] != -1) {
-    step = way->map[y][x];
+  if (ways->map[y][x] != -1) {
+    step = ways->map[y][x];
     *path = (Position *)malloc(sizeof(Position) * (step + 1));
 
     // Начальная позиция
@@ -625,17 +559,17 @@ void findWay(Pathway_t *way, Position begin, Position end, Position **path,
 
     // Обратный переход к начальной позиции
     while (y != begin.y || x != begin.x) {
-      if (y < way->rows - 1 && !maze->h_walls[y][x] &&
-          way->map[y + 1][x] == step - 1)
+      if (y < ways->rows - 1 && !maze->h_walls[y][x] &&
+          ways->map[y + 1][x] == step - 1)
         y++;
       else if (y > 0 && !maze->h_walls[y - 1][x] &&
-               way->map[y - 1][x] == step - 1)
+               ways->map[y - 1][x] == step - 1)
         y--;
-      else if (x < way->cols - 1 && !maze->v_walls[y][x] &&
-               way->map[y][x + 1] == step - 1)
+      else if (x < ways->cols - 1 && !maze->v_walls[y][x] &&
+               ways->map[y][x + 1] == step - 1)
         x++;
       else if (x > 0 && !maze->v_walls[y][x - 1] &&
-               way->map[y][x - 1] == step - 1)
+               ways->map[y][x - 1] == step - 1)
         x--;
 
       (*path)[(*pathLength)].x =
@@ -645,5 +579,5 @@ void findWay(Pathway_t *way, Position begin, Position end, Position **path,
       step--;
     }
   }
-  destroyMap(way);
+  freeingPathMapMemory(ways);
 }

@@ -4,7 +4,7 @@
 void printGame(State_t *state, int pathLength, Position *start, Position *end) {
   Cli_t *size = currentCliSize();
   init_cli_param(size);
-  bool *stateFind = currentStateFind();
+  bool *stateFind = pathfindingState();
 
   start_color();
 
@@ -13,36 +13,47 @@ void printGame(State_t *state, int pathLength, Position *start, Position *end) {
     *stateFind = false;
     printStartBanner(size->term_height, size->term_width);
   } else if (*state == GENERATE_MAZE) {
-    // nodelay(stdscr, false);
     *stateFind = false;
     clear();
     print_menu(size->menu_start_y, size->menu_start_x, start, end);
-    bool *stateSize = currentStateSize();
+    bool *stateSize = mazeSizeInputState();
     *stateSize = false;
     get_dimension(size);
-    // nodelay(stdscr, true);
   } else if (*state == LOAD_MAZE_FROM_FILE) {
     *stateFind = false;
     Maze_t *maze = currentMaze();
-    bool *stateLoad = currentStateLoad();
+    bool *stateLoad = mazeLoadingState();
     char *filename = currentFileName();
     *stateLoad = false;
-    // nodelay(stdscr, false);
     clear();
     print_menu(size->menu_start_y, size->menu_start_x, start, end);
     get_filename(size->input_start_y, size->input_start_x, filename);
-    *stateLoad = load_maze_t(filename, maze);
-    // nodelay(stdscr, true);
+    *stateLoad = loadMaze(filename, maze);
+    if (!*stateLoad)
+      mvprintw(size->menu_start_y + 12, size->input_start_x,
+               "Could not load file");
+  } else if (*state == SAVE_MAZE_IN_FILE) {
+    *stateFind = false;
+    Maze_t *maze = currentMaze();
+    bool *stateSave = mazeSaveState();
+    char *filename = currentFileName();
+    *stateSave = false;
+    clear();
+    print_menu(size->menu_start_y, size->menu_start_x, start, end);
+    get_filename(size->input_start_y, size->input_start_x, filename);
+    *stateSave = saveMaze(filename, maze);
   } else if (*state == FIND_PATHAWAY) {
-    // nodelay(stdscr, false);
-    // 		clear();
     *stateFind = false;
     print_menu(size->menu_start_y, size->menu_start_x, start, end);
     get_start_end_points(size->input_start_y, size->input_start_x, start, end,
                          size->menu_start_x);
-    point_valid validation = areStartEndValid(start, end);
-    // 			nodelay(stdscr, true);
-    if (validation == VALID) *stateFind = true;
+    if (!checkPosition(start)) {
+      mvprintw(size->menu_start_y + 12, size->input_start_x, "Invalid start");
+    } else if (!checkPosition(end)) {
+      mvprintw(size->menu_start_y + 12, size->input_start_x, "Invalid end");
+    } else {
+      *stateFind = true;
+    }
   } else if (*state == MAZE_PRINTING) {
     print_menu(size->menu_start_y, size->menu_start_x, start, end);
     print_banner_maze(size->maze_start_y, size->maze_start_x,
@@ -51,55 +62,17 @@ void printGame(State_t *state, int pathLength, Position *start, Position *end) {
   }
 }
 
-// void print_pathway(Cli_t *size, Position *start, Position *end,
-//                   int *pathLength) {
-//   Maze_t *maze = currentMaze();
-//   Position *path = currentPath();
-//   get_start_end_points(size->input_start_y, size->input_start_x, start, end,
-//                       size->menu_start_x);
-//   point_valid v = areStartEndValid(start, end);
-//   if (v != VALID) {
-//     print_point_eror(v, size->menu_start_x, size->input_start_y + 1);
-//   } else {
-//     Pathway_t *way = currentWay();
-
-//     initializePathway_t(way, maze);
-
-//     // PP0QP>P6P4P5P=P8P5 P?QQP8
-//     findWay(way, *start, *end, &path, pathLength, maze);
-//     print_path(size->maze_start_y, size->maze_start_x, size->maze_win_height,
-//               size->maze_win_width, path, *pathLength);
-//     free(path);
-//   }
-// }
-
-// void print_load_maze(Cli_t *size, Position *start, Position *end) {
-//   Maze_t *maze = currentMaze();
-//   bool *stateLoad = currentStateLoad();
-//   char *filename = currentFileName();
-
-//   get_filename(size->input_start_y, size->input_start_x, filename);
-//   *stateLoad = load_maze_t(filename, maze);
-//   if (*stateLoad) {
-//     print_banner_maze(size->maze_start_y, size->maze_start_x,
-//                       size->maze_win_height, size->maze_win_width);
-//   } else {
-//     print_load_error();
-//   }
-//   print_menu(size->menu_start_y, size->menu_start_x, start, end);
-// }
-
 void print_menu(int start_y, int start_x, Position *start, Position *end) {
   Maze_t *maze = currentMaze();
   mvprintw(start_y + 1, start_x, "[s] - load maze from file");
   mvprintw(start_y + 2, start_x, "[g] - generate maze");
   mvprintw(start_y + 3, start_x, "[ESC] - quit");
-  mvprintw(start_y + 4, start_x, "[f] - find path");
+  mvprintw(start_y + 4, start_x, "[p] - show path");
   mvprintw(start_y + 6, start_x, "Mazes size:");
   mvprintw(start_y + 7, start_x + 11, "rows: %d", maze->rows);
   mvprintw(start_y + 8, start_x + 11, "cols: %d", maze->cols);
-  mvprintw(start_y + 9, start_x, "Start positiion: %d %d", start->x, start->y);
-  mvprintw(start_y + 10, start_x, "End positiion: %d %d", end->x, end->y);
+  mvprintw(start_y + 10, start_x, "Start positiion: %d %d", start->x, start->y);
+  mvprintw(start_y + 11, start_x, "End positiion: %d %d", end->x, end->y);
 }
 
 Cli_t *currentCliSize(void) {
@@ -181,10 +154,10 @@ void init_cli_param(Cli_t *size) {
 
 void get_filename(int start_y, int start_x, char *filename) {
   nodelay(stdscr, false);
-  mvprintw(start_y + 10, start_x, "Enter the filename: ");
+  mvprintw(start_y + 4, start_x, "Enter the filename: ");
   refresh();
   echo();
-  mvgetstr(start_y + 11, start_x, filename);
+  mvgetstr(start_y + 5, start_x, filename);
   noecho();
   clear();
   nodelay(stdscr, true);
@@ -194,13 +167,12 @@ void get_position(int start_y, int start_x, Position *point,
                   const char *string) {
   nodelay(stdscr, false);
   char input[100];
-  mvprintw(start_y + 10, start_x, "%s %s %s    ", "Input ", string,
-           "positiion:");
+  mvprintw(start_y + ((strcmp(string, "start") == 0) ? 4 : 6), start_x,
+           "%s %s %s", "Input", string, "positiion:");
   refresh();
   echo();
-  mvgetstr(start_y + 11, start_x, input);
-  sscanf(input, "%3d    %3d   ", &point->x, &point->y);
-  refresh();
+  mvgetstr(start_y + ((strcmp(string, "start") == 0) ? 5 : 7), start_x, input);
+  sscanf(input, "%3d %3d", &point->x, &point->y);
   noecho();
   nodelay(stdscr, true);
 }
@@ -216,17 +188,17 @@ void get_start_end_points(int start_y, int start_x, Position *start,
 
 void get_dimension(Cli_t *size) {
   nodelay(stdscr, false);
-  bool *stateSize = currentStateSize();
+  bool *stateSize = mazeSizeInputState();
   Maze_t *maze = currentMaze();
   *stateSize = true;
   int rows = 0;
   int cols = 0;
   echo();
-  mvprintw(size->input_start_y + 10, size->input_start_x,
+  mvprintw(size->input_start_y + 4, size->input_start_x,
            "Enter maze rows (1-50): ");
   refresh();
   scanw("%d", &rows);
-  mvprintw(size->input_start_y + 11, size->input_start_x,
+  mvprintw(size->input_start_y + 5, size->input_start_x,
            "Enter maze cols (1-50): ");
   refresh();
   scanw("%d", &cols);
@@ -239,7 +211,7 @@ void get_dimension(Cli_t *size) {
     *stateSize = false;
     print_wrong_dimension_error();
   } else {
-    resize_maze_t(maze, rows, cols);
+    resizeMaze(maze, rows, cols);
     generateMaze_t(maze);
   }
   nodelay(stdscr, true);
@@ -260,14 +232,11 @@ void print_banner_maze(int start_y, int start_x, int max_height, int max_width,
   WINDOW *maze_win = newwin(win_height, win_width, start_y, start_x);
   werase(maze_win);
 
-  // P>QQ P8QP>P2P:P0 P3Q P0P=P8Q "P?P>P;Q"
   wattron(maze_win, COLOR_PAIR(n));
   mvwhline(maze_win, start_y, start_x, '_', maze->cols * cell_width);
   mvwvline(maze_win, start_y + 1, start_x, '|', maze->rows * cell_height);
   wattroff(maze_win, COLOR_PAIR(n));
 
-  // P>QQ P8QP>P2P:P0 P;P0P1P8Q P8P=QP0 - QQP5P=P:P8 QP?Q P0P2P0 P8
-  // QP=P8P7Q
   for (int i = 0; i < maze->rows; ++i) {
     for (int j = 0; j < maze->cols; ++j) {
       y = start_y + i * cell_height;
@@ -289,16 +258,14 @@ void print_banner_maze(int start_y, int start_x, int max_height, int max_width,
     }
   }
 
-  bool *stateFind = currentStateFind();
+  bool *stateFind = pathfindingState();
   if (*stateFind) {
-    Position *path = currentPath();
-    Pathway_t *way = currentWay();
+    Position *path = wayOut();
+    Pathway_t *way = ways();
 
     initializePathway_t(way, maze);
 
-    // PP0QP>P6P4P5P=P8P5 P?QQP8
-    findWay(way, *start, *end, &path, &pathLength,
-            maze);  // PQQ P8QP>P2P:P0 P?QQP8
+    findWay(way, *start, *end, &path, &pathLength, maze);
 
     for (int i = 0; i < pathLength; ++i) {
       y = start_y + path[i].y * cell_height;
@@ -313,49 +280,6 @@ void print_banner_maze(int start_y, int start_x, int max_height, int max_width,
   delwin(maze_win);
 }
 
-// void printGenerateMazeBanner(int height_cli, int width_cli) {
-//   Maze_t *maze = currentMaze();
-
-//   int cell_height = 1;
-//   int cell_width = 2;
-//   int start_y = 0;
-//   int start_x = 0;
-//   int win_height = height_cli;
-//   int win_width = width_cli;
-//   int x, y;
-
-//   WINDOW *generate = newwin(win_height, win_width, start_y, start_x);
-//   werase(generate);
-
-//   // P>QQ P8QP>P2P:P0 P3Q P0P=P8Q "P?P>P;Q"
-//   // mvhline(start_y, start_x, '_', win_width);
-//   // mvvline(start_y + 1, start_x, '|', win_height);
-
-//   // P>QQ P8QP>P2P:P0 P;P0P1P8Q P8P=QP0 - QQP5P=P:P8 QP?Q P0P2P0 P8
-//   QP=P8P7Q for (int i = 0; i < maze->rows; ++i) {
-//     for (int j = 0; j < maze->cols; ++j) {
-//       y = start_y + i * cell_height;
-//       x = start_x + j * cell_width;
-
-//       if (maze->h_walls[i][j]) {
-//         wattron(generate, COLOR_PAIR(1));
-//         mvwhline(generate, y + cell_height, x + 1, '_', cell_width);
-//         wattroff(generate, COLOR_PAIR(1));
-//       }
-
-//       if (maze->v_walls[i][j]) {
-//         for (int k = 1; k <= cell_height; ++k) {
-//           wattron(generate, COLOR_PAIR(1));
-//           mvwaddch(generate, y + k, x + cell_width, '|');
-//           wattroff(generate, COLOR_PAIR(1));
-//         }
-//       }
-//     }
-//   }
-//   wrefresh(generate);
-//   delwin(generate);
-// }
-
 void print_path(int start_y, int start_x, int max_height, int max_width,
                 Position *path, int pathLength) {
   Maze_t *maze = currentMaze();
@@ -363,20 +287,13 @@ void print_path(int start_y, int start_x, int max_height, int max_width,
   int cell_width = max_width / maze->cols;
   int x, y;
 
-  if (path) {  // PQQ P8QP>P2P:P0 P?QQP8
+  if (path) {
     for (int i = 0; i < pathLength; ++i) {
       y = start_y + path[i].y * cell_height;
       x = start_x + path[i].x * cell_width;
       mvprintw(y + 1, x + 1, "o");
     }
   }
-}
-
-void print_load_error() { mvprintw(0, 0, "Could not load file"); }
-
-void print_point_eror(point_valid v, int x, int y) {
-  if (v == INVALID_START) mvprintw(y, x, "Invalid start");
-  if (v == INVALID_END) mvprintw(y, x, "Invalid end");
 }
 
 char *currentFileName(void) {

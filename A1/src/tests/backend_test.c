@@ -11,8 +11,8 @@ START_TEST(test_create_maze_1) {
   ck_assert_int_eq(staticMaze->counter, 0);
   if (staticMaze) {
     if (staticMaze->sideLine) free(staticMaze->sideLine);
-    free_walls(staticMaze->v_walls, staticMaze->rows);
-    free_walls(staticMaze->h_walls, staticMaze->rows);
+    freeWalls(staticMaze->v_walls, staticMaze->rows);
+    freeWalls(staticMaze->h_walls, staticMaze->rows);
   }
 }
 END_TEST
@@ -20,7 +20,7 @@ END_TEST
 START_TEST(test_create_maze_2) {
   int rows = 10;
   int cols = 10;
-  Maze_t *maze = create_maze_t(rows, cols);
+  Maze_t *maze = createMaze(rows, cols);
 
   ck_assert_int_eq(maze->rows, 10);
   ck_assert_int_eq(maze->cols, 10);
@@ -34,34 +34,34 @@ START_TEST(test_create_maze_2) {
       ck_assert_int_eq(maze->h_walls[i][j], 0);
     }
   }
-  free_maze_t(maze);
+  freeMaze(maze);
 }
 END_TEST
 
 START_TEST(test_create_maze_3) {
   int rows = 51;
   int cols = 51;
-  Maze_t *maze = create_maze_t(rows, cols);
+  Maze_t *maze = createMaze(rows, cols);
   ck_assert_int_eq((maze) ? 1 : 0, 0);
 
-  free_maze_t(maze);
+  freeMaze(maze);
 }
 END_TEST
 
 START_TEST(test_create_maze_4) {
   int rows = 0;
   int cols = 0;
-  Maze_t *maze = create_maze_t(rows, cols);
+  Maze_t *maze = createMaze(rows, cols);
   ck_assert_int_eq((maze) ? 1 : 0, 0);
 
-  free_maze_t(maze);
+  freeMaze(maze);
 }
 END_TEST
 
 START_TEST(test_resize_maze_1) {
   int rows = 10;
   int cols = 10;
-  Maze_t *maze = create_maze_t(rows, cols);
+  Maze_t *maze = createMaze(rows, cols);
 
   ck_assert_int_eq(maze->rows, 10);
   ck_assert_int_eq(maze->cols, 10);
@@ -77,7 +77,7 @@ START_TEST(test_resize_maze_1) {
   }
   rows = 20;
   cols = 20;
-  resize_maze_t(maze, rows, cols);
+  resizeMaze(maze, rows, cols);
   ck_assert_int_eq(maze->rows, 20);
   ck_assert_int_eq(maze->cols, 20);
   ck_assert_int_eq((maze->v_walls) ? 1 : 0, 1);
@@ -91,14 +91,14 @@ START_TEST(test_resize_maze_1) {
     }
   }
 
-  free_maze_t(maze);
+  freeMaze(maze);
 }
 END_TEST
 
 START_TEST(test_resize_maze_2) {
   int rows = 10;
   int cols = 10;
-  Maze_t *maze = create_maze_t(rows, cols);
+  Maze_t *maze = createMaze(rows, cols);
 
   ck_assert_int_eq(maze->rows, 10);
   ck_assert_int_eq(maze->cols, 10);
@@ -114,18 +114,18 @@ START_TEST(test_resize_maze_2) {
   }
   rows = 0;
   cols = 0;
-  int result = resize_maze_t(maze, rows, cols);
+  int result = resizeMaze(maze, rows, cols);
   ck_assert_int_eq(result, 0);
   ck_assert_int_eq(maze->rows, 10);
   ck_assert_int_eq(maze->cols, 10);
-  free_maze_t(maze);
+  freeMaze(maze);
 }
 END_TEST
 
 START_TEST(test_resize_maze_3) {
   int rows = 10;
   int cols = 10;
-  Maze_t *maze = create_maze_t(rows, cols);
+  Maze_t *maze = createMaze(rows, cols);
 
   ck_assert_int_eq(maze->rows, 10);
   ck_assert_int_eq(maze->cols, 10);
@@ -141,18 +141,18 @@ START_TEST(test_resize_maze_3) {
   }
   rows = 51;
   cols = 51;
-  int result = resize_maze_t(maze, rows, cols);
+  int result = resizeMaze(maze, rows, cols);
   ck_assert_int_eq(result, 0);
   ck_assert_int_eq(maze->rows, 10);
   ck_assert_int_eq(maze->cols, 10);
-  free_maze_t(maze);
+  freeMaze(maze);
 }
 END_TEST
 
 START_TEST(test_load_maze_1) {
-  Maze_t *maze = create_maze_t(1, 1);
+  Maze_t *maze = createMaze(1, 1);
   const char *filename = "./tests/test_maze.txt";
-  bool result = load_maze_t(filename, maze);
+  bool result = loadMaze(filename, maze);
   ck_assert_int_eq(result, 1);
   ck_assert_int_eq(maze->rows, 4);
   ck_assert_int_eq(maze->cols, 4);
@@ -161,39 +161,39 @@ START_TEST(test_load_maze_1) {
   ck_assert_int_eq((maze->sideLine) ? 1 : 0, 1);
   ck_assert_int_eq(maze->counter, 1);
 
-  free_maze_t(maze);
+  freeMaze(maze);
 }
 END_TEST
 
 START_TEST(test_load_maze_2) {
-  Maze_t *maze = create_maze_t(1, 1);
+  Maze_t *maze = createMaze(1, 1);
   const char *filename = "./test_maze.txt";
-  bool result = load_maze_t(filename, maze);
+  bool result = loadMaze(filename, maze);
   ck_assert_int_eq(result, 0);
   ck_assert_int_eq(maze->rows, 1);
   ck_assert_int_eq(maze->cols, 1);
   ck_assert_int_eq(maze->counter, 1);
 
-  free_maze_t(maze);
+  freeMaze(maze);
 }
 END_TEST
 
 START_TEST(test_generate_maze_1) {
-  Maze_t *maze = create_maze_t(20, 20);
+  Maze_t *maze = createMaze(20, 20);
   generateMaze_t(maze);
 
   ck_assert_int_eq(maze->rows, 20);
   ck_assert_int_eq(maze->cols, 20);
   ck_assert_int_ne(maze->counter, 1);
 
-  free_maze_t(maze);
+  freeMaze(maze);
 }
 END_TEST
 
 /*-------НАвигатор-----*/
 
 START_TEST(test_find_pathway_maze_1) {
-  Maze_t *maze = create_maze_t(20, 20);
+  Maze_t *maze = createMaze(20, 20);
   generateMaze_t(maze);
   Pathway_t way;
   initializePathway_t(&way, maze);
@@ -212,8 +212,8 @@ START_TEST(test_find_pathway_maze_1) {
   ck_assert_int_eq((path) ? 1 : 0, 1);
 
   free(path);
-  destroyMap(&way);
-  free_maze_t(maze);
+  freeingPathMapMemory(&way);
+  freeMaze(maze);
 }
 END_TEST
 
@@ -296,22 +296,22 @@ END_TEST
 /*----------помоганторы----------------*/
 
 START_TEST(test_helpers_maze_1) {
-  Pathway_t *way = currentWay();
+  Pathway_t *way = ways();
 
   ck_assert_int_eq(way->rows, 0);
   ck_assert_int_eq(way->cols, 0);
   ck_assert_int_eq((way->map) ? 1 : 0, 0);
 
-  Position *start = currentPath();
+  Position *start = wayOut();
   ck_assert_int_eq(start->x, 0);
   ck_assert_int_eq(start->y, 0);
 
   Maze_t *staticMaze = currentMaze();
-  resize_maze_t(staticMaze, 3, 3);
+  resizeMaze(staticMaze, 3, 3);
   start->x = 4;
   start->y = 4;
 
-  int result = isValidPosition(start);
+  int result = checkPosition(start);
   ck_assert_int_eq(result, 0);
 }
 END_TEST
@@ -321,7 +321,7 @@ START_TEST(test_helpers_maze_2) {
   Position end = {3, 3};
 
   Maze_t *staticMaze = currentMaze();
-  resize_maze_t(staticMaze, 4, 4);
+  resizeMaze(staticMaze, 4, 4);
 
   ck_assert_int_eq(areStartEndValid(&start, &end), 0);
   end.x = 4;
@@ -333,17 +333,17 @@ START_TEST(test_helpers_maze_2) {
   ck_assert_int_eq(areStartEndValid(&start, &end), 1);
   if (staticMaze) {
     if (staticMaze->sideLine) free(staticMaze->sideLine);
-    free_walls(staticMaze->v_walls, staticMaze->rows);
-    free_walls(staticMaze->h_walls, staticMaze->rows);
+    freeWalls(staticMaze->v_walls, staticMaze->rows);
+    freeWalls(staticMaze->h_walls, staticMaze->rows);
   }
 }
 END_TEST
 
 START_TEST(test_helpers_maze_3) {
-  bool *stateSizeMaze = currentStateSize();
+  bool *stateSizeMaze = mazeSizeInputState();
   ck_assert_uint_eq(*stateSizeMaze, 0);
 
-  bool *stateLoadMaze = currentStateLoad();
+  bool *stateLoadMaze = mazeLoadingState();
   ck_assert_uint_eq(*stateLoadMaze, 0);
 }
 END_TEST

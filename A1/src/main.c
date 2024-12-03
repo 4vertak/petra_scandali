@@ -37,8 +37,8 @@ void game_loop() {
 
   if (maze) {
     if (maze->sideLine) free(maze->sideLine);
-    free_walls(maze->v_walls, maze->rows);
-    free_walls(maze->h_walls, maze->rows);
+    freeWalls(maze->v_walls, maze->rows);
+    freeWalls(maze->h_walls, maze->rows);
   }
   endwin();
 }

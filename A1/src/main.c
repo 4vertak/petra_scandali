@@ -4,7 +4,8 @@ void handleUserInput(UserAction_t *action) {
   int signal = GET_USER_INPUT;
   if (signal != ERR) {
     *action = getSignal(signal);
-  }
+  } else
+    *action = NOSIG;
 }
 
 void game_loop() {

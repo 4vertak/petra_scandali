@@ -60,7 +60,7 @@ Pathway_t *currentWay(void);
 
 Position *currentPath(void);
 
-point_valid *currentStateValidPosition(void);
+bool *currentStateFind(void);
 
 bool isValidPosition(Position *path);
 

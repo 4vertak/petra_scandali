@@ -10,11 +10,11 @@
 #define MAX_SIZE 50
 #define kEmpty 0
 #define ESCAPE 27
-// #define PRINT_DEBAG
+#define PRINT_DEBAG
 
 typedef struct {
-  int x;
   int y;
+  int x;
 } Position;
 
 typedef struct {

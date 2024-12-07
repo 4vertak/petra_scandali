@@ -456,8 +456,8 @@ Position *wayOut(void) {
 bool checkPosition(Position *path) {
   Maze_t *maze = currentMaze();
   bool return_value = true;
-  if (path->x < 0 || path->x >= maze->rows || path->y < 0 ||
-      path->y >= maze->cols) {
+  if (path->x < 0 || path->y >= maze->rows || path->y < 0 ||
+      path->x >= maze->cols) {
     return_value = false;
   }
   return return_value;
@@ -541,12 +541,14 @@ void findWay(Pathway_t *ways, Position begin, Position end, Position **path,
   int x = end.x;
   int count = 1;
   int step = 0;
+  //   printf("end.y %d  end.x %d\n", end.y, end.x);
 
   ways->map[begin.y][begin.x] = 0;  // Установка начальной позиции
 
   // Процесс нахождения шагов, пока есть шаги и местоположение не достигнуто
   while (count > 0 && ways->map[y][x] == -1) {
     count = takePossibleSteps(ways, step++, maze);
+    // printf("Путь длиной %d\n", step);
   }
 
   if (ways->map[y][x] != -1) {
@@ -556,7 +558,6 @@ void findWay(Pathway_t *ways, Position begin, Position end, Position **path,
     // Начальная позиция
     (*path)[(*pathLength)].x = x;
     (*path)[(*pathLength)++].y = y;
-
     // Обратный переход к начальной позиции
     while (y != begin.y || x != begin.x) {
       if (y < ways->rows - 1 && !maze->h_walls[y][x] &&
@@ -579,5 +580,5 @@ void findWay(Pathway_t *ways, Position begin, Position end, Position **path,
       step--;
     }
   }
-  freeingPathMapMemory(ways);
+  //   freeingPathMapMemory(ways);
 }

@@ -2,6 +2,7 @@
 #define SRC_BACKEND_BACKEND_H
 
 #include <limits.h>
+#include <ncurses.h>
 #include <stdbool.h>
 #include <stdio.h>
 #include <stdlib.h>
@@ -11,6 +12,16 @@
 #define kEmpty 0
 #define ESCAPE 27
 #define PRINT_DEBAG
+#define DEAD 0
+#define ALIVE 1
+
+typedef struct {
+  int rows;
+  int cols;
+  int **map;
+  int birthLimit;
+  int bornLimit;
+} Cave_t;
 
 typedef struct {
   int y;
@@ -34,11 +45,23 @@ typedef struct {
 
 typedef enum {
   START,
+  SELECT_GENERATE,
+  SELECT_LOAD,
+  SELECT_DISPLAY_WAY,
+
   GENERATE_MAZE,
   SAVE_MAZE_IN_FILE,
   LOAD_MAZE_FROM_FILE,
   FIND_PATHAWAY,
   MAZE_PRINTING,
+
+  GENERATE_CAVE,
+  SAVE_CAVE_IN_FILE,
+  LOAD_CAVE_FROM_FILE,
+  CAVE_PRINTING,
+  CAVE_PRINTING_STEP_BY_STEP,
+  CAVE_PRINTING_AUTO,
+
   EXIT
 } State_t;
 
@@ -49,6 +72,12 @@ typedef enum {
   Save,
   Pathfinding,
   Terminate,
+  ShowPathfindingMap,
+  selectMaze,
+  selectCave,
+  nextStep,
+  speedDown,
+  speedUp,
   NOSIG
 } UserAction_t;
 
@@ -59,6 +88,8 @@ Pathway_t *ways(void);
 Position *wayOut(void);
 
 bool *pathfindingState(void);
+
+bool *showPathfindingMapState(void);
 
 bool checkPosition(Position *path);
 
@@ -96,7 +127,7 @@ Maze_t *createMaze(int rows, int cols);
 
 int resizeMaze(Maze_t *maze, int new_rows, int new_cols);
 
-bool *mazeSizeInputState(void);
+bool *sizeInputState(void);
 
 /*---------Загрузка файла лабиринт------------*/
 
@@ -165,5 +196,23 @@ void updateCurrentState(State_t *state);
 // void onLoadingMaze();
 
 // void onFindPathway(Position *path, int pathLength);
+
+/*--------------------CAVE------------------------*/
+
+Cave_t *currentCave(void);
+void allocateMap(Cave_t *cave);
+int resizeCave(Cave_t *cave, int new_rows, int new_cols);
+
+bool readFile(Cave_t *cave, const char *fileName);
+
+int findNeighbours(Cave_t *cave, int rowPos, int colPos);
+
+void updateMap(Cave_t *cave);
+
+void generateMap(Cave_t *cave, int chance);
+
+void setLimits(Cave_t *cave, int birth, int death);
+
+void freeCave(Cave_t *cave);
 
 #endif  // SRC_BACKEND_BACKEND_H

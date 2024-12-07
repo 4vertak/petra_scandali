@@ -4,6 +4,8 @@
 #include <locale.h>
 #include <ncurses.h>
 #include <string.h>
+#define __USE_MISC
+#include <unistd.h>
 
 #include "../backend/backend.h"
 
@@ -60,16 +62,24 @@ typedef struct {
 
 /*-----------------CBUI----------------------------*/
 
+void handleUserInput(UserAction_t *action);
+
 Cli_t *currentCliSize(void);
 void init_cli_param(Cli_t *size);
-void print_menu(int start_y, int start_x, Position *start, Position *end);
+void print_mazes_menu(int start_y, int start_x, Position *start, Position *end);
+void print_caves_menu(int start_y, int start_x, Cave_t *cave);
 void get_filename(int start_y, int start_x, char *filename);
 void get_start_end_points(int start_y, int start_x, Position *start,
                           Position *end, int menu_x);
-void get_dimension(Cli_t *size);
+void getParamMaze(Cli_t *size);
+void getParamCave(Cli_t *size);
 void printWinMaze(int start_y, int start_x, int max_height, int max_width,
                   Position *start, Position *end, int pathLength);
+void printWinCave(int start_y, int start_x, int max_height, int max_width);
+
 void bannerMaze(WINDOW *maze_win, Maze_t *maze, int start_y, int start_x,
+                int cell_height, int cell_width);
+void bannerCave(WINDOW *cave_win, Cave_t *cave, int start_y, int start_x,
                 int cell_height, int cell_width);
 void bannerPath(WINDOW *maze_win, int start_y, int start_x, int cell_height,
                 int cell_width, Position *start, Position *end, int pathLength);
@@ -81,5 +91,11 @@ void print_pathway(Cli_t *size, Position *start, Position *end,
 void print_wrong_dimension_error();
 void printGame(State_t *state, int pathLength, Position *start, Position *end);
 void printStartBanner(int height_cli, int width_cli);
+void printSelectBanner(int height_cli, int width_cli);
+void printSelectDisplayCaveBanner(int height_cli, int width_cli);
+void print_caves_automod_menu(int start_y, int start_x, Cave_t *cave,
+                              unsigned int delay);
+void print_caves_manualmod_menu(int start_y, int start_x, Cave_t *cave,
+                                int step_count);
 
 #endif  // SRC_GUI_CONSOLE_BASED_UI_H

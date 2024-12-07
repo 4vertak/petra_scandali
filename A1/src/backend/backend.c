@@ -18,6 +18,18 @@ UserAction_t getSignal(int user_input) {
     action = Save;
   } else if (user_input == ESCAPE) {
     action = Terminate;
+  } else if (user_input == 'a') {
+    action = ShowPathfindingMap;
+  } else if (user_input == 'm') {
+    action = selectMaze;
+  } else if (user_input == 'c') {
+    action = selectCave;
+  } else if (user_input == 'n') {
+    action = nextStep;
+  } else if (user_input == KEY_UP) {
+    action = speedUp;
+  } else if (user_input == KEY_DOWN) {
+    action = speedDown;
   }
 
   return action;
@@ -27,14 +39,16 @@ void userInput(UserAction_t action, State_t *state) {
   switch (action) {
     case Generate:
       if (*state == START || *state == MAZE_PRINTING ||
-          *state == FIND_PATHAWAY) {
-        *state = GENERATE_MAZE;
+          *state == FIND_PATHAWAY || *state == CAVE_PRINTING_STEP_BY_STEP ||
+          *state == CAVE_PRINTING_AUTO || *state == CAVE_PRINTING) {
+        *state = SELECT_GENERATE;
       }
       break;
     case Load:
       if (*state == START || *state == MAZE_PRINTING ||
-          *state == FIND_PATHAWAY) {
-        *state = LOAD_MAZE_FROM_FILE;
+          *state == FIND_PATHAWAY || *state == CAVE_PRINTING_STEP_BY_STEP ||
+          *state == CAVE_PRINTING_AUTO || *state == CAVE_PRINTING) {
+        *state = SELECT_LOAD;
       }
       break;
     case Pathfinding:
@@ -42,9 +56,33 @@ void userInput(UserAction_t action, State_t *state) {
         *state = FIND_PATHAWAY;
       }
       break;
+    case ShowPathfindingMap:
+      if (*state == SELECT_DISPLAY_WAY) {
+        *state = CAVE_PRINTING_AUTO;
+      }
+      break;
     case Save:
-      if (*state == MAZE_PRINTING || *state == FIND_PATHAWAY) {
+      if (*state == MAZE_PRINTING || *state == FIND_PATHAWAY ||
+          *state == CAVE_PRINTING_STEP_BY_STEP ||
+          *state == CAVE_PRINTING_AUTO || *state == CAVE_PRINTING) {
         *state = SAVE_MAZE_IN_FILE;
+      }
+      if (*state == SELECT_DISPLAY_WAY) {
+        *state = CAVE_PRINTING_STEP_BY_STEP;
+      }
+      break;
+    case selectMaze:
+      if (*state == SELECT_GENERATE) {
+        *state = GENERATE_MAZE;
+      } else if (*state == SELECT_LOAD) {
+        *state = LOAD_MAZE_FROM_FILE;
+      }
+      break;
+    case selectCave:
+      if (*state == SELECT_GENERATE) {
+        *state = GENERATE_CAVE;
+      } else if (*state == SELECT_LOAD) {
+        *state = LOAD_CAVE_FROM_FILE;
       }
       break;
     case Terminate:
@@ -57,7 +95,7 @@ void userInput(UserAction_t action, State_t *state) {
 }
 
 void updateCurrentState(State_t *state) {
-  bool *stateSize = mazeSizeInputState();
+  bool *stateSize = sizeInputState();
   bool *stateLoad = mazeLoadingState();
   bool *stateSave = mazeSaveState();
   bool *stateFind = pathfindingState();
@@ -68,11 +106,29 @@ void updateCurrentState(State_t *state) {
         *stateSize = false;
       }
       break;
+    case GENERATE_CAVE:
+      if (*stateSize) {
+        *state = SELECT_DISPLAY_WAY;
+        *stateSize = false;
+      }
+      break;
     case LOAD_MAZE_FROM_FILE:
-      if (*stateLoad) *state = MAZE_PRINTING;
+      if (*stateLoad) {
+        *state = MAZE_PRINTING;
+        *stateLoad = false;
+      }
+      break;
+    case LOAD_CAVE_FROM_FILE:
+      if (*stateLoad) {
+        *state = CAVE_PRINTING;
+        *stateLoad = false;
+      }
       break;
     case SAVE_MAZE_IN_FILE:
-      if (*stateSave) *state = MAZE_PRINTING;
+      if (*stateSave) {
+        *state = MAZE_PRINTING;
+        *stateSave = false;
+      }
       break;
     case FIND_PATHAWAY:
       if (*stateFind) *state = MAZE_PRINTING;
@@ -266,7 +322,7 @@ bool saveMaze(const char *filename, Maze_t *maze) {
 /*------------текущее состояния размера
  * лабирнта----------------------------------*/
 
-bool *mazeSizeInputState(void) {
+bool *sizeInputState(void) {
   static bool state = false;
   return &state;
 }
@@ -285,6 +341,11 @@ bool *mazeSaveState(void) {
 }
 
 bool *pathfindingState(void) {
+  static bool state = false;
+  return &state;
+}
+
+bool *showPathfindingMapState(void) {
   static bool state = false;
   return &state;
 }
@@ -581,4 +642,151 @@ void findWay(Pathway_t *ways, Position begin, Position end, Position **path,
     }
   }
   //   freeingPathMapMemory(ways);
+}
+
+/*----------------CAVE--------------------------*/
+
+Cave_t *currentCave(void) {
+  static Cave_t cave = {0, 0, NULL, 0, 0};
+  return &cave;
+}
+void allocateMap(Cave_t *cave) {
+  cave->map = allocateArray(cave->rows, cave->cols);
+}
+
+int resizeCave(Cave_t *cave, int new_rows, int new_cols) {
+  int return_value = 0;
+  if (!cave || new_rows <= 0 || new_cols <= 0 || new_rows > 50 ||
+      new_cols > 50) {
+    printf("Размер матрицы должен быть в диапазоне 1-50\n");
+  } else {
+    int **new_map = allocateArray(new_rows, new_cols);
+
+    if (!new_map) {
+      // printf("Не удалось выделить память\n");
+      freeWalls(new_map, new_rows);
+    } else {
+      // Освобождение старых стен
+      freeWalls(cave->map, cave->rows);
+
+      // Обновление указателей и размеров
+      cave->map = new_map;
+      cave->rows = new_rows;
+      cave->cols = new_cols;
+      cave->birthLimit = 0;
+      cave->bornLimit = 0;
+
+      // Инициализация стен
+      for (int i = 0; i < new_rows; i++) {
+        for (int j = 0; j < new_cols; j++) {
+          cave->map[i][j] = 0;
+          cave->map[i][j] = 0;
+        }
+      }
+      return_value = 1;
+    }
+  }
+  return return_value;
+}
+
+bool readFile(Cave_t *cave, const char *fileName) {
+  bool return_value = false;
+  int new_rows = 0;
+  int new_cols = 0;
+
+  FILE *file = fopen(fileName, "r");
+  if (file) {
+    fscanf(file, "%d %d", &new_rows, &new_cols);
+    resizeCave(cave, new_rows, new_cols);
+    for (int i = 0; i < new_rows; i++) {
+      for (int j = 0; j < new_cols; j++) {
+        fscanf(file, "%d", &cave->map[i][j]);
+      }
+    }
+
+    fclose(file);
+    return_value = true;
+  }
+  return return_value;
+}
+
+// Окре́стность Му́ра клетки (англ. Moore neighborhood) — в двумерном случае —
+// совокупность восьми клеток на квадратном паркете, имеющих общую вершину с
+// данной клеткой.
+
+int findNeighbours(Cave_t *cave, int rowPos, int colPos) {
+  int count = 0;
+  for (int i = -1; i <= 1; i++) {
+    for (int j = -1; j <= 1; j++) {
+      if (i == 0 && j == 0) continue;
+      int cur_i = rowPos + i;
+      int cur_j = colPos + j;
+      if (cur_i >= 0 && cur_i < cave->rows && cur_j >= 0 &&
+          cur_j < cave->cols) {
+        count += cave->map[cur_i][cur_j];
+      }
+    }
+  }
+  return count;
+}
+
+void updateMap(Cave_t *cave) {
+  int **newMap = (int **)malloc(cave->rows * sizeof(int *));
+  if (newMap == NULL) {
+    perror("Failed to allocate memory for newMap");
+    exit(EXIT_FAILURE);
+  }
+
+  for (int i = 0; i < cave->rows; i++) {
+    newMap[i] = (int *)malloc(cave->cols * sizeof(int));
+    if (newMap[i] == NULL) {
+      perror("Failed to allocate memory for newMap row");
+      for (int k = 0; k < i; k++) {
+        free(newMap[k]);
+      }
+      free(newMap);
+      exit(EXIT_FAILURE);
+    }
+  }
+
+  for (int i = 0; i < cave->rows; i++) {
+    for (int j = 0; j < cave->cols; j++) {
+      int neighbors = findNeighbours(cave, i, j);
+      if (cave->map[i][j] == ALIVE && neighbors > cave->bornLimit) {
+        newMap[i][j] = DEAD;
+      } else if (cave->map[i][j] == DEAD && neighbors > cave->birthLimit) {
+        newMap[i][j] = ALIVE;
+      } else {
+        newMap[i][j] = cave->map[i][j];
+      }
+    }
+  }
+
+  for (int i = 0; i < cave->rows; i++) {
+    free(cave->map[i]);
+    cave->map[i] = newMap[i];
+  }
+  free(newMap);
+}
+
+void generateMap(Cave_t *cave, int chance) {
+  srand(time(NULL));
+  allocateMap(cave);
+  for (int i = 0; i < cave->rows; i++) {
+    for (int j = 0; j < cave->cols; j++) {
+      cave->map[i][j] = (rand() % 100 < chance) ? ALIVE : DEAD;
+    }
+  }
+}
+
+void setLimits(Cave_t *cave, int birth, int death) {
+  cave->birthLimit = birth;
+  cave->bornLimit = death;
+}
+
+void freeCave(Cave_t *cave) {
+  for (int i = 0; i < cave->rows; i++) {
+    free(cave->map[i]);
+  }
+  free(cave->map);
 }

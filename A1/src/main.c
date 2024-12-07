@@ -1,13 +1,5 @@
 #include "./main.h"
 
-void handleUserInput(UserAction_t *action) {
-  int signal = GET_USER_INPUT;
-  if (signal != ERR) {
-    *action = getSignal(signal);
-  } else
-    *action = NOSIG;
-}
-
 void game_loop() {
   bool break_flag = false;
 
@@ -17,6 +9,7 @@ void game_loop() {
 
   Maze_t *maze = currentMaze();
   State_t *state = currentState();
+  Cave_t *cave = currentCave();
 
   UserAction_t action = NOSIG;
   srand(time(NULL));
@@ -25,9 +18,7 @@ void game_loop() {
 
     userInput(action, state);
 
-    if (*state == START || *state == GENERATE_MAZE ||
-        *state == LOAD_MAZE_FROM_FILE || *state == FIND_PATHAWAY ||
-        *state == MAZE_PRINTING) {
+    if (*state != EXIT) {
       handleUserInput(&action);
     }
 
@@ -39,6 +30,9 @@ void game_loop() {
     if (maze->sideLine) free(maze->sideLine);
     freeWalls(maze->v_walls, maze->rows);
     freeWalls(maze->h_walls, maze->rows);
+  }
+  if (cave) {
+    freeCave(cave);
   }
   endwin();
 }

@@ -11,6 +11,5 @@
 #define GET_USER_INPUT getch()
 
 void game_loop();
-void handleUserInput(UserAction_t *action);
 
 #endif  // SRC_MAIN_H

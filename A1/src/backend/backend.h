@@ -2,6 +2,7 @@
 #define SRC_BACKEND_BACKEND_H
 
 #include <limits.h>
+#include <math.h>
 #include <ncurses.h>
 #include <stdbool.h>
 #include <stdio.h>
@@ -14,6 +15,13 @@
 #define PRINT_DEBAG
 #define DEAD 0
 #define ALIVE 1
+
+#define NUMBER_OF_ACTIONS 4
+#define DECAY_RATE 0.0001f  // скорость уменьшения eps
+#define MAX_EPS 1.0f        // вероятность исследования
+#define MIN_EPS 0.01f       // вероятность исследования
+
+#define TRAIN_COUNT 10
 
 typedef struct {
   int rows;
@@ -114,7 +122,7 @@ void findWay(Pathway_t *ways, Position begin, Position end, Position **path,
 
 /*-----------Выделение и освобождеие памяти---------------*/
 
-void freeWalls(int **walls, int rows);
+void free2dArray(int **walls, int rows);
 
 void freeMaze(Maze_t *maze);
 
@@ -214,5 +222,34 @@ void generateMap(Cave_t *cave, int chance);
 void setLimits(Cave_t *cave, int birth, int death);
 
 void freeCave(Cave_t *cave);
+
+/*------------------логика ML Q-Learning------------------------*/
+
+// Функция для создания Q-таблицы
+float ***createQTable(Maze_t *maze);
+
+// Функция для освобождения Q-таблицы
+void freeQTable(float ***q_table, int rows, int cols);
+
+// Проверка, возможно ли перемещение
+int is_valid_move(Maze_t *maze, int new_x, int new_y, int state_x, int state_y);
+
+// Возвращает новое состояние на основе действия
+void get_new_state(int action, int current_x, int current_y, int *new_x,
+                   int *new_y);
+
+void init2DArray(int **array, int rows, int cols);
+
+// Обновление Q-значений
+void updateQTable(float ***Q, int state_x, int state_y, int action,
+                  float reward);
+int maxQValue(float ***Q, float *max_q_value, int state_x, int state_y);
+
+int setAction(float ***Q, int state_x, int state_y, float *epsilon,
+              int episode);
+// Награда
+float calculateReward(Maze_t *maze, Position *end, int *new_x, int *new_y,
+                      int *state_x, int *state_y);
+void q_learning(Maze_t *maze, Position *start, Position *end, float ***Q);
 
 #endif  // SRC_BACKEND_BACKEND_H

@@ -28,8 +28,8 @@ void game_loop() {
 
   if (maze) {
     if (maze->sideLine) free(maze->sideLine);
-    freeWalls(maze->v_walls, maze->rows);
-    freeWalls(maze->h_walls, maze->rows);
+    free2dArray(maze->v_walls, maze->rows);
+    free2dArray(maze->h_walls, maze->rows);
   }
   if (cave) {
     freeCave(cave);
@@ -49,13 +49,13 @@ int main() {
 #ifdef DEBAG
 
 int main() {
-  Maze_t *maze = createMaze(10, 11);
+  Maze_t *maze = createMaze(4, 4);
   generateMaze_t(maze);
   Pathway_t way;
   initializePathway_t(&way, maze);
 
   Position start = {0, 0};
-  Position end = {9, 10};
+  Position end = {3, 3};
 
   Position *path = NULL;
   int pathLength = 0;
@@ -82,7 +82,8 @@ int main() {
   for (int i = 0; i < pathLength; ++i) {
     printf("path[%d].y = %2d path[%d].x = %2d\n", i, path[i].y, i, path[i].x);
   }
-
+  float ***Q = createQTable(maze);
+  q_learning(maze, &start, &end, Q);
   free(path);
   freeingPathMapMemory(&way);
   freeMaze(maze);

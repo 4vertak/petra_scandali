@@ -140,7 +140,7 @@ void updateCurrentState(State_t *state) {
 
 /*-----------Выделение и освобождеие памяти---------------*/
 
-void freeWalls(int **walls, int rows) {
+void free2dArray(int **walls, int rows) {
   if (walls) {
     for (int i = 0; i < rows; i++) {
       free(walls[i]);
@@ -152,8 +152,8 @@ void freeWalls(int **walls, int rows) {
 void freeMaze(Maze_t *maze) {
   if (maze) {
     if (maze->sideLine) free(maze->sideLine);
-    freeWalls(maze->v_walls, maze->rows);
-    freeWalls(maze->h_walls, maze->rows);
+    free2dArray(maze->v_walls, maze->rows);
+    free2dArray(maze->h_walls, maze->rows);
     free(maze);
   }
 }
@@ -164,7 +164,7 @@ int **allocateArray(int rows, int cols) {
     for (int i = 0; i < rows; i++) {
       array[i] = malloc(cols * sizeof(int));
       if (!array[i]) {
-        freeWalls(array, i);
+        free2dArray(array, i);
         return NULL;
       }
     }
@@ -231,13 +231,13 @@ int resizeMaze(Maze_t *maze, int new_rows, int new_cols) {
     if (!new_sideLine || !new_v_walls || !new_h_walls) {
       // printf("Не удалось выделить память\n");
       free(new_sideLine);
-      freeWalls(new_v_walls, new_rows);
-      freeWalls(new_h_walls, new_rows);
+      free2dArray(new_v_walls, new_rows);
+      free2dArray(new_h_walls, new_rows);
     } else {
       // Освобождение старых стен
       free(maze->sideLine);
-      freeWalls(maze->v_walls, maze->rows);
-      freeWalls(maze->h_walls, maze->rows);
+      free2dArray(maze->v_walls, maze->rows);
+      free2dArray(maze->h_walls, maze->rows);
 
       // Обновление указателей и размеров
       maze->sideLine = new_sideLine;
@@ -664,10 +664,10 @@ int resizeCave(Cave_t *cave, int new_rows, int new_cols) {
 
     if (!new_map) {
       // printf("Не удалось выделить память\n");
-      freeWalls(new_map, new_rows);
+      free2dArray(new_map, new_rows);
     } else {
       // Освобождение старых стен
-      freeWalls(cave->map, cave->rows);
+      free2dArray(cave->map, cave->rows);
 
       // Обновление указателей и размеров
       cave->map = new_map;
@@ -789,4 +789,226 @@ void freeCave(Cave_t *cave) {
     free(cave->map[i]);
   }
   free(cave->map);
+}
+
+/*------------------логика ML Q-Learning------------------------*/
+
+// Функция для создания Q-таблицы
+float ***createQTable(Maze_t *maze) {
+  float ***q_table = (float ***)malloc(maze->rows * sizeof(float **));
+  if (q_table == NULL) {
+    perror("Failed to allocate memory for q_table");
+    exit(EXIT_FAILURE);
+  }
+  for (int i = 0; i < maze->rows; i++) {
+    q_table[i] = (float **)malloc(maze->cols * sizeof(float *));
+    for (int j = 0; j < maze->cols; j++) {
+      q_table[i][j] = (float *)malloc(NUMBER_OF_ACTIONS * sizeof(float));
+      for (int a = 0; a < NUMBER_OF_ACTIONS; a++) {
+        q_table[i][j][a] = 0.0f;  // Инициализация Q-значений
+      }
+    }
+  }
+  return q_table;
+}
+
+// Функция для освобождения Q-таблицы
+void freeQTable(float ***q_table, int rows, int cols) {
+  if (q_table == NULL) {
+    return;
+  }
+  for (int i = 0; i < rows; i++) {
+    for (int j = 0; j < cols; j++) {
+      free(q_table[i][j]);
+    }
+    free(q_table[i]);
+  }
+  free(q_table);
+}
+
+// Проверка, возможно ли перемещение
+int is_valid_move(Maze_t *maze, int new_x, int new_y, int state_x,
+                  int state_y) {
+  int return_value = 1;
+  if (new_x < 0 || new_x >= maze->rows || new_y < 0 || new_y >= maze->cols)
+    return_value = 1;
+  else if (new_x == state_x && new_y == state_y + 1)
+    return_value = maze->v_walls[state_x][state_y] ? 1 : 0;
+  else if (new_x == state_x && new_y == state_y - 1)
+    return_value = maze->v_walls[state_x][state_y - 1] ? 1 : 0;
+  else if (new_x == state_x + 1 && new_y == state_y)
+    return_value = maze->h_walls[state_x][state_y] ? 1 : 0;
+  else if (new_x == state_x - 1 && new_y == state_y)
+    return_value = maze->h_walls[state_x - 1][state_y] ? 1 : 0;
+  return return_value;
+}
+
+// Возвращает новое состояние на основе действия
+void get_new_state(int action, int current_x, int current_y, int *new_x,
+                   int *new_y) {
+  switch (action) {
+    case 0:  // Вверх
+      *new_x = current_x - 1;
+      *new_y = current_y;
+      break;
+    case 1:  // Вниз
+      *new_x = current_x + 1;
+      *new_y = current_y;
+      break;
+    case 2:  // Влево
+      *new_x = current_x;
+      *new_y = current_y - 1;
+      break;
+    case 3:  // Вправо
+      *new_x = current_x;
+      *new_y = current_y + 1;
+      break;
+    default:
+      *new_x = current_x;
+      *new_y = current_y;
+      break;
+  }
+}
+
+void init2DArray(int **array, int rows, int cols) {
+  for (int i = 0; i < rows; i++) {
+    for (int j = 0; j < cols; j++) {
+      array[i][j] = 0;
+    }
+  }
+}
+
+// Обновление Q-значений
+void updateQTable(float ***Q, int state_x, int state_y, int action,
+                  float reward) {
+  float alpha = 0.1f;  // темп обучения
+  float gamma = 0.9f;  // дискаунт на следующее действие
+
+  float max_future_q = Q[state_x][state_y][0];
+  maxQValue(Q, &max_future_q, state_x, state_y);
+  // for (int i = 0; i < NUMBER_OF_ACTIONS; i++) {
+  //   if (Q[state_x][state_y][i] > max_future_q) {
+  //     max_future_q = Q[state_x][state_y][i];
+  //   }
+  // }
+
+  Q[state_x][state_y][action] +=
+      alpha * (reward + gamma * max_future_q - Q[state_x][state_y][action]);
+}
+
+int maxQValue(float ***Q, float *max_q_value, int state_x, int state_y) {
+  int best_action = 0;
+  for (int i = 0; i < NUMBER_OF_ACTIONS; i++) {
+    if (Q[state_x][state_y][i] > *max_q_value) {
+      *max_q_value = Q[state_x][state_y][i];
+      best_action = i;  // Максимальное значение Q
+    }
+  }
+  return best_action;
+}
+
+int setAction(float ***Q, int state_x, int state_y, float *epsilon,
+              int episode) {
+  srand(time(0));
+  int action = 0;
+  *epsilon =
+      MAX_EPS - (MAX_EPS - MIN_EPS) * (1 - exp(-DECAY_RATE * (float)episode));
+  *epsilon = (*epsilon > MIN_EPS) ? *epsilon : MIN_EPS;
+
+  if ((float)rand() / RAND_MAX < *epsilon) {
+    action = rand() % NUMBER_OF_ACTIONS;
+  } else {
+    action = 0;
+    float max_q_value = Q[state_x][state_y][0];
+    action = maxQValue(Q, &max_q_value, state_x, state_y);
+  }
+  return action;
+}
+
+// Награда
+
+float calculateReward(Maze_t *maze, Position *end, int *new_x, int *new_y,
+                      int *state_x, int *state_y) {
+  float reward = 0.0f;
+
+  if (is_valid_move(maze, *new_x, *new_y, *state_x, *state_y)) {
+    *new_x = *state_x;
+    *new_y = *state_y;
+    reward -= 100.0f;
+  } else {
+    if (*state_x == end->x && *state_y == end->y)
+      reward = 100.0f;
+    else {
+      Position begin = {.x = *state_x, .y = *state_y};
+      Position begin2 = {.x = *new_x, .y = *new_y};
+      Pathway_t way;
+      initializePathway_t(&way, maze);
+      Position *path = NULL;
+      int pathLength = 0;
+      int pathLength2 = 0;
+      findWay(&way, begin, *end, &path, &pathLength, maze);
+      freeingPathMapMemory(&way);
+      initializePathway_t(&way, maze);
+      findWay(&way, begin2, *end, &path, &pathLength2, maze);
+      freeingPathMapMemory(&way);
+      reward += (pathLength - pathLength2) * 0.5f;
+    }
+    *state_x = *new_x;
+    *state_y = *new_y;
+  }
+  return reward;
+}
+
+// Основной алгоритм Q-обучения для поиска пути
+void q_learning(Maze_t *maze, Position *start, Position *end, float ***Q) {
+  // float ***Q = createQTable(maze);
+
+  int **visited = allocateArray(maze->rows, maze->cols);
+
+  init2DArray(visited, maze->rows, maze->cols);
+
+  float epsilon = MAX_EPS;  // Параметр исследования vs. эксплуатации
+
+  for (int episode = 0; episode < 10; episode++) {
+    int state_x = start->x;
+    int state_y = start->y;
+    int step = 0;
+    bool break_flag = true;
+
+    while (break_flag) {
+      int action = setAction(Q, state_x, state_y, &epsilon, episode);
+      int new_x, new_y;
+      get_new_state(action, state_x, state_y, &new_x, &new_y);
+      float reward =
+          calculateReward(maze, end, &new_x, &new_y, &state_x, &state_y);
+
+      visited[state_x][state_y]++;
+
+      updateQTable(Q, state_x, state_y, action, reward);
+
+      step++;
+
+      if (state_x == end->x && state_y == end->y) {
+        break_flag = false;
+      }
+    }
+  }
+  // #ifdef DEBAG
+  // Печать Q-таблицы
+  printf("Q-таблица:\n");
+  for (int i = 0; i < maze->rows; i++) {
+    for (int j = 0; j < maze->cols; j++) {
+      for (int a = 0; a < NUMBER_OF_ACTIONS; a++) {
+        printf("%.2f ", Q[i][j][a]);
+      }
+      printf("\n");
+    }
+    printf("\n");
+  }
+
+  freeQTable(Q, maze->rows, maze->cols);
+
+  // #endif
+
+  free2dArray(visited, maze->rows);
 }

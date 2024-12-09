@@ -10,6 +10,8 @@
 
 #define GET_USER_INPUT getch()
 
+#define DEBAG
+
 void game_loop();
 
 #endif  // SRC_MAIN_H

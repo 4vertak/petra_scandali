@@ -563,7 +563,7 @@ void bannerCave(WINDOW *cave_win, Cave_t *cave, int start_y, int start_x,
       int x = start_x + j * cell_width;
 
       if (cave->map[i][j]) {
-        color = ORANGEFONT;
+        color = ORANGE;
         for (int k = 0; k < cell_height; ++k) {
           for (int m = 0; m < cell_width; ++m) {
             wattron(cave_win, COLOR_PAIR(color));
@@ -572,7 +572,7 @@ void bannerCave(WINDOW *cave_win, Cave_t *cave, int start_y, int start_x,
           }
         }
       } else {
-        color = ORANGE;
+        color = ORANGEFONT;
         for (int k = 0; k < cell_height; ++k) {
           for (int m = 0; m < cell_width; ++m) {
             wattron(cave_win, COLOR_PAIR(color));

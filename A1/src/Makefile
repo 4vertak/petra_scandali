@@ -12,7 +12,7 @@ DVI_DIR = ./../docs
 DIST_DIR = ./../dist
 BUILD = ./../bin
 
-CFLAGS = -Wall -Werror -Wextra -pedantic -std=c11
+CFLAGS = -Wall -Werror -Wextra -pedantic -std=c11 -lm
 LDGUI = -lncurses
 TEST_FLAGS =-lcheck -lpthread -ldl -pthread -lm -lrt -lsubunit -lgcov --coverage
 VALGRIND_FLAGS = --tool=memcheck --leak-check=full
@@ -64,7 +64,7 @@ all: install run
 
 install: uninstall $(LIBRARY) $(GUI_LIBRARY)
 	@mkdir -p $(BUILD)
-	@$(CC) $(CFLAGS) $(MAIN_C) $(LIBRARY) $(GUI_LIBRARY) $(LDGUI) -o $(BUILD)/$(PROJECT_NAME)
+	@$(CC) $(CFLAGS) $(MAIN_C) $(LIBRARY) $(GUI_LIBRARY) $(LDGUI) -o $(BUILD)/$(PROJECT_NAME) -lm
 
 
 uninstall: clean

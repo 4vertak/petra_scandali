@@ -1,10 +1,12 @@
 #ifndef SRC_GUI_CONSOLE_BASED_UI_H
 #define SRC_GUI_CONSOLE_BASED_UI_H
-
+#define _POSIX_C_SOURCE 199309L
 #include <locale.h>
 #include <ncurses.h>
 #include <string.h>
+
 #define __USE_MISC
+#include <time.h>
 #include <unistd.h>
 
 #include "../backend/backend.h"
@@ -97,5 +99,16 @@ void print_caves_automod_menu(int start_y, int start_x, Cave_t *cave,
                               unsigned int delay);
 void print_caves_manualmod_menu(int start_y, int start_x, Cave_t *cave,
                                 int step_count);
+void printSelectViewPathMapBanner(int height_cli, int width_cli);
+void getParamViewPath(void);
+
+void bannerTrain(int state_x, int state_y, int cell_height, int cell_width);
+void print_train_menu(int start_y, int start_x, Position *start, Position *end,
+                      int episode, int state_x, int state_y);
+
+void printWinTrain(int start_y, int start_x, int max_height, int max_width,
+                   Position *start, Position *end);
+
+void msleep(long msec);
 
 #endif  // SRC_GUI_CONSOLE_BASED_UI_H

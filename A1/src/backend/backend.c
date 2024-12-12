@@ -30,6 +30,8 @@ UserAction_t getSignal(int user_input) {
     action = speedUp;
   } else if (user_input == KEY_DOWN) {
     action = speedDown;
+  } else if (user_input == 'q') {
+    action = QLearning;
   }
 
   return action;
@@ -54,6 +56,11 @@ void userInput(UserAction_t action, State_t *state) {
     case Pathfinding:
       if (*state == MAZE_PRINTING || *state == FIND_PATHAWAY) {
         *state = FIND_PATHAWAY;
+      }
+      break;
+    case QLearning:
+      if (*state == MAZE_PRINTING || *state == FIND_PATHAWAY) {
+        *state = QL_TRAIN;
       }
       break;
     case ShowPathfindingMap:
@@ -793,23 +800,54 @@ void freeCave(Cave_t *cave) {
 
 /*------------------логика ML Q-Learning------------------------*/
 
-// Функция для создания Q-таблицы
-float ***createQTable(Maze_t *maze) {
-  float ***q_table = (float ***)malloc(maze->rows * sizeof(float **));
-  if (q_table == NULL) {
-    perror("Failed to allocate memory for q_table");
-    exit(EXIT_FAILURE);
+bool loadQTable(const char *filename, float ***Q, Maze_t *maze) {
+  bool result = false;
+  FILE *file = fopen(filename, "r");
+  if (file != NULL) {
+    for (int i = 0; i < maze->rows; i++) {
+      for (int j = 0; j < maze->cols; j++) {
+        for (int k = 0; k < NUMBER_OF_ACTIONS; k++) {
+          fscanf(file, "%f", &Q[i][j][k]);
+        }
+        fscanf(file, "\n");
+      }
+      fscanf(file, "\n");
+    }
+    fclose(file);
+    result = true;
   }
-  for (int i = 0; i < maze->rows; i++) {
-    q_table[i] = (float **)malloc(maze->cols * sizeof(float *));
-    for (int j = 0; j < maze->cols; j++) {
-      q_table[i][j] = (float *)malloc(NUMBER_OF_ACTIONS * sizeof(float));
-      for (int a = 0; a < NUMBER_OF_ACTIONS; a++) {
-        q_table[i][j][a] = 0.0f;  // Инициализация Q-значений
+  return result;
+}
+
+void initialQTable(float ***Q, Maze_t *maze, const char *filename) {
+  if (!loadQTable(filename, Q, maze)) {
+    for (int i = 0; i < maze->rows; i++) {
+      for (int j = 0; j < maze->cols; j++) {
+        for (int a = 0; a < NUMBER_OF_ACTIONS; a++) {
+          Q[i][j][a] = 0.0f;  // Инициализация Q-значений
+        }
       }
     }
   }
-  return q_table;
+}
+
+// Функция для создания Q-таблицы
+float ***createQTable(Maze_t *maze) {
+  float ***Q = (float ***)malloc(maze->rows * sizeof(float **));
+  if (Q == NULL) {
+    perror("Failed to allocate memory for Q-table");
+    exit(EXIT_FAILURE);
+  }
+  for (int i = 0; i < maze->rows; i++) {
+    Q[i] = (float **)malloc(maze->cols * sizeof(float *));
+    for (int j = 0; j < maze->cols; j++) {
+      Q[i][j] = (float *)malloc(NUMBER_OF_ACTIONS * sizeof(float));
+    }
+  }
+  const char *filename = NULL;
+  initialQTable(Q, maze, filename);
+
+  return Q;
 }
 
 // Функция для освобождения Q-таблицы
@@ -827,20 +865,28 @@ void freeQTable(float ***q_table, int rows, int cols) {
 }
 
 // Проверка, возможно ли перемещение
-int is_valid_move(Maze_t *maze, int new_x, int new_y, int state_x,
-                  int state_y) {
-  int return_value = 1;
+bool is_valid_move(Maze_t *maze, int new_x, int new_y, int state_x, int state_y,
+                   int action) {
+  bool result = false;
   if (new_x < 0 || new_x >= maze->rows || new_y < 0 || new_y >= maze->cols)
-    return_value = 1;
-  else if (new_x == state_x && new_y == state_y + 1)
-    return_value = maze->v_walls[state_x][state_y] ? 1 : 0;
-  else if (new_x == state_x && new_y == state_y - 1)
-    return_value = maze->v_walls[state_x][state_y - 1] ? 1 : 0;
-  else if (new_x == state_x + 1 && new_y == state_y)
-    return_value = maze->h_walls[state_x][state_y] ? 1 : 0;
-  else if (new_x == state_x - 1 && new_y == state_y)
-    return_value = maze->h_walls[state_x - 1][state_y] ? 1 : 0;
-  return return_value;
+    result = false;
+  else {
+    switch (action) {
+      case 0:  // Вверх
+        result = maze->h_walls[state_x - 1][state_y] ? false : true;
+        break;
+      case 1:  // Вниз
+        result = maze->h_walls[state_x][state_y] ? false : true;
+        break;
+      case 2:  // Влево
+        result = maze->v_walls[state_x][state_y - 1] ? false : true;
+        break;
+      case 3:  // Вправо
+        result = maze->v_walls[state_x][state_y] ? false : true;
+        break;
+    }
+  }
+  return result;
 }
 
 // Возвращает новое состояние на основе действия
@@ -870,52 +916,37 @@ void get_new_state(int action, int current_x, int current_y, int *new_x,
   }
 }
 
-void init2DArray(int **array, int rows, int cols) {
-  for (int i = 0; i < rows; i++) {
-    for (int j = 0; j < cols; j++) {
-      array[i][j] = 0;
-    }
-  }
-}
-
-// Обновление Q-значений
-void updateQTable(float ***Q, int state_x, int state_y, int action,
-                  float reward) {
-  float alpha = 0.1f;  // темп обучения
-  float gamma = 0.9f;  // дискаунт на следующее действие
-
-  float max_future_q = Q[state_x][state_y][0];
-  maxQValue(Q, &max_future_q, state_x, state_y);
-  // for (int i = 0; i < NUMBER_OF_ACTIONS; i++) {
-  //   if (Q[state_x][state_y][i] > max_future_q) {
-  //     max_future_q = Q[state_x][state_y][i];
-  //   }
-  // }
-
-  Q[state_x][state_y][action] +=
-      alpha * (reward + gamma * max_future_q - Q[state_x][state_y][action]);
-}
-
+// Максимальное значение Q
 int maxQValue(float ***Q, float *max_q_value, int state_x, int state_y) {
   int best_action = 0;
   for (int i = 0; i < NUMBER_OF_ACTIONS; i++) {
     if (Q[state_x][state_y][i] > *max_q_value) {
       *max_q_value = Q[state_x][state_y][i];
-      best_action = i;  // Максимальное значение Q
+      best_action = i;
     }
   }
   return best_action;
 }
 
-int setAction(float ***Q, int state_x, int state_y, float *epsilon,
-              int episode) {
-  srand(time(0));
-  int action = 0;
-  *epsilon =
-      MAX_EPS - (MAX_EPS - MIN_EPS) * (1 - exp(-DECAY_RATE * (float)episode));
-  *epsilon = (*epsilon > MIN_EPS) ? *epsilon : MIN_EPS;
+// Обновление Q-значений
+void updateQTable(float ***Q, int state_x, int state_y, int action,
+                  float reward) {
+  float max_future_q = Q[state_x][state_y][0];
 
-  if ((float)rand() / RAND_MAX < *epsilon) {
+  maxQValue(Q, &max_future_q, state_x, state_y);
+
+  Q[state_x][state_y][action] +=
+      ALPHA * (reward + GAMMA * max_future_q - Q[state_x][state_y][action]);
+}
+
+int setAction(float ***Q, int state_x, int state_y, int episode) {
+  float epsilon = MAX_EPS;  // Параметр исследования vs. эксплуатации
+  int action = 0;
+  epsilon = MAX_EPS -
+            (MAX_EPS - MIN_EPS) * (1 - exp(-LEARNING_RATE * (float)episode));
+  epsilon = (epsilon > MIN_EPS) ? epsilon : MIN_EPS;
+
+  if ((float)rand() / RAND_MAX < epsilon) {
     action = rand() % NUMBER_OF_ACTIONS;
   } else {
     action = 0;
@@ -925,33 +956,35 @@ int setAction(float ***Q, int state_x, int state_y, float *epsilon,
   return action;
 }
 
-// Награда
-
 float calculateReward(Maze_t *maze, Position *end, int *new_x, int *new_y,
-                      int *state_x, int *state_y) {
+                      int *state_x, int *state_y, int action) {
   float reward = 0.0f;
 
-  if (is_valid_move(maze, *new_x, *new_y, *state_x, *state_y)) {
+  if (!is_valid_move(maze, *new_x, *new_y, *state_x, *state_y, action)) {
     *new_x = *state_x;
     *new_y = *state_y;
-    reward -= 100.0f;
+    reward += -1.0f;
   } else {
     if (*state_x == end->x && *state_y == end->y)
-      reward = 100.0f;
+      reward = 1.0f;
     else {
-      Position begin = {.x = *state_x, .y = *state_y};
-      Position begin2 = {.x = *new_x, .y = *new_y};
-      Pathway_t way;
-      initializePathway_t(&way, maze);
-      Position *path = NULL;
-      int pathLength = 0;
-      int pathLength2 = 0;
-      findWay(&way, begin, *end, &path, &pathLength, maze);
-      freeingPathMapMemory(&way);
-      initializePathway_t(&way, maze);
-      findWay(&way, begin2, *end, &path, &pathLength2, maze);
-      freeingPathMapMemory(&way);
-      reward += (pathLength - pathLength2) * 0.5f;
+      reward += 0.0001f;
+
+      /*--------продуамать как упрастить подсчет оценки от растояния до
+       * выхода------------*/
+      // Position begin = {.x = *state_x, .y = *state_y};
+      // Position begin2 = {.x = *new_x, .y = *new_y};
+      // Pathway_t way;
+      // initializePathway_t(&way, maze);
+      // Position *path = NULL;
+      // int pathLength = 0;
+      // int pathLength2 = 0;
+      // findWay(&way, begin, *end, &path, &pathLength, maze);
+      // freeingPathMapMemory(&way);
+      // initializePathway_t(&way, maze);
+      // findWay(&way, begin2, *end, &path, &pathLength2, maze);
+      // freeingPathMapMemory(&way);
+      // reward += (pathLength - pathLength2) * 0.5f;
     }
     *state_x = *new_x;
     *state_y = *new_y;
@@ -961,54 +994,115 @@ float calculateReward(Maze_t *maze, Position *end, int *new_x, int *new_y,
 
 // Основной алгоритм Q-обучения для поиска пути
 void q_learning(Maze_t *maze, Position *start, Position *end, float ***Q) {
-  // float ***Q = createQTable(maze);
-
-  int **visited = allocateArray(maze->rows, maze->cols);
-
-  init2DArray(visited, maze->rows, maze->cols);
-
-  float epsilon = MAX_EPS;  // Параметр исследования vs. эксплуатации
-
-  for (int episode = 0; episode < 10; episode++) {
+  srand(time(NULL));
+  for (int episode = 0; episode < NUM_EPISOD; episode++) {
     int state_x = start->x;
     int state_y = start->y;
     int step = 0;
-    bool break_flag = true;
 
-    while (break_flag) {
-      int action = setAction(Q, state_x, state_y, &epsilon, episode);
+    while (true) {
+      int action = setAction(Q, state_x, state_y, episode);
       int new_x, new_y;
+
       get_new_state(action, state_x, state_y, &new_x, &new_y);
-      float reward =
-          calculateReward(maze, end, &new_x, &new_y, &state_x, &state_y);
 
-      visited[state_x][state_y]++;
+      float reward = calculateReward(maze, end, &new_x, &new_y, &state_x,
+                                     &state_y, action);
 
+      // Обновление Q-значений
       updateQTable(Q, state_x, state_y, action, reward);
 
-      step++;
-
       if (state_x == end->x && state_y == end->y) {
-        break_flag = false;
+        break;  // Если достигли цели, прерываем цикл
       }
+      step++;
     }
   }
-  // #ifdef DEBAG
+}
+
+void printQTable(Maze_t *maze, float ***Q) {
   // Печать Q-таблицы
   printf("Q-таблица:\n");
   for (int i = 0; i < maze->rows; i++) {
     for (int j = 0; j < maze->cols; j++) {
       for (int a = 0; a < NUMBER_OF_ACTIONS; a++) {
-        printf("%.2f ", Q[i][j][a]);
+        printf("%.6f\t", Q[i][j][a]);
       }
       printf("\n");
     }
     printf("\n");
   }
-
-  freeQTable(Q, maze->rows, maze->cols);
-
-  // #endif
-
-  free2dArray(visited, maze->rows);
 }
+
+bool saveQTable(const char *filename, float ***Q, Maze_t *maze) {
+  bool result = false;
+  FILE *file = fopen(filename, "w");
+
+  if (file == NULL) {
+    perror("Не удалось открыть файл");
+    return result;
+  }
+  fprintf(file, "%d %d\n", maze->rows, maze->cols);
+  for (int i = 0; i < maze->rows; i++) {
+    for (int j = 0; j < maze->cols; j++) {
+      for (int k = 0; k < NUMBER_OF_ACTIONS; k++) {
+        fprintf(file, "%.6f ", Q[i][j][k]);
+      }
+      fprintf(file, "\n");
+    }
+    fprintf(file, "\n");
+  }
+  fclose(file);
+
+  result = true;
+
+  return result;
+}
+
+// void findWayinQTable(Position begin, Position end, Position **path,
+//                      int *pathLength, float **Q, Maze_t *maze) {
+//   *pathLength = 0;  // Инициализация длины пути
+//   int y = end.y;
+//   int x = end.x;
+//   int count = 1;
+//   int step = 0;
+
+//   for (int i)
+
+//     // Процесс нахождения шагов, пока есть шаги и местоположение не
+//     достигнуто while (count > 0 && ways->map[y][x] == -1) {
+//       count = takePossibleSteps(ways, step++, maze);
+//       // printf("Путь длиной %d\n", step);
+//     }
+
+//   if (ways->map[y][x] != -1) {
+//     step = ways->map[y][x];
+//     *path = (Position *)malloc(sizeof(Position) * (step + 1));
+
+//     // Начальная позиция
+//     (*path)[(*pathLength)].x = x;
+//     (*path)[(*pathLength)++].y = y;
+//     // Обратный переход к начальной позиции
+//     while (y != begin.y || x != begin.x) {
+//       if (y < ways->rows - 1 && !maze->h_walls[y][x] &&
+//           ways->map[y + 1][x] == step - 1)
+//         y++;
+//       else if (y > 0 && !maze->h_walls[y - 1][x] &&
+//                ways->map[y - 1][x] == step - 1)
+//         y--;
+//       else if (x < ways->cols - 1 && !maze->v_walls[y][x] &&
+//                ways->map[y][x + 1] == step - 1)
+//         x++;
+//       else if (x > 0 && !maze->v_walls[y][x - 1] &&
+//                ways->map[y][x - 1] == step - 1)
+//         x--;
+
+//       (*path)[(*pathLength)].x =
+//           x;  // Используем скобки для доступа к элементу массива
+//       (*path)[(*pathLength)++].y =
+//           y;  // Используем скобки для доступа к элементу массива
+//       step--;
+//     }
+//   }
+//   //   freeingPathMapMemory(ways);
+// }

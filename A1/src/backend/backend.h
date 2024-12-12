@@ -16,12 +16,16 @@
 #define DEAD 0
 #define ALIVE 1
 
-#define NUMBER_OF_ACTIONS 4
-#define DECAY_RATE 0.0001f  // скорость уменьшения eps
-#define MAX_EPS 1.0f        // вероятность исследования
-#define MIN_EPS 0.01f       // вероятность исследования
+#define NUMBER_OF_ACTIONS 4  // Вверх, вниз, влево, вправо
+#define MAX_EPS 1.0f
+#define MIN_EPS 0.001f  // вероятность исследования
+#define LEARNING_RATE 0.00001f  // скорость уменьшения eps
 
-#define TRAIN_COUNT 10
+#define ALPHA 0.1f  // темп обучения // Коэффициент обучения
+#define GAMMA \
+  0.9f  // дискаунт на следующее действие // Коэффициент дисконтирования
+
+#define NUM_EPISOD 500
 
 typedef struct {
   int rows;
@@ -70,6 +74,8 @@ typedef enum {
   CAVE_PRINTING_STEP_BY_STEP,
   CAVE_PRINTING_AUTO,
 
+  QL_TRAIN,
+
   EXIT
 } State_t;
 
@@ -80,6 +86,7 @@ typedef enum {
   Save,
   Pathfinding,
   Terminate,
+  QLearning,
   ShowPathfindingMap,
   selectMaze,
   selectCave,
@@ -225,6 +232,10 @@ void freeCave(Cave_t *cave);
 
 /*------------------логика ML Q-Learning------------------------*/
 
+bool loadQTable(const char *filename, float ***Q, Maze_t *maze);
+
+void initialQTable(float ***Q, Maze_t *maze, const char *filename);
+
 // Функция для создания Q-таблицы
 float ***createQTable(Maze_t *maze);
 
@@ -232,24 +243,30 @@ float ***createQTable(Maze_t *maze);
 void freeQTable(float ***q_table, int rows, int cols);
 
 // Проверка, возможно ли перемещение
-int is_valid_move(Maze_t *maze, int new_x, int new_y, int state_x, int state_y);
+bool is_valid_move(Maze_t *maze, int new_x, int new_y, int state_x, int state_y,
+                   int action);
 
 // Возвращает новое состояние на основе действия
 void get_new_state(int action, int current_x, int current_y, int *new_x,
                    int *new_y);
 
-void init2DArray(int **array, int rows, int cols);
+// Максимальное значение Q
+int maxQValue(float ***Q, float *max_q_value, int state_x, int state_y);
 
 // Обновление Q-значений
 void updateQTable(float ***Q, int state_x, int state_y, int action,
                   float reward);
-int maxQValue(float ***Q, float *max_q_value, int state_x, int state_y);
 
-int setAction(float ***Q, int state_x, int state_y, float *epsilon,
-              int episode);
-// Награда
+int setAction(float ***Q, int state_x, int state_y, int episode);
+
 float calculateReward(Maze_t *maze, Position *end, int *new_x, int *new_y,
-                      int *state_x, int *state_y);
+                      int *state_x, int *state_y, int action);
+
+// Основной алгоритм Q-обучения для поиска пути
 void q_learning(Maze_t *maze, Position *start, Position *end, float ***Q);
+
+void printQTable(Maze_t *maze, float ***Q);
+
+bool saveQTable(const char *filename, float ***Q, Maze_t *maze);
 
 #endif  // SRC_BACKEND_BACKEND_H

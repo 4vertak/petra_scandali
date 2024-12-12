@@ -10,7 +10,7 @@
 
 #define GET_USER_INPUT getch()
 
-#define DEBAG
+// #define DEBAG
 
 void game_loop();
 

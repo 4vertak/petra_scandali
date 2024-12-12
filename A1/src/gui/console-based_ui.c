@@ -92,6 +92,8 @@ void printGame(State_t *state, int pathLength, Position *start, Position *end) {
       print_mazes_menu(size->menu_start_y, size->menu_start_x, start, end);
       get_start_end_points(size->input_start_y, size->input_start_x, start, end,
                            size->menu_start_x);
+      printSelectViewPathMapBanner(size->term_height, size->term_width);
+      getParamViewPath();
       if (!checkPosition(start)) {
         mvprintw(size->menu_start_y + 12, size->input_start_x, "Invalid start");
       } else if (!checkPosition(end)) {
@@ -99,6 +101,13 @@ void printGame(State_t *state, int pathLength, Position *start, Position *end) {
       } else {
         *stateFind = true;
       }
+      break;
+    case QL_TRAIN:
+      print_mazes_menu(size->menu_start_y, size->menu_start_x, start, end);
+      get_start_end_points(size->input_start_y, size->input_start_x, start, end,
+                           size->menu_start_x);
+      printWinTrain(size->maze_start_y, size->maze_start_x,
+                    size->maze_win_height, size->maze_win_width, start, end);
       break;
     case MAZE_PRINTING:
       print_mazes_menu(size->menu_start_y, size->menu_start_x, start, end);
@@ -367,13 +376,37 @@ void get_position(int start_y, int start_x, Position *point,
 
 void get_start_end_points(int start_y, int start_x, Position *start,
                           Position *end, int menu_x) {
-  bool *show_pathfinding_map = showPathfindingMapState();
-  UserAction_t action = NOSIG;
   char *namepoints = "start";
   get_position(start_y, start_x, start, namepoints);
   namepoints = "end";
   get_position(start_y, start_x, end, namepoints);
   print_mazes_menu(0, menu_x, start, end);
+}
+
+void printSelectViewPathMapBanner(int height_cli, int width_cli) {
+  int win_height = 7;
+  int win_width = 28;
+  int start_y = (height_cli - win_height) / 2;
+  int start_x = (width_cli - win_width) / 2;
+  color_enum color = DEFAULT_COLOR;
+
+  WINDOW *winToSelect = newwin(win_height, win_width, start_y, start_x);
+  werase(winToSelect);
+  box(winToSelect, 0, 0);
+  color = ORANGEFONT;
+
+  wattron(winToSelect, COLOR_PAIR(color));
+  mvwprintw(winToSelect, 1, 2, "Click to select a view:");
+  mvwprintw(winToSelect, 3, 3, "[a] - pathfinding map");
+  mvwprintw(winToSelect, 5, 4, "[ENTER] - only way");
+  wattroff(winToSelect, COLOR_PAIR(color));
+  wrefresh(winToSelect);
+  delwin(winToSelect);
+}
+
+void getParamViewPath(void) {
+  bool *show_pathfinding_map = showPathfindingMapState();
+  UserAction_t action = NOSIG;
   nodelay(stdscr, false);
   handleUserInput(&action);
   if (action == ShowPathfindingMap)
@@ -623,6 +656,137 @@ void bannerPath(WINDOW *maze_win, int start_y, int start_x, int cell_height,
     wattroff(maze_win, COLOR_PAIR(color));
   }
   free(path);
+}
+
+void printWinTrain(int start_y, int start_x, int max_height, int max_width,
+                   Position *start, Position *end) {
+  // Cli_t *size = currentCliSize();
+  Maze_t *maze = currentMaze();
+  float ***Q = createQTable(maze);
+  State_t *state = currentState();
+  // UserAction_t signal = NOSIG;
+  int cell_height = max_height / maze->rows;
+  int cell_width = max_width / maze->cols;
+
+  int win_height = max_height;
+  int win_width = max_width + 2;
+
+  WINDOW *train_win = newwin(win_height, win_width, start_y, start_x);
+  werase(train_win);
+  // unsigned int delay = 100000000;
+  // nodelay(stdscr, TRUE);
+
+  for (int episode = 0; episode < NUM_EPISOD; episode++) {
+    int state_x = start->x;
+    int state_y = start->y;
+    int step = 0;
+    bool exit_state = false;
+    while (!exit_state) {
+      int action = setAction(Q, state_x, state_y, episode);
+      int new_x, new_y;
+      get_new_state(action, state_x, state_y, &new_x, &new_y);
+      float reward = calculateReward(maze, end, &new_x, &new_y, &state_x,
+                                     &state_y, action);
+      // Обновление Q-значений
+      updateQTable(Q, state_x, state_y, action, reward);
+
+      if (state_x == end->x && state_y == end->y) {
+        exit_state = true;  // Если достигли цели, прерываем цикл
+        *state = MAZE_PRINTING;
+      }
+      // if (episode % 10 == 0 && step % 5 == 0) {
+      clear();
+      int y_ = 1 + state_x * cell_height + cell_height / 2;
+      int x_ = 1 + state_y * cell_width + cell_width / 2;
+      refresh();
+      attron(COLOR_PAIR(0));
+      mvprintw(y_, x_, "*");
+      attroff(COLOR_PAIR(0));
+      // color_enum color = DEFAULT_COLOR;
+
+      int x, y;
+
+      // отрисовка границ "поля"
+      mvhline(start_y, start_x, '_', max_width);
+      mvvline(start_y + 1, start_x, '|', max_height);
+
+      // отрисовка лабиринта по формату данных - стенки справа и снизу
+      for (int i = 0; i < maze->rows; ++i) {
+        for (int j = 0; j < maze->cols; ++j) {
+          y = start_y + i * cell_height;
+          x = start_x + j * cell_width;
+          if (maze->h_walls[i][j]) {
+            mvhline(y + cell_height, x + 1, '_', cell_width);
+          }
+
+          if (maze->v_walls[i][j]) {
+            for (int k = 1; k <= cell_height; ++k) {
+              mvprintw(y + k, x + cell_width, "|");
+            }
+          }
+        }
+      }
+
+      // bannerMaze(train_win, maze, start_y, start_x, cell_height, cell_width);
+      refresh();
+      // bannerTrain(state_x, state_y, cell_height, cell_width);
+      // bannerMaze(train_win, maze, start_y, start_x, cell_height,
+      // cell_width);
+      // refresh();
+      msleep(50);
+      // }
+      // print_train_menu(size->menu_start_y, size->menu_start_x, start, end,
+      //                  episode, state_x, state_y);
+      // refresh();
+
+      // handleUserInput(&signal);
+      // if (signal == speedUp) {
+      //   delay += 100000;
+      // } else if (signal == speedDown) {
+      //   delay -= 100000;
+      // } else if (signal == Terminate) {
+      //   exit_state = true;
+      //   *state = MAZE_PRINTING;
+      // }
+      // usleep(delay);
+      step++;
+    }
+  }
+  saveQTable("QTable.txt", Q, maze);
+  freeQTable(Q, maze->rows, maze->cols);
+  wrefresh(train_win);
+  delwin(train_win);
+}
+
+void msleep(long msec) {
+  struct timespec ts;
+  ts.tv_sec = msec / 1000;
+  ts.tv_nsec = (msec % 1000) * 1000000;
+  nanosleep(&ts, &ts);
+}
+
+void bannerTrain(int state_x, int state_y, int cell_height, int cell_width) {
+  int y_ = 1 + state_x * cell_height + cell_height / 2;
+  int x_ = 1 + state_y * cell_width + cell_width / 2;
+  clear();
+  attron(COLOR_PAIR(0));
+  mvprintw(y_, x_, "*");
+  attroff(COLOR_PAIR(0));
+}
+
+void print_train_menu(int start_y, int start_x, Position *start, Position *end,
+                      int episode, int state_x, int state_y) {
+  Maze_t *maze = currentMaze();
+  mvprintw(start_y + 1, start_x, "[ESC]  - stop & exit");
+  mvprintw(start_y + 2, start_x, "[UP] - delay Up");
+  mvprintw(start_y + 3, start_x, "[DOWN] - delay Down");
+  mvprintw(start_y + 5, start_x, "Mazes size:");
+  mvprintw(start_y + 6, start_x + 11, "rows: %d", maze->rows);
+  mvprintw(start_y + 7, start_x + 11, "cols: %d", maze->cols);
+  mvprintw(start_y + 9, start_x, "Start positiion: %d %d", start->x, start->y);
+  mvprintw(start_y + 10, start_x, "End positiion: %d %d", end->x, end->y);
+  mvprintw(start_y + 11, start_x, "%d / %d", episode, NUM_EPISOD);
+  mvprintw(start_y + 13, start_x, "%d %d", state_x, state_y);
 }
 
 char *currentFileName(void) {

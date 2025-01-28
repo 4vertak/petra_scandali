@@ -1,94 +1,93 @@
 #!/bin/bash
 
-cidr_to_decimal() {
-    local CIDR=$1
-
-    BIT_STRING=$(printf '%0'${CIDR}'s' | tr ' ' '1')$(printf '%0'$((32-CIDR))'s' | tr ' ' '0')
-
-    OCTETS=""
-    for (( i=0; i<4; i++ )); do
-        OCTET=${BIT_STRING:0:8}
-        BIT_STRING=${BIT_STRING:8}
-        
-        DECIMAL=$((2#$OCTET))
-        
-        OCTETS+="$DECIMAL"
-        if [ $i -lt 3 ]; then
-            OCTETS+="."
-        fi
-    done
-
-    echo "$OCTETS"
+cidr_to_mask() {
+  local CIDR="$1"
+  local MASK=""
+  for ((i=0; i<4; i++)); do
+    if [ "$CIDR" -ge 8 ]; then
+      MASK+="255"
+      CIDR=$((CIDR - 8))
+    else
+      MASK+="$((256 - (2 ** (8 - CIDR))))"
+      CIDR=0
+    fi
+    [ "$i" -lt 3 ] && MASK+="."
+  done
+  echo "$MASK"
 }
 
 convert_size() {
-    local mb_value=$1
-    echo "scale=$2; $mb_value / 1024" | bc
+    local MB_VALUE=$1
+    echo "scale=$2; $MB_VALUE / 1024" | bc
 }
 
 
+# СЕТЕВОЕ ИМЯ
 HOSTNAME=$(hostname)
-TIMEZONE=$(timedatectl show --property=Timezone --value)
-UTC_OFFSET=$(date +%:z)
+
+#ВРЕМЕННАЯ ЗОНА и СМЕЩЕНИЕ ВРЕМЕНИ в виде: America/New_York UTC -5
+TIMEZONE=$(timedatectl show --property=Timezone --value )
+UTC_OFFSET=$(date +%:z | sed 's/^+0/+/; s/^-0/-/; s/^00/0/; s/:00$//')
+TIMEZONE_INFO="$TIMEZONE UTC ${UTC_OFFSET}"
+
 USER=$(whoami)
 
+#ИНФОРМАЦИЯ ОБ ОСи
 OS=$(awk -F'"' '{print $2}' /etc/os-release | head -1)
+
+# ТЕКУЩЕЕ ВРЕМЯ в виде: 12 May 2020 12:24:36
 DATE=$(date +"%d %B %Y %T")
 
+# ВРЕМЯ РАБОТЫ СИСТЕМЫ 
 UPTIME=$(uptime -p | sed 's/up //')
+
+# ВРЕМЯ РАБОТЫ СИСТЕМЫ в секундах
 UPTIME_SEC=$(cat /proc/uptime | awk '{print $1}' | cut -d '.' -f 1)
 
-IP=$(hostname -I | awk '{print $1}') 
-MASK=$(cidr_to_decimal $(ip addr show | grep -w "$IP" -A 2 | grep -oP '(?<=inet\s)\d+(\.\d+){3}\/\d+' | awk -F'/' '{print $2}'))
+#СЕТЕВЫЕ НАСТРОЙКИ
+INTERFACE=$(ip -o -4 addr show | grep -v ' lo ' | awk '{print $2}' | head -n1)
+IP_INFO=$(ip -o -4 addr show "$INTERFACE" | awk '{print $4}')
+IP=$(echo "$IP_INFO" | cut -d'/' -f1)
+CIDR=$(echo "$IP_INFO" | cut -d'/' -f2)
+MASK=$(cidr_to_mask "$CIDR")
 GATEWAY=$(ip route | grep default | awk '{print $3}')
 
+# ПАМЯТЬ ОПЕРАТИВКА
 RAM_TOTAL=$(convert_size $(free --si --mega | awk '/^Mem:/{print $2}') 3)
 RAM_USED=$(convert_size $(free --si --mega | awk '/^Mem:/{print $3}') 3)
 RAM_FREE=$(convert_size $(free --si --mega | awk '/^Mem:/{print $4}') 3)
 
+# ПАМЯТЬ КОРНЕВОЙ РАЗДЕЛ
 SPACE_ROOT=$(convert_size $(df -BK / | awk 'NR==2 {print substr($2, 1, length($2)-1)}') 2)
 SPACE_ROOT_USED=$(convert_size $(df -BK / | awk 'NR==2 {print substr($3, 1, length($3)-1)}') 2)
 SPACE_ROOT_FREE=$(convert_size $(df -BK / | awk 'NR==2 {print substr($4, 1, length($4)-1)}') 2)
 
-echo "HOSTNAME = $HOSTNAME"
-echo "TIMEZONE = $TIMEZONE $UTC_OFFSET"
-echo "USER = $USER"
-echo "OS = $OS"
-echo "DATE = $DATE"
-echo "UPTIME = $UPTIME"
-echo "UPTIME_SEC = $UPTIME_SEC"
-echo "IP = $IP"
-echo "MASK = $MASK"
-echo "GATEWAY = $GATEWAY"
-echo "RAM_TOTAL = $RAM_TOTAL GB"
-echo "RAM_USED = $RAM_USED GB"
-echo "RAM_FREE = $RAM_FREE GB"
-echo "SPACE_ROOT = $SPACE_ROOT MB"
-echo "SPACE_ROOT_USED = $SPACE_ROOT_USED MB"
-echo "SPACE_ROOT_FREE = $SPACE_ROOT_FREE MB"
+# ФОРМИРУЕМ ИНФУ
+output="HOSTNAME = $HOSTNAME
+TIMEZONE = $TIMEZONE_INFO
+USER = $USER
+OS = $OS
+DATE = $DATE
+UPTIME = $UPTIME
+UPTIME_SEC = $UPTIME_SEC
+IP = $IP
+MASK = $MASK
+GATEWAY = $GATEWAY
+RAM_TOTAL = ${RAM_TOTAL} GB
+RAM_USED = ${RAM_USED} GB
+RAM_FREE = ${RAM_FREE} GB
+SPACE_ROOT = ${SPACE_ROOT} MB
+SPACE_ROOT_USED = ${SPACE_ROOT_USED} MB
+SPACE_ROOT_FREE = ${SPACE_ROOT_FREE} MB"
 
+echo "$output"
+
+# СОХРАНЕНИЕ
 read -p "Хотите сохранить данные в файл? (Y/N): " answer
 if [[ "$answer" =~ ^[Yy]$ ]]; then
-    filename=$(date +"%d_%m_%y_%H_%M_%S.status")
-    {
-        echo "HOSTNAME = $HOSTNAME"
-        echo "TIMEZONE = $TIMEZONE $UTC_OFFSET"
-        echo "USER = $USER"
-        echo "OS = $OS"
-        echo "DATE = $DATE"
-        echo "UPTIME = $UPTIME"
-        echo "UPTIME_SEC = $UPTIME_SEC"
-        echo "IP = $IP"
-        echo "MASK = $MASK"
-        echo "GATEWAY = $GATEWAY"
-        echo "RAM_TOTAL = $RAM_TOTAL GB"
-        echo "RAM_USED = $RAM_USED GB"
-        echo "RAM_FREE = $RAM_FREE GB"
-        echo "SPACE_ROOT = $SPACE_ROOT MB"
-        echo "SPACE_ROOT_USED = $SPACE_ROOT_USED MB"
-        echo "SPACE_ROOT_FREE = $SPACE_ROOT_FREE MB"
-    } > "$filename"
-    echo "Данные сохранены в файл $filename."
+  filename=$(date +"%d_%m_%y_%H_%M_%S").status
+  echo "$output" > "$filename"
+  echo "Данные сохранены в файл $filename"
 else
     echo "Данные не были сохранены."
 fi

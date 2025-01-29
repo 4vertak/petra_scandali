@@ -23,6 +23,13 @@ declare -A backgrounds=(
     [6]='\033[40m'  # black
 )
 
+
+
+BACKGROUND_NAME=$1
+FONT_COLOR_NAME=$2
+BACKGROUND_VALUE=$3
+FONT_COLOR_VALUE=$4
+
 # ПРОВЕРЯЕМ КОЛ-ВО ПАРМЕТРов
 if [ "$#" -ne 4 ]; then
     echo "Ошибка: требуется 4 параметра."
@@ -37,11 +44,6 @@ for param in "$BACKGROUND_NAME" "$FONT_COLOR_NAME" "$BACKGROUND_VALUE" "$FONT_CO
         exit 1
     fi
 done
-
-BACKGROUND_NAME=$1
-FONT_COLOR_NAME=$2
-BACKGROUND_VALUE=$3
-FONT_COLOR_VALUE=$4
 
 # ПРОВЕРЯЕМ НА СОВПАДЕНИЕ ЦВЕТОВ ФОНА и ШРИВТА
 if [ "$BACKGROUND_NAME" -eq "$FONT_COLOR_NAME" ]; then
@@ -78,7 +80,9 @@ cidr_to_mask() {
 # КОНВЕРТАЦИЯ РАЗМЕРА
 convert_size() {
     local VALUE=$1
-    echo "scale=$2; $VALUE / 1024" | bc
+    local SCALE=$2
+    local RESULT=$(echo "scale=$SCALE; $VALUE / 1024" | bc -l)
+    printf "%.*f\n" "$SCALE" "$RESULT"
 }
 
 # ================================================
@@ -133,7 +137,13 @@ reset='\033[0m'
 output=""
 for label in "HOSTNAME" "TIMEZONE" "USER" "OS" "DATE" "UPTIME" "UPTIME_SEC" "IP" "MASK" "GATEWAY" "RAM_TOTAL" "RAM_USED" "RAM_FREE" "SPACE_ROOT" "SPACE_ROOT_USED" "SPACE_ROOT_FREE"; do
     value=$(eval "echo \$$label")
-    output+="${backgrounds[$BACKGROUND_NAME]}${colors[$FONT_COLOR_NAME]}${label} = ${backgrounds[$BACKGROUND_VALUE]}${colors[$FONT_COLOR_VALUE]}${value}${reset}\n"
+    if [[ "$label" == RAM* ]]; then
+        output+="${backgrounds[$BACKGROUND_NAME]}${colors[$FONT_COLOR_NAME]}${label} = ${backgrounds[$BACKGROUND_VALUE]}${colors[$FONT_COLOR_VALUE]}${value} GB${reset}\n"
+    elif [[ "$label" == SPACE* ]]; then
+        output+="${backgrounds[$BACKGROUND_NAME]}${colors[$FONT_COLOR_NAME]}${label} = ${backgrounds[$BACKGROUND_VALUE]}${colors[$FONT_COLOR_VALUE]}${value} MB${reset}\n"
+    else
+        output+="${backgrounds[$BACKGROUND_NAME]}${colors[$FONT_COLOR_NAME]}${label} = ${backgrounds[$BACKGROUND_VALUE]}${colors[$FONT_COLOR_VALUE]}${value} ${reset}\n"
+    fi
 done
 
 echo -e "$output"

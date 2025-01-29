@@ -29,6 +29,27 @@ DEFAULT_FONT_COLOR_1=4
 DEFAULT_BACKGROUND_2=5
 DEFAULT_FONT_COLOR_2=1
 
+# ================================================
+# 2. ОБРАБОТКА КОНФИГУРАЦИОННОГО ФАЙЛА
+# ================================================
+
+CONFIG_FILE=$(realpath "$0" | sed 's/main.sh/config.conf/')
+if [[ -f "$CONFIG_FILE" ]]; then
+    source "$CONFIG_FILE"
+else
+    echo "Ошибка: файл конфигурации не найден."
+    echo "Применены значения по умолчанию."
+fi
+
+# ================================================
+# 3. ПРИМЕНЕНИЕ НАСТРОЕК
+# ================================================
+
+BACKGROUND_NAME=${background_1:-$DEFAULT_BACKGROUND_1}
+FONT_COLOR_NAME=${font_color_1:-$DEFAULT_FONT_COLOR_1}
+BACKGROUND_VALUE=${background_2:-$DEFAULT_BACKGROUND_2}
+FONT_COLOR_VALUE=${font_color_2:-$DEFAULT_FONT_COLOR_2}
+
 # ПРОВЕРЯЕМ НА КОРРЕКТНОСТЬ ПАРАМЕТРОВ
 for param in "$BACKGROUND_NAME" "$FONT_COLOR_NAME" "$BACKGROUND_VALUE" "$FONT_COLOR_VALUE"; do
     if ! [[ "$param" =~ ^[1-6]$ ]]; then
@@ -48,26 +69,7 @@ if [ "$BACKGROUND_VALUE" -eq "$FONT_COLOR_VALUE" ]; then
     exit 1
 fi
 
-# ================================================
-# 2. ОБРАБОТКА КОНФИГУРАЦИОННОГО ФАЙЛА
-# ================================================
 
-CONFIG_FILE="config.conf"
-if [[ -f "$CONFIG_FILE" ]]; then
-    source "$CONFIG_FILE"
-else
-    echo "Ошибка: файл конфигурации не найден."
-    exit 1
-fi
-
-# ================================================
-# 3. ПРИМЕНЕНИЕ НАСТРОЕК
-# ================================================
-
-BACKGROUND_NAME=${background_1:-$DEFAULT_BACKGROUND_1}
-FONT_COLOR_NAME=${font_color_1:-$DEFAULT_FONT_COLOR_1}
-BACKGROUND_VALUE=${background_2:-$DEFAULT_BACKGROUND_2}
-FONT_COLOR_VALUE=${font_color_2:-$DEFAULT_FONT_COLOR_2}
 
 # ================================================
 # 4. ФУНКЦИИ ДЛЯ КОНВЕРТАЦИИ РАЗМЕРА и МАСКИ
@@ -91,7 +93,9 @@ cidr_to_mask() {
 
 convert_size() {
     local VALUE=$1
-    echo "scale=$2; $VALUE / 1024" | bc
+    local SCALE=$2
+    local RESULT=$(echo "scale=$SCALE; $VALUE / 1024" | bc -l)
+    printf "%.*f\n" "$SCALE" "$RESULT"
 }
 
 # ================================================
@@ -146,7 +150,13 @@ reset='\033[0m'
 output=""
 for label in "HOSTNAME" "TIMEZONE" "USER" "OS" "DATE" "UPTIME" "UPTIME_SEC" "IP" "MASK" "GATEWAY" "RAM_TOTAL" "RAM_USED" "RAM_FREE" "SPACE_ROOT" "SPACE_ROOT_USED" "SPACE_ROOT_FREE"; do
     value=$(eval "echo \$$label")
-    output+="${backgrounds[$BACKGROUND_NAME]}${colors[$FONT_COLOR_NAME]}${label} = ${backgrounds[$BACKGROUND_VALUE]}${colors[$FONT_COLOR_VALUE]}${value}${reset}\n"
+    if [[ "$label" == RAM* ]]; then
+        output+="${backgrounds[$BACKGROUND_NAME]}${colors[$FONT_COLOR_NAME]}${label} = ${backgrounds[$BACKGROUND_VALUE]}${colors[$FONT_COLOR_VALUE]}${value} GB${reset}\n"
+    elif [[ "$label" == SPACE* ]]; then
+        output+="${backgrounds[$BACKGROUND_NAME]}${colors[$FONT_COLOR_NAME]}${label} = ${backgrounds[$BACKGROUND_VALUE]}${colors[$FONT_COLOR_VALUE]}${value} MB${reset}\n"
+    else
+        output+="${backgrounds[$BACKGROUND_NAME]}${colors[$FONT_COLOR_NAME]}${label} = ${backgrounds[$BACKGROUND_VALUE]}${colors[$FONT_COLOR_VALUE]}${value} ${reset}\n"
+    fi
 done
 
 echo -e "$output"

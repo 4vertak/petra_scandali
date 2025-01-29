@@ -1,5 +1,9 @@
 #!/bin/bash
 
+# ================================================
+# 1. ПРОВЕРКА ПАРАМЕТРОВ
+# ================================================
+
 if [ "$#" -ne 1 ]; then
     echo "Ошибка: требуется в параметре указать путь до каталога."
     echo "Использование: $0 <путь/>"
@@ -13,33 +17,34 @@ if [ ! -d "$DIR" ]; then
     exit 1
 fi
 
+# ================================================
+# 2. ФОРМИРОВАНИЕ ВЫВОДА
+# ================================================
+
 START_TIME=$(date +%s)
-
 TOTAL_FOLDERS=$(find "$DIR" -type d | wc -l)
-
 TOP_FOLDERS=$(du -h --max-depth=1 "$DIR" 2>/dev/null | sort -hr | head -n 5)
-
 TOTAL_FILES=$(find "$DIR" -type f | wc -l)
-
 CONFIG_FILES=$(find "$DIR" -type f -name "*.conf" | wc -l)
 TEXT_FILES=$(find "$DIR" -type f -exec file --mime-type {} + | grep -c "text/plain")
 EXECUTABLE_FILES=$(find "$DIR" -type f -executable -exec file {} + | grep -c -E "executable|script")
 LOG_FILES=$(find "$DIR" -type f -name "*.log" | wc -l)
 ARCHIVE_FILES=$(find "$DIR" -type f -exec file --mime-type {} + | grep -c -E "application/(zip|x-tar|x-gzip|x-bzip2)")
 SYMLINKS=$(find "$DIR" -type l -exec file {} + | grep -c "symbolic link to")
-
 TOP_FILES=$(find "$DIR" -type f -exec du -h {} + 2>/dev/null | sort -hr | head -n 10 | while read -r size path; do
     type=$(file -b --mime-type "$path")
     echo "$path, $size, $type"
 done)
-
 TOP_EXECUTABLES=$(find "$DIR" -type f -executable -exec du -h {} + 2>/dev/null | sort -hr | head -n 10 | while read -r size path; do
     hash=$(md5sum "$path" | awk '{print $1}')
     echo "$path, $size, $hash"
 done)
-
 END_TIME=$(date +%s)
 EXECUTION_TIME=$((END_TIME - START_TIME))
+
+# ================================================
+# 3. ВЫВОД ИНФОРМАЦИИ
+# ================================================
 
 echo "Total number of folders (including all nested ones) = $TOTAL_FOLDERS"
 echo "TOP 5 folders of maximum size arranged in descending order (path and size):"

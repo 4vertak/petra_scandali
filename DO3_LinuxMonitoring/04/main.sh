@@ -1,42 +1,8 @@
-# Значения по умолчанию
-DEFAULT_BACKGROUND_1=2
-DEFAULT_FONT_COLOR_1=4
-DEFAULT_BACKGROUND_2=5
-DEFAULT_FONT_COLOR_2=1
+#!/bin/bash
 
-# Чтение конфигурационного файла
-CONFIG_FILE="config.conf"
-if [[ -f "$CONFIG_FILE" ]]; then
-    source "$CONFIG_FILE"
-else
-    echo "Ошибка: файл конфигурации не найден."
-    exit 1
-fi
-
-# Присваиваем параметры переменным, используя значения по умолчанию, если они не заданы
-BACKGROUND_NAME=${background_1:-$DEFAULT_BACKGROUND_1}
-FONT_COLOR_NAME=${font_color_1:-$DEFAULT_FONT_COLOR_1}
-BACKGROUND_VALUE=${background_2:-$DEFAULT_BACKGROUND_2}
-FONT_COLOR_VALUE=${font_color_2:-$DEFAULT_FONT_COLOR_2}
-
-# ПРОВЕРЯЕМ НА КОРРЕКТНОСТЬ ПАРАМЕТРОВ
-for param in "$BACKGROUND_NAME" "$FONT_COLOR_NAME" "$BACKGROUND_VALUE" "$FONT_COLOR_VALUE"; do
-    if ! [[ "$param" =~ ^[1-6]$ ]]; then
-        echo "Ошибка: все параметры должны быть числовыми значениями от 1 до 6."
-        exit 1
-    fi
-done
-
-# ПРОВЕРЯЕМ НА СОВПАДЕНИЕ ЦВЕТОВ ФОНА и ШРИВТА
-if [ "$BACKGROUND_NAME" -eq "$FONT_COLOR_NAME" ]; then
-    echo "Ошибка: фон имен не должен совпадать с цветом шрифта имен."
-    exit 1
-fi
-
-if [ "$BACKGROUND_VALUE" -eq "$FONT_COLOR_VALUE" ]; then
-    echo "Ошибка: фон значений не должен совпадать с цветом шрифта значений."
-    exit 1
-fi
+# ================================================
+# 1. НАСТРОЙКА ЦВЕТОВ И ПРОВЕРКА ПАРАМЕТРОВ
+# ================================================
 
 #Декларация ЦВЕТов
 declare -A colors=(
@@ -57,6 +23,55 @@ declare -A backgrounds=(
     [6]='\033[40m'  # black
 )
 
+# Значения по умолчанию
+DEFAULT_BACKGROUND_1=2
+DEFAULT_FONT_COLOR_1=4
+DEFAULT_BACKGROUND_2=5
+DEFAULT_FONT_COLOR_2=1
+
+# ПРОВЕРЯЕМ НА КОРРЕКТНОСТЬ ПАРАМЕТРОВ
+for param in "$BACKGROUND_NAME" "$FONT_COLOR_NAME" "$BACKGROUND_VALUE" "$FONT_COLOR_VALUE"; do
+    if ! [[ "$param" =~ ^[1-6]$ ]]; then
+        echo "Ошибка: все параметры должны быть числовыми значениями от 1 до 6."
+        exit 1
+    fi
+done
+
+# ПРОВЕРЯЕМ НА СОВПАДЕНИЕ ЦВЕТОВ ФОНА и ШРИВТА
+if [ "$BACKGROUND_NAME" -eq "$FONT_COLOR_NAME" ]; then
+    echo "Ошибка: фон имен не должен совпадать с цветом шрифта имен."
+    exit 1
+fi
+
+if [ "$BACKGROUND_VALUE" -eq "$FONT_COLOR_VALUE" ]; then
+    echo "Ошибка: фон значений не должен совпадать с цветом шрифта значений."
+    exit 1
+fi
+
+# ================================================
+# 2. ОБРАБОТКА КОНФИГУРАЦИОННОГО ФАЙЛА
+# ================================================
+
+CONFIG_FILE="config.conf"
+if [[ -f "$CONFIG_FILE" ]]; then
+    source "$CONFIG_FILE"
+else
+    echo "Ошибка: файл конфигурации не найден."
+    exit 1
+fi
+
+# ================================================
+# 3. ПРИМЕНЕНИЕ НАСТРОЕК
+# ================================================
+
+BACKGROUND_NAME=${background_1:-$DEFAULT_BACKGROUND_1}
+FONT_COLOR_NAME=${font_color_1:-$DEFAULT_FONT_COLOR_1}
+BACKGROUND_VALUE=${background_2:-$DEFAULT_BACKGROUND_2}
+FONT_COLOR_VALUE=${font_color_2:-$DEFAULT_FONT_COLOR_2}
+
+# ================================================
+# 4. ФУНКЦИИ ДЛЯ КОНВЕРТАЦИИ РАЗМЕРА и МАСКИ
+# ================================================
 
 cidr_to_mask() {
   local CIDR="$1"
@@ -75,10 +90,13 @@ cidr_to_mask() {
 }
 
 convert_size() {
-    local MB_VALUE=$1
-    echo "scale=$2; $MB_VALUE / 1024" | bc
+    local VALUE=$1
+    echo "scale=$2; $VALUE / 1024" | bc
 }
 
+# ================================================
+# 5. ФОРМИРОВАНИЕ ВЫВОДА
+# ================================================
 
 # СЕТЕВОЕ ИМЯ
 HOSTNAME=$(hostname)
@@ -120,13 +138,15 @@ SPACE_ROOT=$(convert_size $(df -BK / | awk 'NR==2 {print substr($2, 1, length($2
 SPACE_ROOT_USED=$(convert_size $(df -BK / | awk 'NR==2 {print substr($3, 1, length($3)-1)}') 2)
 SPACE_ROOT_FREE=$(convert_size $(df -BK / | awk 'NR==2 {print substr($4, 1, length($4)-1)}') 2)
 
-# ФОРМИРУЕМ ИНФУ
+# ================================================
+# 6. ВЫВОД ИНФОРМАЦИИ
+# ================================================
+
 reset='\033[0m'
 output=""
 for label in "HOSTNAME" "TIMEZONE" "USER" "OS" "DATE" "UPTIME" "UPTIME_SEC" "IP" "MASK" "GATEWAY" "RAM_TOTAL" "RAM_USED" "RAM_FREE" "SPACE_ROOT" "SPACE_ROOT_USED" "SPACE_ROOT_FREE"; do
     value=$(eval "echo \$$label")
     output+="${backgrounds[$BACKGROUND_NAME]}${colors[$FONT_COLOR_NAME]}${label} = ${backgrounds[$BACKGROUND_VALUE]}${colors[$FONT_COLOR_VALUE]}${value}${reset}\n"
 done
-
 
 echo -e "$output"

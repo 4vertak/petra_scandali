@@ -1,5 +1,10 @@
 #!/bin/bash
 
+# ================================================
+# 1. ФУНКЦИИ ДЛЯ КОНВЕРТАЦИИ РАЗМЕРА и МАСКИ
+# ================================================
+
+# КОНВЕРТАЦИЯ CIDR в IPv4
 cidr_to_mask() {
   local CIDR="$1"
   local MASK=""
@@ -16,11 +21,15 @@ cidr_to_mask() {
   echo "$MASK"
 }
 
+# КОНВЕРТАЦИЯ РАЗМЕРА
 convert_size() {
-    local MB_VALUE=$1
-    echo "scale=$2; $MB_VALUE / 1024" | bc
+    local VALUE=$1
+    echo "scale=$2; $VALUE / 1024" | bc
 }
 
+# ================================================
+# 2. ФОРМИРОВАНИЕ ВЫВОДА
+# ================================================
 
 # СЕТЕВОЕ ИМЯ
 HOSTNAME=$(hostname)
@@ -62,7 +71,10 @@ SPACE_ROOT=$(convert_size $(df -BK / | awk 'NR==2 {print substr($2, 1, length($2
 SPACE_ROOT_USED=$(convert_size $(df -BK / | awk 'NR==2 {print substr($3, 1, length($3)-1)}') 2)
 SPACE_ROOT_FREE=$(convert_size $(df -BK / | awk 'NR==2 {print substr($4, 1, length($4)-1)}') 2)
 
-# ФОРМИРУЕМ ИНФУ
+# ================================================
+# 3. ВЫВОД ИНФОРМАЦИИ
+# ================================================
+
 output="HOSTNAME = $HOSTNAME
 TIMEZONE = $TIMEZONE_INFO
 USER = $USER
@@ -82,7 +94,10 @@ SPACE_ROOT_FREE = ${SPACE_ROOT_FREE} MB"
 
 echo "$output"
 
-# СОХРАНЕНИЕ
+# ================================================
+# 4. ФУНКЦИЯ ДЛЯ СОХРАНЕНИЯ ИНФОРМАЦИИ
+# ================================================
+
 read -p "Хотите сохранить данные в файл? (Y/N): " answer
 if [[ "$answer" =~ ^[Yy]$ ]]; then
   filename=$(date +"%d_%m_%y_%H_%M_%S").status

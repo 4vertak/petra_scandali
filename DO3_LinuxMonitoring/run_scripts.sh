@@ -38,6 +38,8 @@ done
 echo ''
 echo ''
 
+PATH_DIR=$(echo "$(realpath "$0" | sed 's/run_scripts.sh//')")
+
 for ((i=1; i<6; i++))
 do
     chmod +x ./0$i/main.sh
@@ -51,7 +53,7 @@ do
     elif [ $i -eq 3 ]; then
         bash "./0$i/main.sh" '1' '2' '3' '4'
     else
-        bash "./0$i/main.sh" ../src/
+        bash "./0$i/main.sh" $PATH_DIR
     fi
     echo ''
     sleep 0.1

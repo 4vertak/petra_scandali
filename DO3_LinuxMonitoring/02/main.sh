@@ -26,7 +26,11 @@ convert_size() {
     local VALUE=$1
     local SCALE=$2
     local RESULT=$(echo "scale=$SCALE; $VALUE / 1024" | bc -l)
-    printf "%.*f\n" "$SCALE" "$RESULT"
+    if (( $(echo "$RESULT < 1" | bc -l) )); then
+        echo "scale=$SCALE; $VALUE / 1024" | bc -l | sed 's/^./0./'
+    else 
+        echo "$RESULT"
+    fi
 }
 
 # ================================================

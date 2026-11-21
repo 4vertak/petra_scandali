@@ -174,7 +174,8 @@ void print_mazes_menu(int start_y, int start_x, Position *start,
   mvprintw(start_y + 2, start_x, "[g] - generate maze");
   mvprintw(start_y + 3, start_x, "[s] - save maze");
   mvprintw(start_y + 4, start_x, "[f] - show path");
-  mvprintw(start_y + 5, start_x, "[ESC] - quit");
+  mvprintw(start_y + 5, start_x, "[q] - Q-learning");
+  mvprintw(start_y + 6, start_x, "[ESC] - quit");
   mvprintw(start_y + 7, start_x, "Mazes size:");
   mvprintw(start_y + 8, start_x + 11, "rows: %d", maze->rows);
   mvprintw(start_y + 9, start_x + 11, "cols: %d", maze->cols);
@@ -639,20 +640,25 @@ void bannerPath(WINDOW *maze_win, int start_y, int start_x, int cell_height,
         int x = start_x + j * cell_width;
         if (way->map[i][j] != -1) {
           wattron(maze_win, COLOR_PAIR(color));
-          mvwaddch(maze_win, y + ((cell_height == 1) ? 1 : cell_height / 2),
+          mvwaddch(maze_win, y - ((cell_height <= 1) ? 1 : cell_height / 2),
                    x + ((cell_width == 1) ? 1 : cell_width / 2), '*');
           wattroff(maze_win, COLOR_PAIR(color));
         }
       }
     }
   }
+
   color = REDFONT;
   for (int i = 0; i < pathLength; ++i) {
-    int y = start_y + path[i].y * cell_height;
-    int x = start_x + path[i].x * cell_width;
+    int y = 1 + start_y + path[i].y * cell_height;
+    int x = 1 + start_x + path[i].x * cell_width;
     wattron(maze_win, COLOR_PAIR(color));
-    mvwaddch(maze_win, y + ((cell_height == 1) ? 1 : cell_height / 2),
-             x + ((cell_width == 1) ? 1 : cell_width / 2), '*');
+    mvwprintw(
+        maze_win, y + ((cell_height <= 1) ? 1 : cell_height / 2),
+        x + ((cell_width == 1) ? 1 : cell_width / 2),
+        ((cell_width > 8)
+             ? "{*_*}"
+             : ((cell_width > 6) ? "{''}" : ((cell_width > 4) ? ":)" : "o"))));
     wattroff(maze_win, COLOR_PAIR(color));
   }
   free(path);
@@ -660,7 +666,7 @@ void bannerPath(WINDOW *maze_win, int start_y, int start_x, int cell_height,
 
 void printWinTrain(int start_y, int start_x, int max_height, int max_width,
                    Position *start, Position *end) {
-   Cli_t *size = currentCliSize();
+  Cli_t *size = currentCliSize();
   Maze_t *maze = currentMaze();
   float ***Q = createQTable(maze);
   State_t *state = currentState();
@@ -687,35 +693,54 @@ void printWinTrain(int start_y, int start_x, int max_height, int max_width,
       float reward = calculateReward(maze, end, &new_x, &new_y, &state_x,
                                      &state_y, action);
       // Обновление Q-значений
-      updateQTable(Q, state_x, state_y, action, reward);
+      updateQTable(Q, state_x, state_y, new_x, new_y, action, reward);
 
       if (state_x == end->x && state_y == end->y) {
         exit_state = true;  // Если достигли цели, прерываем цикл
       }
-      if (episode % 100 == 0 && step % 5 == 0) {
-      werase(train_win);
-bannerTrain(train_win, state_x, state_y, cell_height, cell_width);
+      if (episode % 10 == 0 && step % 5 == 0) {
+        werase(train_win);
+        bannerTrain(train_win, state_x, state_y, cell_height, cell_width);
 
-      bannerMaze(train_win, maze, start_y, start_x, cell_height, cell_width);
-      wrefresh(train_win);
-      msleep(24);
-      
-       refresh();
-      
-      print_train_menu(size->menu_start_y, size->menu_start_x, start, end,
-                        episode, state_x, state_y);
- refresh();
+        bannerMaze(train_win, maze, start_y, start_x, cell_height, cell_width);
+        wrefresh(train_win);
+        msleep(24);
+
+        refresh();
+
+        print_train_menu(size->menu_start_y, size->menu_start_x, start, end,
+                         episode, state_x, state_y);
+        refresh();
       }
-      
+
       step++;
     }
   }
-  
-  saveQTable("QTable.txt", Q, maze);
-  freeQTable(Q, maze->rows, maze->cols);
   wrefresh(train_win);
+  bannerViewPathQlearning(train_win, start_y, start_x, cell_height, cell_width,
+                          start, end);
+  wrefresh(train_win);
+  clear();
+
+  saveQTable("QTable.txt", Q, maze);
+  saveMaze("MazeTest.txt", maze);
+  freeQTable(Q, maze->rows, maze->cols);
   *state = MAZE_PRINTING;
   delwin(train_win);
+}
+
+void bannerViewPathQlearning(WINDOW *train_win, int start_y, int start_x,
+                             int cell_height, int cell_width, Position *start,
+                             Position *end) {
+  wrefresh(train_win);
+  bannerPath(train_win, start_y, start_x, cell_height, cell_width, start, end,
+             0);
+  wrefresh(train_win);
+  nodelay(stdscr, false);
+  getch();
+  noecho();
+
+  nodelay(stdscr, true);
 }
 
 void msleep(long msec) {
@@ -725,12 +750,18 @@ void msleep(long msec) {
   nanosleep(&ts, &ts);
 }
 
-void bannerTrain( WINDOW *train_win, int state_x, int state_y, int cell_height, int cell_width) {
-    int y_ = 1 + state_x * cell_height + cell_height / 2;
-    int x_ = 1 + state_y * cell_width + cell_width / 2;
-    wattron(train_win, COLOR_PAIR(5)| A_BOLD);
-    mvwprintw(train_win, y_, x_, ((cell_width > 8) ? "{*_*}": ((cell_width > 6) ? "{''}" : ((cell_width > 4) ? ":)" : "o"))));
-    wattroff(train_win, COLOR_PAIR(5));
+void bannerTrain(WINDOW *train_win, int state_x, int state_y, int cell_height,
+                 int cell_width) {
+  int y = 1 + state_x * cell_height;
+  int x = 1 + state_y * cell_width;
+  wattron(train_win, COLOR_PAIR(5) | A_BOLD);
+  mvwprintw(
+      train_win, y + ((cell_height <= 1) ? 1 : cell_height / 2),
+      x + ((cell_width == 1) ? 1 : (cell_width / 2)),
+      ((cell_width > 8)
+           ? "{*_*}"
+           : ((cell_width > 6) ? "{''}" : ((cell_width > 4) ? ":)" : "o"))));
+  wattroff(train_win, COLOR_PAIR(5));
 }
 
 void print_train_menu(int start_y, int start_x, Position *start, Position *end,
@@ -742,8 +773,8 @@ void print_train_menu(int start_y, int start_x, Position *start, Position *end,
   mvprintw(start_y + 5, start_x, "Start positiion: %d %d", start->x, start->y);
   mvprintw(start_y + 6, start_x, "End positiion: %d %d", end->x, end->y);
   mvprintw(start_y + 8, start_x, "Q-Learning:");
-  mvprintw(start_y + 9, start_x + 11, "Ep.: %d/%d", episode, NUM_EPISOD);
-  mvprintw(start_y + 10, start_x + 11, "Pos.: %d %d", state_x, state_y);
+  mvprintw(start_y + 9, start_x + 11, "Ep.: %4d/%4d", episode, NUM_EPISOD);
+  mvprintw(start_y + 10, start_x + 11, "Pos.: %2d %2d", state_x, state_y);
 }
 
 char *currentFileName(void) {

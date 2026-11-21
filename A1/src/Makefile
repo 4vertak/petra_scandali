@@ -90,7 +90,7 @@ gcov_report: clean $(OBJ_DIR) $(REPORT_DIR) $(TEST_O)
 	genhtml -o $(REPORT_DIR) $(REPORT_DIR)/gcov_report.info
 #	gcovr -r . --html --html-details  -o $(REPORT_DIR)/gcov_report.html
 	@printf "\033[1;33mGCOV report created: $(REPORT_DIR)/gcov_report.html \n\033[0m"
-	# xdg-open $(REPORT_DIR)/index.html
+#	xdg-open $(REPORT_DIR)/index.html
 
 dvi:
 	@rm -rf $(DVI_DIR)
@@ -112,7 +112,7 @@ run:
 
 
 style:
-	@cp ../materials/linters/.clang-format .clang-format
+#	@cp ../materials/linters/.clang-format .clang-format
 	@printf "\033[1;33mRunning clang-format with Google style on all files...\n\033[0m"
 	@clang-format -style=Google -n $(ALL_FILES)
 	@printf "\033[1;33mChecking formatting without making changes completed.\n\033[0m"

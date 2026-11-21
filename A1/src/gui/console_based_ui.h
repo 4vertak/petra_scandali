@@ -102,12 +102,16 @@ void print_caves_manualmod_menu(int start_y, int start_x, Cave_t *cave,
 void printSelectViewPathMapBanner(int height_cli, int width_cli);
 void getParamViewPath(void);
 
-void bannerTrain( WINDOW *train_win, int state_x, int state_y, int cell_height, int cell_width);
+void bannerTrain(WINDOW *train_win, int state_x, int state_y, int cell_height,
+                 int cell_width);
 void print_train_menu(int start_y, int start_x, Position *start, Position *end,
                       int episode, int state_x, int state_y);
 
 void printWinTrain(int start_y, int start_x, int max_height, int max_width,
                    Position *start, Position *end);
+void bannerViewPathQlearning(WINDOW *train_win, int start_y, int start_x,
+                             int cell_height, int cell_width, Position *start,
+                             Position *end);
 
 void msleep(long msec);
 

@@ -49,13 +49,14 @@ int main() {
 #ifdef DEBAG
 
 int main() {
-  Maze_t *maze = createMaze(4, 4);
+  Maze_t *maze = createMaze(10, 10);
+  // loadMaze("MazeTest.txt", maze);
   generateMaze_t(maze);
   Pathway_t way;
   initializePathway_t(&way, maze);
 
   Position start = {0, 0};
-  Position end = {3, 3};
+  Position end = {9, 9};
 
   Position *path = NULL;
   int pathLength = 0;
@@ -84,6 +85,24 @@ int main() {
   }
   float ***Q = createQTable(maze);
   q_learning(maze, &start, &end, Q);
+  int **patharray = allocateArray(maze->rows, maze->cols);
+  int len = 0;
+  //   loadQTable("QTable.txt", Q, maze);
+
+  findWayinQTable(&start, &end, patharray, &len, maze, Q);
+  printQTable(maze, Q);
+
+  for (int i = 0; i < maze->rows; ++i) {
+    for (int j = 0; j < maze->cols; ++j) {
+      printf("%2d ", patharray[i][j]);
+    }
+    printf("\n");
+  }
+  printf("\n");
+
+  saveQTable("QTable.txt", Q, maze);
+  saveMaze("MazeTest.txt", maze);
+  free2dArray(patharray, maze->rows);
   free(path);
   freeingPathMapMemory(&way);
   freeMaze(maze);

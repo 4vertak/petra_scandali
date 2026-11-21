@@ -18,14 +18,14 @@
 
 #define NUMBER_OF_ACTIONS 4  // Вверх, вниз, влево, вправо
 #define MAX_EPS 1.0f
-#define MIN_EPS 0.001f  // вероятность исследования
-#define LEARNING_RATE 0.00001f  // скорость уменьшения eps
+#define MIN_EPS 0.01f  // вероятность исследования
+#define LEARNING_RATE 0.0001f  // скорость уменьшения eps
 
 #define ALPHA 0.1f  // темп обучения // Коэффициент обучения
 #define GAMMA \
   0.9f  // дискаунт на следующее действие // Коэффициент дисконтирования
 
-#define NUM_EPISOD 500
+#define NUM_EPISOD 100
 
 typedef struct {
   int rows;
@@ -254,8 +254,8 @@ void get_new_state(int action, int current_x, int current_y, int *new_x,
 int maxQValue(float ***Q, float *max_q_value, int state_x, int state_y);
 
 // Обновление Q-значений
-void updateQTable(float ***Q, int state_x, int state_y, int action,
-                  float reward);
+void updateQTable(float ***Q, int state_x, int state_y, int new_x, int new_y,
+                  int action, float reward);
 
 int setAction(float ***Q, int state_x, int state_y, int episode);
 
@@ -268,5 +268,8 @@ void q_learning(Maze_t *maze, Position *start, Position *end, float ***Q);
 void printQTable(Maze_t *maze, float ***Q);
 
 bool saveQTable(const char *filename, float ***Q, Maze_t *maze);
+
+void findWayinQTable(Position *start, Position *end, int **path,
+                     int *pathLength, Maze_t *maze, float ***Q);
 
 #endif  // SRC_BACKEND_BACKEND_H

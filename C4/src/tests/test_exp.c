@@ -1,52 +1,31 @@
-#include "./test.h"
+#include "test.h"
 
-START_TEST(test_exp_1) {
-  ck_assert_double_nan(s21_exp(NAN));
-  ck_assert_double_nan(exp(NAN));
-}
-END_TEST
+static const double inputs[] = {TEST_SPECIAL_VALUES,
+                                -747,
+                                -746,
+                                -745.2,
+                                -745,
+                                -744,
+                                -710,
+                                -709,
+                                -10,
+                                -1,
+                                -0.5,
+                                -1e-16,
+                                1e-16,
+                                0.5,
+                                1,
+                                10,
+                                100,
+                                709,
+                                709.782712893384,
+                                0x1.62e42fefa39f0p9,
+                                710,
+                                25048.369};
 
-START_TEST(test_exp_2) {
-  ck_assert_double_eq(s21_exp(INFINITY), exp(INFINITY));
-}
-END_TEST
-
-START_TEST(test_exp_3) {
-  ck_assert_double_eq(s21_exp(-INFINITY), exp(-INFINITY));
-}
-END_TEST
-
-START_TEST(test_exp_4) {
-  ck_assert_double_eq_tol(s21_exp(0), exp(0), 0.000001);
-}
-END_TEST
-
-START_TEST(test_exp_5) {
-  ck_assert_double_eq_tol(s21_exp(1), exp(1), 0.000001);
-}
-END_TEST
-
-START_TEST(test_exp_6) {
-  ck_assert_double_eq_tol(s21_exp(-1), exp(-1), 0.000001);
-}
-END_TEST
-
-START_TEST(test_exp_7) {
-  ck_assert_double_eq(s21_exp(25048.369), exp(25048.369));
-}
+START_TEST(compare_exp) { test_unary_value(s21_exp, exp, inputs[_i], 0); }
 END_TEST
 
 Suite *test_exp(void) {
-  Suite *s = suite_create("\n\033[37;1m==========| S21_EXP  |=========\033[0m");
-  TCase *tc = tcase_create("exp_tc");
-
-  tcase_add_test(tc, test_exp_1);
-  tcase_add_test(tc, test_exp_2);
-  tcase_add_test(tc, test_exp_3);
-  tcase_add_test(tc, test_exp_4);
-  tcase_add_test(tc, test_exp_5);
-  tcase_add_test(tc, test_exp_6);
-  tcase_add_test(tc, test_exp_7);
-  suite_add_tcase(s, tc);
-  return s;
+  return test_suite("exp", compare_exp, TEST_COUNT(inputs));
 }

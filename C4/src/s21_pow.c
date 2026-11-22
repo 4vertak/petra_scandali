@@ -1,165 +1,42 @@
-#include "./s21_math.h"
+#include <float.h>
 
-long double s21_pow(double base, double exp) {
-  long double res = 0.0;
-  return (pow_total(base, exp, &res)) ? pow_A(base, exp) : res;
+#include "s21_math_internal.h"
+
+long double s21_positive_power(double base, long double exponent) {
+  double mantissa = base;
+  int binary_exponent = s21_normalize(&mantissa);
+  if (mantissa == 1.0) {
+    // Keep exact powers of two exact, including at the underflow boundary.
+    long double power = (long double)binary_exponent * exponent;
+    if (power <= LDBL_MIN_EXP - LDBL_MANT_DIG - 1) return 0;
+    if (power >= LDBL_MAX_EXP) return S21_INF;
+    if (power == (int)power) return s21_scale(1, (int)power);
+  }
+  return s21_exp_reduced(exponent * s21_log(base));
 }
 
-long double pow_A(double base, double exp) {
-  long double res = 0.0;
-  if ((long long int)exp == exp) {
-    res = s21_Bpow(base, exp);
+long double s21_pow(double base, double exponent) {
+  if (exponent == 0.0 || base == 1.0) return 1;
+  if (s21_isnan(base) || s21_isnan(exponent)) return S21_NAN;
+
+  double magnitude = s21_fabs(base);
+  if (s21_isinf(exponent)) {
+    if (magnitude == 1) return 1;
+    return (magnitude > 1) == (exponent > 0) ? S21_INF : 0;
+  }
+
+  int integer_exponent = s21_floor(exponent) == exponent;
+  int odd = integer_exponent && s21_fabs(exponent) < 0x1p53 &&
+            (long long)exponent % 2 != 0;
+  long double result;
+  if (base == 0.0 || s21_isinf(base)) {
+    result = (base == 0.0) == (exponent > 0) ? 0 : S21_INF;
+  } else if (base < 0 && !integer_exponent) {
+    result = S21_NAN;
+  } else if (integer_exponent && s21_fabs(exponent) <= 64) {
+    result = (double)s21_pow_int(magnitude, (long long)exponent);
   } else {
-    res = s21_Cpow(base, exp);
+    result = (double)s21_positive_power(magnitude, exponent);
   }
-  return res;
-}
-
-long double s21_Bpow(double base, double exp) {
-  long double res = 1.0;
-  if (exp > 0) {
-    for (; exp >= 1; exp--) {
-      res *= base;
-    }
-  } else {
-    for (; exp <= -1; exp++) {
-      res /= base;
-    }
-  }
-  return res;
-}
-
-long double s21_Cpow(double base, double exp) {
-  long double res = s21_exp(exp * s21_log(s21_fabs(base)));
-  if (!is_fin(res)) {
-    res = S21_EXPON;
-  }
-  if (base < 0 && ((long long int)exp & 1) == 0) {
-    res = (exp > 0) ? -res : S21_NAN;
-  }
-  return res;
-}
-
-int pow_total(double base, double exp, long double *res) {
-  long double tol = 1e-14;
-  int ok = 1;
-  int b_is_nan = s21_isnan(base);
-  int b_is_fin = is_fin(base);
-  int e_is_nan = s21_isnan(exp);
-  int e_is_fin = is_fin(exp);
-  int e_lim = s21_fabs(exp - s21_floor(exp)) <= tol;
-  if (b_is_fin && !b_is_nan && base > 0 && base <= tol && e_lim &&
-      ((int)exp) < 0 && ((int)exp) % 2) {
-    *res = S21_INF;
-    ok = 0;
-  }
-  if (b_is_fin && !b_is_nan && base > 0 && base <= tol && e_lim &&
-      ((int)exp) < 0 && ((int)exp) % 2) {
-    *res = S21_NINF;
-    ok = 0;
-  }
-  if (b_is_fin && !b_is_nan && s21_fabs(base) < tol && e_is_fin &&
-      ((e_lim && !(((int)exp) % 2)) || !e_lim)) {
-    if (base == 0) {
-      if (exp == 0) {
-        *res = 1;
-      } else if (exp > 0) {
-        *res = 0;
-      } else {
-        *res = S21_INF;
-      }
-    }
-    ok = 0;
-  }
-  if (b_is_fin && !b_is_nan && s21_fabs(base) < tol && !e_is_nan && !e_is_fin &&
-      exp < 0) {
-    *res = S21_INF;
-    ok = 0;
-  }
-  if (b_is_fin && !b_is_nan && base > 0 && base <= tol && e_lim &&
-      ((int)exp) % 2) {
-    *res = +0;
-    ok = 0;
-  }
-  if (b_is_fin && !b_is_nan && base < 0 && base >= -tol && e_lim &&
-      ((int)exp) % 2) {
-    *res = -0;
-    ok = 0;
-  }
-  if (b_is_fin && !b_is_nan && s21_fabs(base + 1) < tol && !e_is_fin &&
-      !e_is_nan) {
-    *res = 1;
-    ok = 0;
-  }
-  if (b_is_fin && !b_is_nan && s21_fabs(base - 1) < tol) {
-    *res = 1;
-    ok = 0;
-  }
-  if (s21_fabs(exp) < tol) {
-    *res = 1;
-    ok = 0;
-  }
-  if (ok && b_is_fin && base < -tol && e_is_fin && !e_lim) {
-    *res = S21_NAN;
-    ok = 0;
-  }
-  if (b_is_fin && !b_is_nan && base < 0 && base >= -tol && e_lim &&
-      ((int)exp) % 2) {
-    *res = -0;
-    ok = 0;
-  }
-  if (exp > 0 && b_is_fin && !b_is_nan && s21_fabs(base) < tol &&
-      ((!e_lim && s21_fabs(exp) > tol) || (e_lim && !(((int)exp) % 2)))) {
-    *res = +0;
-    ok = 0;
-  }
-  if (ok && s21_fabs(base) - 1 < tol && !e_is_nan && !e_is_fin && exp < 0) {
-    *res = S21_INF;
-    ok = 0;
-  }
-  if (ok && s21_fabs(base) - 1 > tol && !e_is_nan && !e_is_fin && exp < 0) {
-    *res = +0;
-    ok = 0;
-  }
-  if (ok && s21_fabs(base) - 1 < tol && !e_is_nan && !e_is_fin && exp > 0) {
-    *res = +0;
-    ok = 0;
-  }
-  if (ok && s21_fabs(base) - 1 > tol && !e_is_nan && !e_is_fin && exp > 0) {
-    *res = S21_INF;
-    ok = 0;
-  }
-  if (!b_is_nan && !b_is_fin && base < 0 && e_lim && exp < 0 &&
-      ((int)exp) % 2 && ok) {
-    *res = -0;
-    ok = 0;
-  }
-  if (!b_is_nan && !b_is_fin && base < 0 &&
-      ((!e_lim && exp < 0) || (e_lim && exp < 0 && !(((int)exp) % 2)))) {
-    *res = +0;
-    ok = 0;
-  }
-  if (!b_is_nan && !b_is_fin && base < 0 &&
-      (e_lim && exp > 0 && ((int)exp) & 1)) {
-    *res = S21_NINF;
-    ok = 0;
-  }
-  if (!b_is_nan && !b_is_fin && base < 0 &&
-      ((!e_lim && exp > 0) || (e_lim && exp > 0 && !(((int)exp) % 2)))) {
-    *res = S21_INF;
-    ok = 0;
-  }
-  if (!b_is_nan && !b_is_fin && base > 0 && exp < -tol) {
-    *res = +0;
-    ok = 0;
-  }
-  if (!b_is_nan && !b_is_fin && base > 0 && exp > tol) {
-    *res = S21_INF;
-    ok = 0;
-  }
-  if ((b_is_nan && exp) || (base != 1 && e_is_nan)) {
-    *res = S21_NAN;
-    ok = 0;
-  }
-  return ok;
+  return __builtin_signbit(base) && odd ? -result : result;
 }

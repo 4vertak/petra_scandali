@@ -1,28 +1,20 @@
-#include "./s21_math.h"
+#include "s21_math_internal.h"
 
 long double s21_log(double x) {
-    if (x == S21_INF_POS) {
-        return x;
-    }
-    if (x == 0) {
-        return S21_INF_NEG;
-    }
-    if (x == 1) {
-        return 0;
-    }
-    if (x < 0 || x == S21_INF_NEG) {
-        return S21_NAN;
-    }
+  if (x == 0.0) return S21_NINF;
+  if (x < 0.0) return S21_NAN;
+  if (!__builtin_isfinite(x)) return x;
 
-    long double log = 0, compare = 0;
-    int n_iterations= 0;
-    for (; x >= S21_EXP; n_iterations++) {
-        x /= S21_EXP;
-    }
-    for (int i = 0; i < 100; i++) {
-        compare = log;
-        log = compare + 2 * (x - s21_exp(compare)) / (x + s21_exp(compare));
-    }
-    log += n_iterations;
-    return log;
+  int exponent = s21_normalize(&x);
+  if (x > 1.4142135623730950488L) {
+    x *= 0.5;
+    ++exponent;
+  }
+  // log(x) = 2 atanh((x - 1)/(x + 1)), with |ratio| < 0.172.
+  long double ratio = (x - 1.0L) / (x + 1.0L);
+  long double square = ratio * ratio;
+  long double tail = 0;
+  for (int n = 33; n >= 3; n -= 2) tail = 1.0L / n + square * tail;
+  long double log_mantissa = 2 * (ratio + ratio * square * tail);
+  return exponent * S21_LN2_HI + (log_mantissa + exponent * S21_LN2_LO);
 }

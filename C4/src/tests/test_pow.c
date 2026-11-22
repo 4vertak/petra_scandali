@@ -1,66 +1,76 @@
-#include "./test.h"
+#include "test.h"
 
-// START_TEST(pow_test_0) {
-//     ck_assert_double_eq(s21_pow(0, 0), pow(0, 0));
-//     ck_assert_double_eq(s21_pow(1, 0), pow(1, 0));
-//     ck_assert_double_eq(s21_pow(0, 1), pow(0, 1));
-//     ck_assert_double_eq(s21_pow(1, 1), pow(1, 1));
-//     ck_assert_double_eq(s21_pow(1, -1), pow(1, -1));
-//     ck_assert_double_eq(s21_pow(-1, 1), pow(-1, 1));
-//     ck_assert_double_eq(s21_pow(-1, -1), pow(-1, -1));
-// }
-// END_TEST;
+static const double bases[] = {TEST_SPECIAL_VALUES,
+                               -1,
+                               1,
+                               0.5,
+                               -0.5,
+                               2,
+                               -2,
+                               3,
+                               -3,
+                               4,
+                               1e-20,
+                               -1e-20,
+                               0x1.fffffffffffffp-1,
+                               0x1.0000000000001p0,
+                               -0x1.0000000000001p0};
+static const double exponents[] = {TEST_SPECIAL_VALUES,
+                                   1,
+                                   -1,
+                                   2,
+                                   -2,
+                                   3,
+                                   -3,
+                                   0.5,
+                                   -0.5,
+                                   0.4,
+                                   1.1,
+                                   1e-16,
+                                   0x1.fffffffffffffp0,
+                                   64,
+                                   -64,
+                                   65,
+                                   -65,
+                                   1023,
+                                   1024,
+                                   -1074,
+                                   -1075,
+                                   -537.5,
+                                   0x1.fffffffffffffp52,
+                                   -0x1.fffffffffffffp52,
+                                   0x1p53,
+                                   0x1p63};
 
-START_TEST(pow_test_1) {
-  ck_assert_double_eq(s21_pow(S21_INF_NEG, S21_INF_NEG),
-                      pow(S21_INF_NEG, S21_INF_NEG));
-  ck_assert_double_eq(s21_pow(S21_INF_NEG, S21_INF_POS),
-                      pow(S21_INF_NEG, S21_INF_POS));
-  ck_assert_double_eq(s21_pow(S21_INF_NEG, 1), pow(S21_INF_NEG, 1));
-  ck_assert_double_nan(s21_pow(-20, 0.4));
-  ck_assert_double_nan(pow(-20, 0.4));
+START_TEST(compare_pow) {
+  double x = bases[_i / TEST_COUNT(exponents)];
+  double y = exponents[_i % TEST_COUNT(exponents)];
+  test_binary_value(s21_pow, pow, x, y, 0);
 }
 END_TEST
 
-START_TEST(pow_test_2) {
-  // ck_assert_double_nan(s21_pow(NAN, NAN));
-  ck_assert_double_nan(pow(NAN, NAN));
-  ck_assert_double_eq(s21_exp(S21_INF_NEG), exp(S21_INF_NEG));
+// A large exponent amplifies rounding errors in the logarithm of the base.
+static const double precision_cases[][2] = {
+    {0x1.5d6e38f67e07p0, -0x1.f54de7b352473p10},
+    {0x1.88c8489d9881ap-1, 0x1.4c7ce49b9afa5p11},
+    {0x1.4a3d55dff37f3p0, -0x1.3adff9b4533ffp11},
+    {0x1.4b02d3cd30e9ep0, -0x1.4a2c48f675f2cp11},
+    {0x1.4a99b49caf9e3p0, -0x1.49afc632b42a9p11},
+    {0x1.4dbd1ea5af58p0, -0x1.31debdf20440cp11},
+};
+
+START_TEST(compare_pow_precision) {
+  test_binary_value(s21_pow, pow, precision_cases[_i][0],
+                    precision_cases[_i][1], 0);
 }
 END_TEST
-
-/*START_TEST(pow_test_3) {
-  ck_assert_double_eq(s21_pow(1, S21_NAN), pow(1, S21_NAN));
-  ck_assert_double_nan(s21_pow(1, NAN));
-  ck_assert_double_nan(pow(1, NAN));
-}
-END_TEST
-
-START_TEST(pow_test_4) {
-  ck_assert_double_eq(s21_pow(2.0, 1.1), pow(2.0, 1.1));
-}
-END_TEST
-
-START_TEST(pow_test_5) {
-  ck_assert_double_eq(s21_pow(2.0, -1.0), pow(2.0, -1.0));
-  ck_assert_double_eq(s21_pow(2.0, 0), pow(2.0, 0));
-  ck_assert_double_eq(s21_pow(2.0, 1), pow(2.0, 1.0));
-  ck_assert_double_eq(s21_pow(2.0, 2.0), pow(2.0, 2.0));
-  ck_assert_double_eq(s21_pow(2.0, 3.0), pow(2.0, 3.0));
-  ck_assert_double_eq(s21_pow(2.0, 4.0), pow(2.0, 4.0));
-}
-END_TEST*/
 
 Suite *test_pow(void) {
-  Suite *s = suite_create("\n\033[37;1m==========| S21_POW |=========\033[0m");
-  TCase *tc = tcase_create("pow_tc");
-
-  // tcase_add_test(tc, pow_test_0);
-  tcase_add_test(tc, pow_test_1);
-  tcase_add_test(tc, pow_test_2);
-  /*tcase_add_test(tc, pow_test_3);
-  tcase_add_test(tc, pow_test_4);
-  tcase_add_test(tc, pow_test_5);*/
-  suite_add_tcase(s, tc);
-  return s;
+  Suite *suite =
+      test_suite("pow", compare_pow, TEST_COUNT(bases) * TEST_COUNT(exponents));
+  TCase *precision = tcase_create("precision");
+  tcase_add_loop_test(precision, compare_pow_precision, 0,
+                      TEST_COUNT(precision_cases));
+  suite_add_tcase(suite, precision);
+  return suite;
 }

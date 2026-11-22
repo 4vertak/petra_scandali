@@ -4,13 +4,14 @@ Implementation of your own version of the math.h library.
 
 
 ## Contents
+
 1. [Chapter I](#chapter-i) \
     1.1. [Introduction](#introduction)
 2. [Chapter II](#chapter-ii) \
     2.1. [Information](#information)\
-    2.2. [Overview of some "math.h" functions](#Overview of some "math.h" functions)
+    2.2. [Overview of some "math.h" functions](#overview-of-some-mathh-functions)
 3. [Chapter III](#chapter-iii) \
-    3.1. [Part 1](#part-1-Implementing the math.h library functions)  
+    3.1. [Part 1](#part-1-implementing-the-mathh-library-functions)
 
 
 ## Chapter I
@@ -26,7 +27,9 @@ In this project you will develop your own version of the standard math.h library
 C mathematical operations are a group of functions in the standard library of the C programming language implementing basic mathematical functions. All functions use floating-point numbers in one manner or another. Different C standards provide different, albeit backwards-compatible, sets of functions. Any functions that operate on angles use radians as the unit of angle.
 
 ## Overview of some "math.h" functions
+
 |No.	|Function	|Description	|
+|---|---|---|
 |1	|int abs(int x)	|computes absolute value of an integer value	|
 |2	|long double acos(double x)	|computes arc cosine	|
 |3	|long double asin(double x)	|computes arc sine	|

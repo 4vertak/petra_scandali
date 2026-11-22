@@ -1,5 +1,5 @@
-#include "./s21_math.h"
+#include <limits.h>
 
-// возвращает абсолютное значение числа, то есть значение без учета его знака
+#include "s21_math.h"
 
-int s21_abs(int x) { return x > 0 ? x : -x; }
+int s21_abs(int x) { return (x < 0 && x != INT_MIN) ? -x : x; }

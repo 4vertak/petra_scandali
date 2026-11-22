@@ -1,15 +1,12 @@
-#include "./s21_math.h"
+#include "s21_math_internal.h"
 
 long double s21_asin(double x) {
-    long double asin;
-    if (x == 1) {
-        asin = S21_M_PI_2;
-    } else if (x == -1) {
-        asin = - S21_M_PI_2;
-    } else if ((x > 1) || (x < -1)) {
-        asin = S21_NAN;
-    } else if ((x < 1) && (x > -1)) {
-        asin = s21_atan(x / s21_sqrt(1 - x * x));
-    }
-    return asin;
+  long double magnitude = s21_fabs(x);
+  if (!(magnitude <= 1)) return S21_NAN;
+  long double angle = S21_PI_2L;
+  if (magnitude < 1) {
+    long double adjacent = s21_sqrt((1 - magnitude) * (1 + magnitude));
+    angle = s21_atan_positive(magnitude / adjacent);
+  }
+  return __builtin_signbit(x) ? -angle : angle;
 }

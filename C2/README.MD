@@ -2,13 +2,15 @@
 
 ## Building this version
 
-This repository exposes the functions through `src/s21_string.h` and builds
-`src/s21_string.a`. The assignment text below uses the prefix `my_`.
+This version uses the `master` branch and the `s21_` prefix. The public header
+is `src/s21_string.h` and the static library is `src/s21_string.a`. The course
+text below refers to these conventions as `develop` and `my_`.
 Link clients with the archive and `-lm`.
 
 - `make -C C2/src s21_string.a` builds the C11 library.
 - `make -C C2/src test` builds and runs the Check suites. The build uses
   `pkg-config` to locate Check.
+- `make -C C2/src style` checks Google formatting in the library and its tests.
 - `make -C C2/src gcov_report` runs an instrumented build and writes
   `src/report/gcov_report.html`. It checks the 80% line coverage threshold
   separately for every library function and saves the gcov summary in
@@ -24,6 +26,17 @@ or empty trim set returns a copy of the input.
 example, `%2c` requires two input characters, and `1e+` fails a floating-point
 conversion. These cases have explicit expectations in the tests.
 [C11 draft N1570, §7.21.6.2](https://www.sigbus.info/n1570#7.21.6.2)
+
+Numbered conversions select a destination by its position. For example,
+`s21_sscanf("11 22", "%2$d %1$d", &a, &b)` assigns 22 to `a` and 11 to `b`.
+Numbered conversions can be combined with suppressed fields and `%%`.
+Use a field width such as `%5f` to read up to five characters of a number.
+The dot precision in the format tables applies to `sprintf`.
+The `m` modifier allocates storage for `%c`, `%s` and `%[`, including their
+wide forms. Pass a `char **` or `wchar_t **` and call `free` on each successful
+allocation. Character fields contain exactly the requested characters. Strings
+and scansets include a terminator. `%C` and `%S` are aliases for `%lc` and
+`%ls`. [POSIX.1-2017 formatted input](https://man7.org/linux/man-pages/man3/fscanf.3p.html)
 
 ## Introduction
 

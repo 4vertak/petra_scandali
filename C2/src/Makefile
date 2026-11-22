@@ -64,7 +64,8 @@ gcov_report: $(BUILD)/coverage/test
 	            count, minimum, lowest; exit (!count || minimum < 80) }' report/functions.txt
 
 style:
-	clang-format --style=Google --dry-run --Werror $(SRC) $(wildcard s21_*.h)
+	clang-format --style=Google --dry-run --Werror $(SRC) $(wildcard s21_*.h) \
+	      $(TEST_SRC) tests/test.h
 
 $(BUILD)/sanitize/test: $(SRC) $(TEST_SRC) $(wildcard s21_*.h) tests/test.h
 	@mkdir -p $(@D)

@@ -7,7 +7,8 @@ START_TEST(memcmp_1) {
   s21_size_t n = 14;
   int expected = memcmp(str1, str2, n);
   int actual = s21_memcmp(str1, str2, n);
-  ck_assert_int_eq((actual > 0) - (actual < 0), (expected > 0) - (expected < 0));
+  ck_assert_int_eq((actual > 0) - (actual < 0),
+                   (expected > 0) - (expected < 0));
 }
 END_TEST
 
@@ -17,7 +18,8 @@ START_TEST(memcmp_2) {
   s21_size_t n = 2;
   int expected = memcmp(str1, str2, n);
   int actual = s21_memcmp(str1, str2, n);
-  ck_assert_int_eq((actual > 0) - (actual < 0), (expected > 0) - (expected < 0));
+  ck_assert_int_eq((actual > 0) - (actual < 0),
+                   (expected > 0) - (expected < 0));
 }
 END_TEST
 
@@ -27,7 +29,8 @@ START_TEST(memcmp_3) {
   s21_size_t n = 4;
   int expected = memcmp(str1, str2, n);
   int actual = s21_memcmp(str1, str2, n);
-  ck_assert_int_eq((actual > 0) - (actual < 0), (expected > 0) - (expected < 0));
+  ck_assert_int_eq((actual > 0) - (actual < 0),
+                   (expected > 0) - (expected < 0));
 }
 END_TEST
 
@@ -37,7 +40,8 @@ START_TEST(memcmp_4) {
   s21_size_t n = 13;
   int expected = memcmp(str1, str2, n);
   int actual = s21_memcmp(str1, str2, n);
-  ck_assert_int_eq((actual > 0) - (actual < 0), (expected > 0) - (expected < 0));
+  ck_assert_int_eq((actual > 0) - (actual < 0),
+                   (expected > 0) - (expected < 0));
 }
 END_TEST
 
@@ -47,7 +51,8 @@ START_TEST(memcmp_5) {
   s21_size_t n = 15;
   int expected = memcmp(str1, str2, n);
   int actual = s21_memcmp(str1, str2, n);
-  ck_assert_int_eq((actual > 0) - (actual < 0), (expected > 0) - (expected < 0));
+  ck_assert_int_eq((actual > 0) - (actual < 0),
+                   (expected > 0) - (expected < 0));
 }
 END_TEST
 
@@ -64,7 +69,8 @@ START_TEST(memcmp_6) {
   s21_size_t n = sizeof(str1);
   int expected = memcmp(str1, str2, n);
   int actual = s21_memcmp(str1, str2, n);
-  ck_assert_int_eq((actual > 0) - (actual < 0), (expected > 0) - (expected < 0));
+  ck_assert_int_eq((actual > 0) - (actual < 0),
+                   (expected > 0) - (expected < 0));
 }
 END_TEST
 
@@ -88,7 +94,8 @@ START_TEST(memcmp_7) {
   s21_size_t n = sizeof(str1);
   int expected = memcmp(str1, str2, n);
   int actual = s21_memcmp(str1, str2, n);
-  ck_assert_int_eq((actual > 0) - (actual < 0), (expected > 0) - (expected < 0));
+  ck_assert_int_eq((actual > 0) - (actual < 0),
+                   (expected > 0) - (expected < 0));
 }
 END_TEST
 
@@ -98,7 +105,8 @@ START_TEST(memcmp_8) {
   s21_size_t n = 0;
   int expected = memcmp(str1, str2, n);
   int actual = s21_memcmp(str1, str2, n);
-  ck_assert_int_eq((actual > 0) - (actual < 0), (expected > 0) - (expected < 0));
+  ck_assert_int_eq((actual > 0) - (actual < 0),
+                   (expected > 0) - (expected < 0));
 }
 END_TEST
 
@@ -108,7 +116,8 @@ START_TEST(memcmp_9) {
   s21_size_t n = 0;
   int expected = memcmp(str1, str2, n);
   int actual = s21_memcmp(str1, str2, n);
-  ck_assert_int_eq((actual > 0) - (actual < 0), (expected > 0) - (expected < 0));
+  ck_assert_int_eq((actual > 0) - (actual < 0),
+                   (expected > 0) - (expected < 0));
 }
 END_TEST
 
@@ -118,7 +127,8 @@ START_TEST(memcmp_10) {
   s21_size_t n = 8;
   int expected = memcmp(str1, str2, n);
   int actual = s21_memcmp(str1, str2, n);
-  ck_assert_int_eq((actual > 0) - (actual < 0), (expected > 0) - (expected < 0));
+  ck_assert_int_eq((actual > 0) - (actual < 0),
+                   (expected > 0) - (expected < 0));
 }
 END_TEST
 
@@ -128,7 +138,8 @@ START_TEST(memcmp_11) {
   s21_size_t n = 10;
   int expected = memcmp(str1, str2, n);
   int actual = s21_memcmp(str1, str2, n);
-  ck_assert_int_eq((actual > 0) - (actual < 0), (expected > 0) - (expected < 0));
+  ck_assert_int_eq((actual > 0) - (actual < 0),
+                   (expected > 0) - (expected < 0));
 }
 END_TEST
 

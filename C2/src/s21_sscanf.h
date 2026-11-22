@@ -14,8 +14,8 @@ typedef enum {
 typedef struct {
   char conversion;
   s21_length length;
-  size_t width;
-  bool suppress, inverted;
+  size_t width, position;
+  bool suppress, allocate, inverted;
   const char *set, *set_end;
 } s21_scan_spec;
 

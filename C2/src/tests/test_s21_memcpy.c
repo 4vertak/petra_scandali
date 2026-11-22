@@ -6,7 +6,9 @@ START_TEST(memcpy_1) {
   char str2[] = "Hello, world!";
   char str3[] = "Hello";
   s21_size_t len = 5;
-  ck_assert_str_eq(memcpy(str1, str3, len), s21_memcpy(str2, str3, len));
+  memcpy(str1, str3, len);
+  ck_assert_ptr_eq(s21_memcpy(str2, str3, len), str2);
+  ck_assert_mem_eq(str1, str2, sizeof(str1));
 }
 END_TEST
 
@@ -15,7 +17,9 @@ START_TEST(memcpy_2) {
   char str2[] = "Hello, world!";
   char str3[] = "H";
   s21_size_t len = 0;
-  ck_assert_str_eq(memcpy(str1, str3, len), s21_memcpy(str2, str3, len));
+  memcpy(str1, str3, len);
+  ck_assert_ptr_eq(s21_memcpy(str2, str3, len), str2);
+  ck_assert_mem_eq(str1, str2, sizeof(str1));
 }
 END_TEST
 
@@ -24,7 +28,9 @@ START_TEST(memcpy_3) {
   char str2[] = "Hello, world!";
   char str3[] = "\0";
   s21_size_t len = strlen(str3);
-  ck_assert_str_eq(memcpy(str1, str3, len), s21_memcpy(str2, str3, len));
+  memcpy(str1, str3, len);
+  ck_assert_ptr_eq(s21_memcpy(str2, str3, len), str2);
+  ck_assert_mem_eq(str1, str2, sizeof(str1));
 }
 END_TEST
 
@@ -33,7 +39,9 @@ START_TEST(memcpy_4) {
   char str2[] = "Hello, world!";
   char str3[] = "\0";
   s21_size_t len = 1;
-  ck_assert_str_eq(memcpy(str1, str3, len), s21_memcpy(str2, str3, len));
+  memcpy(str1, str3, len);
+  ck_assert_ptr_eq(s21_memcpy(str2, str3, len), str2);
+  ck_assert_mem_eq(str1, str2, sizeof(str1));
 }
 END_TEST
 
@@ -42,7 +50,9 @@ START_TEST(memcpy_5) {
   char str2[] = "Hello, world!";
   char str3[] = "He";
   s21_size_t len = 3;
-  ck_assert_str_eq(memcpy(str1, str3, len), s21_memcpy(str2, str3, len));
+  memcpy(str1, str3, len);
+  ck_assert_ptr_eq(s21_memcpy(str2, str3, len), str2);
+  ck_assert_mem_eq(str1, str2, sizeof(str1));
 }
 END_TEST
 
@@ -53,7 +63,9 @@ START_TEST(memcpy_6) {
   // memcpy(str1, str3, len) == "123456789012341234567890123412345678901234";
   // s21_memcpy(str2, str3, len) == "1234567890123412345678901234";
   s21_size_t len = strlen(str3);
-  ck_assert_str_eq(memcpy(str1, str3, len), s21_memcpy(str2, str3, len));
+  memcpy(str1, str3, len);
+  ck_assert_ptr_eq(s21_memcpy(str2, str3, len), str2);
+  ck_assert_mem_eq(str1, str2, sizeof(str1));
 }
 END_TEST
 
@@ -62,7 +74,9 @@ START_TEST(memcpy_7) {
   char str2[] = "Hello, world!";
   char str3[] = "Hello@world!";
   s21_size_t len = strlen(str3);
-  ck_assert_str_eq(memcpy(str1, str3, len), s21_memcpy(str2, str3, len));
+  memcpy(str1, str3, len);
+  ck_assert_ptr_eq(s21_memcpy(str2, str3, len), str2);
+  ck_assert_mem_eq(str1, str2, sizeof(str1));
 }
 END_TEST
 
@@ -71,7 +85,9 @@ START_TEST(memcpy_8) {
   char str2[13] = "";
   char str3[] = "Hello@world!";
   s21_size_t len = strlen(str3);
-  ck_assert_str_eq(memcpy(str1, str3, len), s21_memcpy(str2, str3, len));
+  memcpy(str1, str3, len);
+  ck_assert_ptr_eq(s21_memcpy(str2, str3, len), str2);
+  ck_assert_mem_eq(str1, str2, sizeof(str1));
 }
 END_TEST
 
@@ -80,7 +96,9 @@ START_TEST(memcpy_9) {
   char str2[] = "23\022024";
   char str3[] = "Hello!";
   s21_size_t len = 6;
-  ck_assert_str_eq(memcpy(str1, str3, len), s21_memcpy(str2, str3, len));
+  memcpy(str1, str3, len);
+  ck_assert_ptr_eq(s21_memcpy(str2, str3, len), str2);
+  ck_assert_mem_eq(str1, str2, sizeof(str1));
 }
 END_TEST
 
@@ -89,7 +107,9 @@ START_TEST(memcpy_10) {
   char str2[] = "23022024";
   char str3[] = "Hel";
   s21_size_t len = 3;
-  ck_assert_str_eq(memcpy(str1, str3, len), s21_memcpy(str2, str3, len));
+  memcpy(str1, str3, len);
+  ck_assert_ptr_eq(s21_memcpy(str2, str3, len), str2);
+  ck_assert_mem_eq(str1, str2, sizeof(str1));
 }
 END_TEST
 
@@ -98,7 +118,9 @@ START_TEST(memcpy_11) {
   char str2[] = "Hello,  world!";
   char str3[] = "23 \0 02 \0 2024";
   s21_size_t len = 15;
-  ck_assert_str_eq(memcpy(str1, str3, len), s21_memcpy(str2, str3, len));
+  memcpy(str1, str3, len);
+  ck_assert_ptr_eq(s21_memcpy(str2, str3, len), str2);
+  ck_assert_mem_eq(str1, str2, sizeof(str1));
 }
 END_TEST
 

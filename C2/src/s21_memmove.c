@@ -1,18 +1,20 @@
-#include "./s21_string.h"
+#include "s21_string.h"
 
 void *s21_memmove(void *dest, const void *src, s21_size_t n) {
-  char *d = (char *)dest;
-  const char *s = (const char *)src;
-  if (d <= s || d >= s + n) {
-    while (n--) {
-      *d++ = *s++;
-    }
-  } else {
-    d += n - 1;
-    s += n - 1;
-    while (n--) {
-      *d-- = *s--;
+  unsigned char *to = dest;
+  const unsigned char *from = src;
+  if (to == from) return dest;
+
+  // Only a destination starting inside the source needs a backward copy.
+  for (s21_size_t i = 1; i < n; ++i) {
+    if (to == from + i) {
+      while (n > 0) {
+        --n;
+        to[n] = from[n];
+      }
+      return dest;
     }
   }
+  for (s21_size_t i = 0; i < n; ++i) to[i] = from[i];
   return dest;
 }

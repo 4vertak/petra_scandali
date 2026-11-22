@@ -7,6 +7,7 @@ START_TEST(test_insert_1) {
   s21_size_t num = 7;
   char *s2 = s21_insert(s1, s3, num);
   ck_assert_str_eq(s4, s2);
+  free(s2);
 }
 END_TEST
 
@@ -37,6 +38,7 @@ START_TEST(test_insert_4) {
   s21_size_t num = 3;
   char *s2 = s21_insert(s1, s3, num);
   ck_assert_str_eq(s4, s2);
+  free(s2);
 }
 END_TEST
 
@@ -77,6 +79,7 @@ START_TEST(test_insert_8) {
   s21_size_t num = 0;
   char *s2 = s21_insert(s1, s3, num);
   ck_assert_str_eq(s4, s2);
+  free(s2);
 }
 END_TEST
 

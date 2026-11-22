@@ -1,33 +1,23 @@
-#include "s21_string.h"  // не забудь убрать
+#include <limits.h>
 
-#ifndef S21_ERRLIST_H
-#define S21_LINUX_ERRLIST_SIZE 134
-#define S21_MACOS_ERRLIST_SIZE 107
-#define BUFF_SIZE 128
-
-#endif
+#include "s21_string.h"
 
 char *s21_strerror(int errnum) {
-  char *res = s21_NULL;
-  static char s21_undef[BUFF_SIZE] = {'\0'};
-  static const char *const s21_macos_errlist[S21_MACOS_ERRLIST_SIZE] = {
-      MACOS_ERRORS};
-  static const char *const s21_linux_errlist[S21_LINUX_ERRLIST_SIZE] = {
-      LINUX_ERRORS};
-  if (LINUX) {
-    if (errnum < 0 || errnum >= S21_LINUX_ERRLIST_SIZE) {
-      s21_sprintf(s21_undef, "Unknown error %d", errnum);  // не забудь убрать
-      res = s21_undef;
-    } else {
-      res = (char *)s21_linux_errlist[errnum];
-    }
-  } else if (MAC_OS) {
-    if (errnum < 0 || errnum >= S21_MACOS_ERRLIST_SIZE) {
-      s21_sprintf(s21_undef, "Unknown error %d", errnum);  // не забудь убрать
-      res = s21_undef;
-    } else {
-      res = (char *)s21_macos_errlist[errnum];
-    }
-  }
-  return res;
+#if defined(__APPLE__)
+  static const char *const messages[] = {MACOS_ERRORS};
+  const char *unknown = "Unknown error: %d";
+#elif defined(__linux__)
+  static const char *const messages[] = {LINUX_ERRORS};
+  const char *unknown = "Unknown error %d";
+#else
+  const char *unknown = "Unknown error %d";
+#endif
+#if defined(__APPLE__) || defined(__linux__)
+  if (errnum >= 0 && (size_t)errnum < sizeof(messages) / sizeof(*messages))
+    return (char *)messages[errnum];
+#endif
+  static _Thread_local char
+      buffer[sizeof("Unknown error: -") + sizeof(int) * CHAR_BIT];
+  s21_sprintf(buffer, unknown, errnum);
+  return buffer;
 }

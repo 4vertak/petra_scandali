@@ -5,7 +5,11 @@ START_TEST(memset_1) {
   char str[] = "Hello, world!";
   int ch = ' ';
   s21_size_t len = 6;
-  ck_assert_ptr_eq(memset(str, ch, len), s21_memset(str, ch, len));
+  char expected[sizeof(str)];
+  memcpy(expected, str, sizeof(str));
+  memset(expected, ch, len);
+  ck_assert_ptr_eq(s21_memset(str, ch, len), str);
+  ck_assert_mem_eq(str, expected, sizeof(str));
 }
 END_TEST
 
@@ -13,7 +17,11 @@ START_TEST(memset_2) {
   char str[] = "Hello, world!";
   int ch = 'e';
   s21_size_t len = 2;
-  ck_assert_ptr_eq(memset(str, ch, len), s21_memset(str, ch, len));
+  char expected[sizeof(str)];
+  memcpy(expected, str, sizeof(str));
+  memset(expected, ch, len);
+  ck_assert_ptr_eq(s21_memset(str, ch, len), str);
+  ck_assert_mem_eq(str, expected, sizeof(str));
 }
 END_TEST
 
@@ -21,7 +29,11 @@ START_TEST(memset_3) {
   char str[] = "Hello, world!";
   int ch = '1';
   s21_size_t len = strlen(str);
-  ck_assert_ptr_eq(memset(str, ch, len), s21_memset(str, ch, len));
+  char expected[sizeof(str)];
+  memcpy(expected, str, sizeof(str));
+  memset(expected, ch, len);
+  ck_assert_ptr_eq(s21_memset(str, ch, len), str);
+  ck_assert_mem_eq(str, expected, sizeof(str));
 }
 END_TEST
 
@@ -29,7 +41,11 @@ START_TEST(memset_4) {
   char str[] = "Hello, world!";
   int ch = 101;
   s21_size_t len = 2;
-  ck_assert_ptr_eq(memset(str, ch, len), s21_memset(str, ch, len));
+  char expected[sizeof(str)];
+  memcpy(expected, str, sizeof(str));
+  memset(expected, ch, len);
+  ck_assert_ptr_eq(s21_memset(str, ch, len), str);
+  ck_assert_mem_eq(str, expected, sizeof(str));
 }
 END_TEST
 
@@ -37,7 +53,11 @@ START_TEST(memset_5) {
   char str[] = "Hello, world!";
   int ch = 'l';
   s21_size_t len = 10;
-  ck_assert_ptr_eq(memset(str, ch, len), s21_memset(str, ch, len));
+  char expected[sizeof(str)];
+  memcpy(expected, str, sizeof(str));
+  memset(expected, ch, len);
+  ck_assert_ptr_eq(s21_memset(str, ch, len), str);
+  ck_assert_mem_eq(str, expected, sizeof(str));
 }
 END_TEST
 
@@ -45,7 +65,11 @@ START_TEST(memset_6) {
   char str[] = "Hello\n, world!";
   int ch = '\n';
   s21_size_t len = 6;
-  ck_assert_ptr_eq(memset(str, ch, len), s21_memset(str, ch, len));
+  char expected[sizeof(str)];
+  memcpy(expected, str, sizeof(str));
+  memset(expected, ch, len);
+  ck_assert_ptr_eq(s21_memset(str, ch, len), str);
+  ck_assert_mem_eq(str, expected, sizeof(str));
 }
 END_TEST
 
@@ -53,7 +77,11 @@ START_TEST(memset_7) {
   char str[] = "Hello@world!";
   int ch = '@';
   s21_size_t len = strlen(str);
-  ck_assert_ptr_eq(memset(str, ch, len), s21_memset(str, ch, len));
+  char expected[sizeof(str)];
+  memcpy(expected, str, sizeof(str));
+  memset(expected, ch, len);
+  ck_assert_ptr_eq(s21_memset(str, ch, len), str);
+  ck_assert_mem_eq(str, expected, sizeof(str));
 }
 END_TEST
 
@@ -61,7 +89,11 @@ START_TEST(memset_8) {
   char str[] = "Hello@world!";
   int ch = '\0';
   s21_size_t len = 0;
-  ck_assert_ptr_eq(memset(str, ch, len), s21_memset(str, ch, len));
+  char expected[sizeof(str)];
+  memcpy(expected, str, sizeof(str));
+  memset(expected, ch, len);
+  ck_assert_ptr_eq(s21_memset(str, ch, len), str);
+  ck_assert_mem_eq(str, expected, sizeof(str));
 }
 END_TEST
 
@@ -69,7 +101,11 @@ START_TEST(memset_9) {
   char str[] = "16022024";
   int ch = '6';
   s21_size_t len = 1;
-  ck_assert_ptr_eq(memset(str, ch, len), s21_memset(str, ch, len));
+  char expected[sizeof(str)];
+  memcpy(expected, str, sizeof(str));
+  memset(expected, ch, len);
+  ck_assert_ptr_eq(s21_memset(str, ch, len), str);
+  ck_assert_mem_eq(str, expected, sizeof(str));
 }
 END_TEST
 
@@ -77,14 +113,23 @@ START_TEST(memset_10) {
   char str[] = "16022024";
   int ch = '6';
   s21_size_t len = 2;
-  ck_assert_ptr_eq(memset(str, ch, len), s21_memset(str, ch, len));
+  char expected[sizeof(str)];
+  memcpy(expected, str, sizeof(str));
+  memset(expected, ch, len);
+  ck_assert_ptr_eq(s21_memset(str, ch, len), str);
+  ck_assert_mem_eq(str, expected, sizeof(str));
 }
 END_TEST
 
 START_TEST(memset_11) {
   char str[] = "16022024";
   int ch = 54;
-  ck_assert_ptr_eq(memset(str, ch, 1), s21_memset(str, ch, 2));
+  s21_size_t len = 1;
+  char expected[sizeof(str)];
+  memcpy(expected, str, sizeof(str));
+  memset(expected, ch, len);
+  ck_assert_ptr_eq(s21_memset(str, ch, len), str);
+  ck_assert_mem_eq(str, expected, sizeof(str));
 }
 END_TEST
 

@@ -1,42 +1,17 @@
 #include "s21_string.h"
 
-char* s21_strtok(char* str, const char* delim) {
-  static char* next_token = s21_NULL;
-  if (str == s21_NULL || s21_strlen(delim) == 0) {
-    return s21_NULL;
-  }
-  if (str != s21_NULL) {
-    next_token = str;
-  }
+char *s21_strtok(char *str, const char *delim) {
+  static char *next;
+  if (str) next = str;
+  if (!next) return s21_NULL;
 
-  char* token_start = next_token;
-  char* token_end = s21_NULL;
-  while (*next_token != '\0') {
-    const char* d = delim;
-    while (*d != '\0') {
-      if (*next_token == *d) {
-        if (token_end != s21_NULL) {
-          *next_token = '\0';
-          next_token++;
-          return token_start;
-        } else {
-          token_start++;
-          next_token++;
-          break;
-        }
-      }
-      d++;
-    }
-    if (*d == '\0') {
-      if (token_end == s21_NULL) {
-        token_end = next_token;
-      }
-      next_token++;
-    }
-  }
-  if (token_end != s21_NULL) {
-    return token_start;
+  while (*next && s21_strchr(delim, *next)) ++next;
+  char *token = *next ? next : s21_NULL;
+  next += s21_strcspn(next, delim);
+  if (*next) {
+    *next++ = '\0';
   } else {
-    return s21_NULL;
+    next = s21_NULL;
   }
+  return token;
 }

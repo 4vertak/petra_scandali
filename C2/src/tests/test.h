@@ -29,6 +29,7 @@ Suite *test_to_upper(void);
 Suite *test_to_lower(void);
 Suite *test_insert(void);
 Suite *test_trim(void);
+Suite *test_regressions(void);
 Suite *test_sscanf(void);
 Suite *test_sprintf(void);
 

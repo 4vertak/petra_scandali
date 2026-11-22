@@ -7,7 +7,7 @@ char *s21_strncat(char *dest, const char *src, s21_size_t n) {
   }
 
   s21_size_t src_length = 0;
-  while (src[src_length] != '\0' && src_length < n) {
+  while (src_length < n && src[src_length] != '\0') {
     dest[dest_length + src_length] = src[src_length];
     src_length++;
   }

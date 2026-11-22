@@ -54,8 +54,10 @@ START_TEST(sscanf_test_c_2) {  // спецификатор c +длина+шир�
   ck_assert_int_eq(sscanf(str_1, "%1c", &b1), s21_sscanf(str_1, "%1c", &b2));
   ck_assert_int_eq(b1, b2);
   b1 = 0, b2 = 0;
-  ck_assert_int_eq(sscanf(str_1, "%2c", &b1), s21_sscanf(str_1, "%2c", &b2));
-  ck_assert_int_eq(b1, b2);
+  char expected[2], actual[2];
+  ck_assert_int_eq(sscanf(str_1, "%2c", expected),
+                   s21_sscanf(str_1, "%2c", actual));
+  ck_assert_mem_eq(expected, actual, sizeof(actual));
   b1 = 0, b2 = 0;
   ck_assert_int_eq(sscanf(str_2, "%1c%1c ", &b1, &c1),
                    s21_sscanf(str_2, "%1c%1c ", &b2, &c2));
@@ -99,7 +101,7 @@ START_TEST(sscanf_test_d_1) {  // спецификатор d обычные си
   char str_6[LEN] = "123 1b";
   char str_7[LEN] = "1b 123";
   int a1 = 0, a2 = 0, b1 = 0, b2 = 0;
-  // ck_assert_int_eq(sscanf(str_1, "%d", &a1), s21_sscanf(str_1, "%d", &a2));
+  ck_assert_int_eq(sscanf(str_1, "%d", &a1), s21_sscanf(str_1, "%d", &a2));
   ck_assert_int_eq(a1, a2);
   a1 = 0, a2 = 0;
   ck_assert_int_eq(sscanf(str_2, "%d", &a1), s21_sscanf(str_2, "%d", &a2));
@@ -149,42 +151,21 @@ START_TEST(sscanf_test_d_1) {  // спецификатор d обычные си
 }
 END_TEST
 
-// START_TEST(sscanf_test_d_2) {  // спецификатор d знаки
-//   char str_1[LEN] = "+123";
-//   char str_2[LEN] = "-123";
-//   char str_3[LEN] = "+123 -123";
-//   char str_4[LEN] = "+123-123";
-//   char str_5[LEN] = "++123";
-//   char str_6[LEN] = "------123";
-//   int a1 = 0, a2 = 0, b1 = 0, b2 = 0;
-//   // ck_assert_int_eq(sscanf(str_1, "%d", &a1), s21_sscanf(str_1, "%d",
-//   &a2)); ck_assert_int_eq(a1, a2); a1 = 0, a2 = 0;
-//   // ck_assert_int_eq(sscanf(str_1, "%2d", &a1), s21_sscanf(str_1, "%2d",
-//   &a2)); ck_assert_int_eq(a1, a2); a1 = 0, a2 = 0;
-//   ck_assert_int_eq(sscanf(str_2, "%d", &a1), s21_sscanf(str_2, "%d", &a2));
-//   ck_assert_int_eq(a1, a2);
-//   a1 = 0, a2 = 0;
-//   ck_assert_int_eq(sscanf(str_5, "%d", &a1), s21_sscanf(str_5, "%d", &a2));
-//   ck_assert_int_eq(a1, a2);
-//   a1 = 0, a2 = 0;
-//   ck_assert_int_eq(sscanf(str_6, "%d", &a1), s21_sscanf(str_6, "%d", &a2));
-//   ck_assert_int_eq(a1, a2);
-//   a1 = 0, a2 = 0;
-//   ck_assert_int_eq(sscanf(str_3, "%d%d", &a1, &b1),
-//                    s21_sscanf(str_3, "%d%d", &a2, &b2));
-//   ck_assert_int_eq(a1, a2);
-//   ck_assert_int_eq(b1, b2);
-//   a1 = 0, a2 = 0, b1 = 0, b2 = 0;
-//   ck_assert_int_eq(sscanf(str_4, "%d%d", &a1, &b1),
-//                    s21_sscanf(str_4, "%d%d", &a2, &b2));
-//   ck_assert_int_eq(a1, a2);
-//   ck_assert_int_eq(b1, b2);
-//   a1 = 0, a2 = 0, b1 = 0, b2 = 0;
-// }
-// END_TEST
+START_TEST(sscanf_test_d_2) {
+  const char *inputs[] = {"+123",  "-123",      "+123 -123", "+123-123",
+                          "++123", "------123", "+"};
+  for (size_t i = 0; i < sizeof(inputs) / sizeof(*inputs); ++i) {
+    int a = 42, b = 42, ref_a = 42, ref_b = 42;
+    ck_assert_int_eq(s21_sscanf(inputs[i], "%d%d", &a, &b),
+                     sscanf(inputs[i], "%d%d", &ref_a, &ref_b));
+    ck_assert_int_eq(a, ref_a);
+    ck_assert_int_eq(b, ref_b);
+  }
+}
+END_TEST
 
 START_TEST(sscanf_test_d_3) {  // спецификатор d длина+ширина h
-  char str_1[LEN] = "123456";
+  char str_1[LEN] = "12345";
   short int a1 = 0, a2 = 0, b1 = 0, b2 = 0;
   ck_assert_int_eq(sscanf(str_1, "%hd", &a1), s21_sscanf(str_1, "%hd", &a2));
   ck_assert_int_eq(a1, a2);
@@ -252,7 +233,7 @@ Suite *test_sscanf(void) {
   tcase_add_test(tcase_core, sscanf_test_c_1);
   tcase_add_test(tcase_core, sscanf_test_c_2);
   tcase_add_test(tcase_core, sscanf_test_d_1);
-  // tcase_add_test(tcase_core, sscanf_test_d_2);
+  tcase_add_test(tcase_core, sscanf_test_d_2);
   tcase_add_test(tcase_core, sscanf_test_d_3);
   tcase_add_test(tcase_core, sscanf_test_d_4);
   tcase_add_test(tcase_core, sscanf_test_d_5);

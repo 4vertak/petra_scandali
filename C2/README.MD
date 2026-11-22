@@ -1,5 +1,30 @@
 # Implementation of the string.h library with additions.
 
+## Building this version
+
+This repository exposes the functions through `src/s21_string.h` and builds
+`src/s21_string.a`. The assignment text below uses the prefix `my_`.
+Link clients with the archive and `-lm`.
+
+- `make -C C2/src s21_string.a` builds the C11 library.
+- `make -C C2/src test` builds and runs the Check suites. The build uses
+  `pkg-config` to locate Check.
+- `make -C C2/src gcov_report` runs an instrumented build and writes
+  `src/report/gcov_report.html`. It checks the 80% line coverage threshold
+  separately for every library function and saves the gcov summary in
+  `src/report/functions.txt`.
+- `make -C C2/src sanitize` runs the same tests with AddressSanitizer,
+  UndefinedBehaviorSanitizer and leak detection.
+
+`s21_to_upper`, `s21_to_lower`, `s21_insert` and `s21_trim` return independent
+allocations. The caller releases each successful result with `free`. A null
+or empty trim set returns a copy of the input.
+
+`s21_sscanf` follows the C11 matching rules for incomplete fields. For
+example, `%2c` requires two input characters, and `1e+` fails a floating-point
+conversion. These cases have explicit expectations in the tests.
+[C11 draft N1570, §7.21.6.2](https://www.sigbus.info/n1570#7.21.6.2)
+
 ## Introduction
 
 In this project you will develop your own implementation of the string.h library in the C programming language with some additions (with your own implementation of the sprintf and sscanf functions). The string.h library is the main C library for string handling. As part of the project, you'll work on tasks involving string data and consolidate the structured approach.

@@ -1,32 +1,20 @@
+#include <stdint.h>
+#include <stdlib.h>
+
 #include "s21_string.h"
 
-void *s21_insert(const char *src, const char *str, size_t start_index) {
-  static char insert[MAX_LENGTH];
-  if (src == s21_NULL || str == s21_NULL) {
-    return s21_NULL;
+void *s21_insert(const char *src, const char *str, s21_size_t start_index) {
+  if (!src || !str) return s21_NULL;
+  size_t length = s21_strlen(src);
+  size_t added = s21_strlen(str);
+  if (start_index > length || added > SIZE_MAX - length - 1) return s21_NULL;
+
+  char *result = malloc(length + added + 1);
+  if (result) {
+    s21_memcpy(result, src, start_index);
+    s21_memcpy(result + start_index, str, added);
+    s21_memcpy(result + start_index + added, src + start_index,
+               length - start_index + 1);
   }
-  int i = 0, j = 0;
-  int src_length = 0, str_length = 0;
-  while (src[src_length] != '\0') {
-    src_length++;
-  }
-  while (str[str_length] != '\0') {
-    str_length++;
-  }
-  if (start_index > (long unsigned int)src_length) {
-    return s21_NULL;
-  }
-  if (insert != s21_NULL) {
-    for (; (unsigned long)i < start_index; i++) {
-      ((char *)insert)[i] = src[i];
-    }
-    for (; j < str_length; j++, i++) {
-      ((char *)insert)[i] = str[j];
-    }
-    for (j = start_index; j < src_length; j++, i++) {
-      ((char *)insert)[i] = src[j];
-    }
-    ((char *)insert)[i] = '\0';
-  }
-  return insert;
+  return result;
 }

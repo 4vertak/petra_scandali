@@ -5,7 +5,9 @@ START_TEST(memcmp_1) {
   char str1[] = "Hello, world!";
   char str2[] = "Hello, world!";
   s21_size_t n = 14;
-  ck_assert_int_eq(memcmp(str1, str2, n), s21_memcmp(str1, str2, n));
+  int expected = memcmp(str1, str2, n);
+  int actual = s21_memcmp(str1, str2, n);
+  ck_assert_int_eq((actual > 0) - (actual < 0), (expected > 0) - (expected < 0));
 }
 END_TEST
 
@@ -13,7 +15,9 @@ START_TEST(memcmp_2) {
   char str1[] = "Hello, world!";
   char str2[] = "Hello, world!";
   s21_size_t n = 2;
-  ck_assert_int_eq(memcmp(str1, str2, n), s21_memcmp(str1, str2, n));
+  int expected = memcmp(str1, str2, n);
+  int actual = s21_memcmp(str1, str2, n);
+  ck_assert_int_eq((actual > 0) - (actual < 0), (expected > 0) - (expected < 0));
 }
 END_TEST
 
@@ -21,7 +25,9 @@ START_TEST(memcmp_3) {
   char str1[] = "Hello@world!";
   char str2[] = "Hello, world!";
   s21_size_t n = 4;
-  ck_assert_int_eq(memcmp(str1, str2, n), s21_memcmp(str1, str2, n));
+  int expected = memcmp(str1, str2, n);
+  int actual = s21_memcmp(str1, str2, n);
+  ck_assert_int_eq((actual > 0) - (actual < 0), (expected > 0) - (expected < 0));
 }
 END_TEST
 
@@ -29,7 +35,9 @@ START_TEST(memcmp_4) {
   char str1[] = "Hello@world!";
   char str2[] = "Hello@world!";
   s21_size_t n = 13;
-  ck_assert_int_eq(memcmp(str1, str2, n), s21_memcmp(str1, str2, n));
+  int expected = memcmp(str1, str2, n);
+  int actual = s21_memcmp(str1, str2, n);
+  ck_assert_int_eq((actual > 0) - (actual < 0), (expected > 0) - (expected < 0));
 }
 END_TEST
 
@@ -37,7 +45,9 @@ START_TEST(memcmp_5) {
   char str1[] = "Hello\n, world!";
   char str2[] = "Hello\n, world!";
   s21_size_t n = 15;
-  ck_assert_int_eq(memcmp(str1, str2, n), s21_memcmp(str1, str2, n));
+  int expected = memcmp(str1, str2, n);
+  int actual = s21_memcmp(str1, str2, n);
+  ck_assert_int_eq((actual > 0) - (actual < 0), (expected > 0) - (expected < 0));
 }
 END_TEST
 
@@ -51,8 +61,10 @@ START_TEST(memcmp_6) {
       "various algorithms related to the processing of that very text and "
       "describe them. That is why we need a number of functions to help us "
       "with that. I'm working on them now.";
-  s21_size_t n = 200;
-  ck_assert_int_eq(memcmp(str1, str2, n), s21_memcmp(str1, str2, n));
+  s21_size_t n = sizeof(str1);
+  int expected = memcmp(str1, str2, n);
+  int actual = s21_memcmp(str1, str2, n);
+  ck_assert_int_eq((actual > 0) - (actual < 0), (expected > 0) - (expected < 0));
 }
 END_TEST
 
@@ -73,8 +85,10 @@ START_TEST(memcmp_7) {
       "various algorithms related to the processing of that very text and "
       "describe them. That is why we need a number of functions to help us "
       "with that. I'm working on them now.";
-  s21_size_t n = 448;
-  ck_assert_int_eq(memcmp(str1, str2, n), s21_memcmp(str1, str2, n));
+  s21_size_t n = sizeof(str1);
+  int expected = memcmp(str1, str2, n);
+  int actual = s21_memcmp(str1, str2, n);
+  ck_assert_int_eq((actual > 0) - (actual < 0), (expected > 0) - (expected < 0));
 }
 END_TEST
 
@@ -82,7 +96,9 @@ START_TEST(memcmp_8) {
   char str1[] = "";
   char str2[] = "";
   s21_size_t n = 0;
-  ck_assert_int_eq(memcmp(str1, str2, n), s21_memcmp(str1, str2, n));
+  int expected = memcmp(str1, str2, n);
+  int actual = s21_memcmp(str1, str2, n);
+  ck_assert_int_eq((actual > 0) - (actual < 0), (expected > 0) - (expected < 0));
 }
 END_TEST
 
@@ -90,7 +106,9 @@ START_TEST(memcmp_9) {
   char str1[] = "2002 world";
   char str2[] = "2002";
   s21_size_t n = 0;
-  ck_assert_int_eq(memcmp(str1, str2, n), s21_memcmp(str1, str2, n));
+  int expected = memcmp(str1, str2, n);
+  int actual = s21_memcmp(str1, str2, n);
+  ck_assert_int_eq((actual > 0) - (actual < 0), (expected > 0) - (expected < 0));
 }
 END_TEST
 
@@ -98,7 +116,9 @@ START_TEST(memcmp_10) {
   char str1[] = "2002 world";
   char str2[] = "2002 world";
   s21_size_t n = 8;
-  ck_assert_int_eq(memcmp(str1, str2, n), s21_memcmp(str1, str2, n));
+  int expected = memcmp(str1, str2, n);
+  int actual = s21_memcmp(str1, str2, n);
+  ck_assert_int_eq((actual > 0) - (actual < 0), (expected > 0) - (expected < 0));
 }
 END_TEST
 
@@ -106,7 +126,9 @@ START_TEST(memcmp_11) {
   char str1[] = "20022024!";
   char str2[] = "20022024!";
   s21_size_t n = 10;
-  ck_assert_int_eq(memcmp(str1, str2, 1), s21_memcmp(str1, str2, 2));
+  int expected = memcmp(str1, str2, n);
+  int actual = s21_memcmp(str1, str2, n);
+  ck_assert_int_eq((actual > 0) - (actual < 0), (expected > 0) - (expected < 0));
 }
 END_TEST
 

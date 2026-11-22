@@ -118,7 +118,7 @@ START_TEST(strncmp_6) {
       "various algorithms related to the processing of that very text and "
       "describe them. That is why we need a number of functions to help us "
       "with that. I'm working on them now.";
-  s21_size_t n = 700;
+  s21_size_t n = sizeof(str1);
   int res1 = strncmp(str1, str2, n);
   int res2 = s21_strncmp(str1, str2, n);
   if (res1 > 1) {

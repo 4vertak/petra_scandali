@@ -84,7 +84,7 @@ END_TEST
 START_TEST(memchr_11) {
   char str[] = "16022024";
   int ch = 54;
-  ck_assert_ptr_ne(memchr(str, ch, 1), s21_memchr(str, ch, 2));
+  ck_assert_ptr_eq(memchr(str, ch, 2), s21_memchr(str, ch, 2));
 }
 END_TEST
 

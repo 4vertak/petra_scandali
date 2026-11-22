@@ -4,10 +4,11 @@
 #include <ctype.h>
 #include <math.h>
 #include <stdarg.h>
+#include <stddef.h>
 #include <stdio.h>
 #include <stdlib.h>
 
-#define s21_NULL (void *)0
+#define s21_NULL ((void *)0)
 
 #define MAX_LENGTH 4096
 
@@ -126,12 +127,15 @@
 #ifdef __APPLE__
 #define MAC_OS 1
 #define LINUX 0
-#elif __linux__
+#elif defined(__linux__)
 #define MAC_OS 0
 #define LINUX 1
+#else
+#define MAC_OS 0
+#define LINUX 0
 #endif
 
-typedef unsigned long s21_size_t;
+typedef size_t s21_size_t;
 
 void *s21_memchr(const void *str, int c, s21_size_t n);
 int s21_memcmp(const void *str1, const void *str2, s21_size_t n);
@@ -151,11 +155,14 @@ int s21_sprintf(char *str, const char *format, ...);
 char *s21_strcat(char *dest, const char *src);
 void *s21_memmove(void *dest, const void *src, s21_size_t n);
 char *s21_strrev(char *str);
-int s21_strcmp(char *str1, char *str2);
+int s21_strcmp(const char *str1, const char *str2);
 char *s21_strtok(char *str, const char *delim);
+// Each successful call to the four functions below returns a copy owned by
+// the caller. Release it with free(). NULL or empty trim_chars selects no
+// bytes.
 void *s21_to_lower(const char *str);
 void *s21_to_upper(const char *str);
-void *s21_insert(const char *src, const char *str, size_t start_index);
+void *s21_insert(const char *src, const char *str, s21_size_t start_index);
 void *s21_trim(const char *src, const char *trim_chars);
 int s21_sscanf(const char *str, const char *format, ...);
 

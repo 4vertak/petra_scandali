@@ -5,6 +5,7 @@ START_TEST(test_to_lower_1) {
   char s3[] = "hELLO, WORLD!";
   char *s2 = s21_to_lower(s3);
   ck_assert_str_eq(s1, s2);
+  free(s2);
 }
 END_TEST
 
@@ -13,6 +14,7 @@ START_TEST(test_to_lower_2) {
   char s3[] = "\nH\t\\G123123";
   char *s2 = s21_to_lower(s3);
   ck_assert_str_eq(s1, s2);
+  free(s2);
 }
 END_TEST
 
@@ -21,6 +23,7 @@ START_TEST(test_to_lower_3) {
   char s3[] = "already lower";
   char *s2 = s21_to_lower(s3);
   ck_assert_str_eq(s1, s2);
+  free(s2);
 }
 END_TEST
 
@@ -29,6 +32,7 @@ START_TEST(test_to_lower_4) {
   char s3[] = "";
   char *s2 = s21_to_lower(s3);
   ck_assert_str_eq(s1, s2);
+  free(s2);
 }
 END_TEST
 
@@ -37,6 +41,7 @@ START_TEST(test_to_lower_5) {
   char s3[] = "ABCDEFGHIJKLMNOPQRSTUVWXYZ";
   char *s2 = s21_to_lower(s3);
   ck_assert_str_eq(s1, s2);
+  free(s2);
 }
 END_TEST
 
@@ -45,6 +50,7 @@ START_TEST(test_to_lower_6) {
   char s3[] = "_?};!234";
   char *s2 = s21_to_lower(s3);
   ck_assert_str_eq(s1, s2);
+  free(s2);
 }
 END_TEST
 

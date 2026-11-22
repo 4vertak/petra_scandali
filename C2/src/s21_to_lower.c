@@ -1,16 +1,16 @@
+#include <stdlib.h>
+
 #include "s21_string.h"
 
 void *s21_to_lower(const char *str) {
-  static char copy_str[MAX_LENGTH];
-  s21_size_t str_length = s21_strlen(str);
-
-  if (copy_str != s21_NULL) {
-    s21_strncpy(copy_str, str, str_length + 1);
-    for (char *i = copy_str; *i; i++) {
-      if (*i >= 'A' && *i <= 'Z') {
-        *i += 32;
-      }
+  if (!str) return s21_NULL;
+  size_t length = s21_strlen(str);
+  char *result = malloc(length + 1);
+  if (result) {
+    for (size_t i = 0; i <= length; ++i) {
+      char c = str[i];
+      result[i] = (c >= 'A' && c <= 'Z') ? c + ('a' - 'A') : c;
     }
   }
-  return (void *)copy_str;
+  return result;
 }
